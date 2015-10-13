@@ -1,0 +1,1138 @@
+/*
+ * Copyright 2015 Namihiko Matsumura (https://github.com/n-i-e/)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.github.n_i_e.deepfolderview;
+
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.beans.PojoProperties;
+import org.eclipse.core.databinding.observable.Realm;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.ProgressBar;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.wb.swt.SWTResourceManager;
+
+import com.github.n_i_e.dirtreedb.AbstractDirTreeDb;
+import com.github.n_i_e.dirtreedb.Assertion;
+import com.github.n_i_e.dirtreedb.DbPathEntry;
+import com.github.n_i_e.dirtreedb.LazyAccessorThread;
+import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDb;
+import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDb.Dispatcher;
+import com.github.n_i_e.dirtreedb.NavigatableArrayList;
+import com.github.n_i_e.dirtreedb.PathEntry;
+import com.ibm.icu.text.NumberFormat;
+import com.ibm.icu.text.SimpleDateFormat;
+
+public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
+	@SuppressWarnings("unused")
+	private DataBindingContext m_bindingContext;
+
+	protected Shell shell;
+	private FormToolkit formToolkit = new FormToolkit(Display.getDefault());
+	private Text txtLocation;
+	private Composite compositeToolBar;
+	private Table table;
+	private Label lblStatusBar;
+	private Composite compositeStatusBar;
+	private ProgressBar progressBar;
+
+	@Override protected Shell getShell() { return shell; }
+	@Override protected Table getTable() { return table; }
+	@Override protected Label getLblStatusBar() { return lblStatusBar; }
+	@Override protected ProgressBar getProgressBar() { return progressBar; }
+
+ 	public static void main(String[] args) {
+		final Display display = Display.getDefault();
+
+		Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
+			public void run() {
+				try {
+					final SwtFileFolderMenu window = new SwtFileFolderMenu();
+					window.open();
+/*
+					display.asyncExec(new Runnable() {
+						public void run() {
+							TableItem tableItem = new TableItem(window.table, SWT.NONE);
+							tableItem.setText(new String[] {"C:\\", "2015-01-01 00:00:00", "1", "2", "3"});
+
+							TableItem tableItem_1 = new TableItem(window.table, SWT.NONE);
+							tableItem_1.setText(new String[] {"D:\\", "2014-01-01 00:00:00", "100", "200", "1"});
+						}
+					});*/
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	public void open() {
+		Display display = Display.getDefault();
+		//createContents();
+		//shell.open();
+		//shell.layout();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) {
+				display.sleep();
+			}
+		}
+	}
+	
+
+	public SwtFileFolderMenu() {
+		createContents();
+		shell.open();
+		shell.layout();
+
+		location = new NavigatableArrayList<Location>();
+		location.add(new Location());
+	}
+
+	/**
+	 * Create contents of the window.
+	 */
+	private void createContents() {
+		shell = new Shell();
+		shell.setImage(SWTResourceManager.getImage(SwtFileFolderMenu.class, "/com/github/n_i_e/deepfolderview/icon/drive-harddisk.png"));
+		shell.setMinimumSize(new Point(300, 200));
+		shell.setSize(640, 480);
+		GridLayout gl_shell = new GridLayout(1, false);
+		gl_shell.verticalSpacing = 6;
+		gl_shell.marginWidth = 3;
+		gl_shell.marginHeight = 3;
+		gl_shell.horizontalSpacing = 6;
+		shell.setLayout(gl_shell);
+		
+		Menu menu = new Menu(shell, SWT.BAR);
+		shell.setMenuBar(menu);
+		
+		MenuItem mntmFile = new MenuItem(menu, SWT.CASCADE);
+		mntmFile.setText(Messages.mntmFile_text);
+		
+		Menu menuFile = new Menu(mntmFile);
+		mntmFile.setMenu(menuFile);
+
+		MenuItem mntmOpen_1 = new MenuItem(menuFile, SWT.NONE);
+		mntmOpen_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				onOpenSelected(e);
+			}
+		});
+		mntmOpen_1.setText(Messages.mntmOpen_text);
+		
+		MenuItem mntmOpenInNew_1 = new MenuItem(menuFile, SWT.NONE);
+		mntmOpenInNew_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				onOpenInNewWindowSelected(e);
+			}
+		});
+		mntmOpenInNew_1.setText(Messages.mntmOpenInNewWindow_text);
+		
+		MenuItem mntmOpenDuplicateDetails_1 = new MenuItem(menuFile, SWT.NONE);
+		mntmOpenDuplicateDetails_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				onOpenDuplicateDetailsSelected(e);
+			}
+		});
+		mntmOpenDuplicateDetails_1.setText(Messages.mntmOpenDuplicateDetails_text);
+		
+		MenuItem mntmCopyTo_2 = new MenuItem(menuFile, SWT.NONE);
+		mntmCopyTo_2.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				onCopyToSelected();
+			}
+		});
+		mntmCopyTo_2.setText(Messages.mntmCopyTo_text);
+		
+		MenuItem mntmClose = new MenuItem(menuFile, SWT.NONE);
+		mntmClose.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				onCloseSelected();
+			}
+		});
+		mntmClose.setText(Messages.mntmClose_text);
+
+		MenuItem mntmQuit = new MenuItem(menuFile, SWT.NONE);
+		mntmQuit.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				onQuitSelected();
+			}
+		});
+		mntmQuit.setText(Messages.mntmQuit_text);
+
+		MenuItem mntmEdit = new MenuItem(menu, SWT.CASCADE);
+		mntmEdit.setText(Messages.mntmEdit_text);
+		
+		Menu menuEdit = new Menu(mntmEdit);
+		mntmEdit.setMenu(menuEdit);
+		
+		MenuItem mntmRun_1 = new MenuItem(menuEdit, SWT.NONE);
+		mntmRun_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				onRunSelected();
+			}
+		});
+		mntmRun_1.setText(Messages.mntmRun_text);
+		
+		MenuItem mntmCopyAsString_1 = new MenuItem(menuEdit, SWT.NONE);
+		mntmCopyAsString_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				onCopyAsStringSelected();
+			}
+		});
+		mntmCopyAsString_1.setText(Messages.mntmCopyAsString_text);
+		
+		MenuItem mntmCopyTo_1 = new MenuItem(menuEdit, SWT.NONE);
+		mntmCopyTo_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				onCopyToSelected();
+			}
+		});
+		mntmCopyTo_1.setText(Messages.mntmCopyTo_text);
+
+		MenuItem mntmVisibility = new MenuItem(menu, SWT.CASCADE);
+		mntmVisibility.setText(Messages.mntmVisibility_text);
+		
+		Menu menuVisibility = new Menu(mntmVisibility);
+		mntmVisibility.setMenu(menuVisibility);
+		
+		final MenuItem mntmFoldersVisible = new MenuItem(menuVisibility, SWT.CHECK);
+		mntmFoldersVisible.setSelection(true);
+		mntmFoldersVisible.setText(Messages.mntmFoldersVisible_text);
+		
+		final MenuItem mntmFilesVisible = new MenuItem(menuVisibility, SWT.CHECK);
+		mntmFilesVisible.setSelection(true);
+		mntmFilesVisible.setText(Messages.mntmFilesVisible_text);
+		
+		final MenuItem mntmCompressedFoldersVisible = new MenuItem(menuVisibility, SWT.CHECK);
+		mntmCompressedFoldersVisible.setSelection(true);
+		mntmCompressedFoldersVisible.setText(Messages.mntmCompressedFoldersVisible_text);
+		
+		final MenuItem mntmCompressedFilesVisible = new MenuItem(menuVisibility, SWT.CHECK);
+		mntmCompressedFilesVisible.setSelection(true);
+		mntmCompressedFilesVisible.setText(Messages.mntmCompressedFilesVisible_text);
+		
+		MenuItem mntmHelp = new MenuItem(menu, SWT.CASCADE);
+		mntmHelp.setText(Messages.mntmHelp_text);
+		
+		Menu menuHelp = new Menu(mntmHelp);
+		mntmHelp.setMenu(menuHelp);
+		
+		MenuItem mntmOpenSourceLicenses = new MenuItem(menuHelp, SWT.NONE);
+		mntmOpenSourceLicenses.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				new SwtOpenSourceLicenses(shell, SWT.TITLE|SWT.MIN|SWT.MAX|SWT.CLOSE).open();
+			}
+		});
+		mntmOpenSourceLicenses.setText(Messages.mntmOpenSourceLicenses_text);
+
+		compositeToolBar = new Composite(shell, SWT.NONE);
+		compositeToolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		compositeToolBar.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+		compositeToolBar.setFont(SWTResourceManager.getFont("Meiryo UI", 12, SWT.NORMAL));
+		GridLayout gl_compositeToolBar = new GridLayout(5, false);
+		gl_compositeToolBar.horizontalSpacing = 0;
+		gl_compositeToolBar.verticalSpacing = 0;
+		gl_compositeToolBar.marginWidth = 0;
+		gl_compositeToolBar.marginHeight = 0;
+		compositeToolBar.setLayout(gl_compositeToolBar);
+		formToolkit.adapt(compositeToolBar);
+		formToolkit.paintBordersFor(compositeToolBar);
+		
+		Button btnLeft = new Button(compositeToolBar, SWT.NONE);
+		btnLeft.setImage(SWTResourceManager.getImage(SwtFileFolderMenu.class, "/com/github/n_i_e/deepfolderview/icon/go-previous.png"));
+		btnLeft.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				onNavigatePreviousSelected(e);
+			}
+		});
+		btnLeft.setFont(SWTResourceManager.getFont("Meiryo UI", 11, SWT.NORMAL));
+		formToolkit.adapt(btnLeft, true, true);
+		
+		Button btnRight = new Button(compositeToolBar, SWT.NONE);
+		btnRight.setImage(SWTResourceManager.getImage(SwtFileFolderMenu.class, "/com/github/n_i_e/deepfolderview/icon/go-next.png"));
+		btnRight.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				onNavigateNextSelected(e);
+			}
+		});
+		btnRight.setFont(SWTResourceManager.getFont("Meiryo UI", 11, SWT.NORMAL));
+		formToolkit.adapt(btnRight, true, true);
+		
+		Button btnUp = new Button(compositeToolBar, SWT.NONE);
+		btnUp.setImage(SWTResourceManager.getImage(SwtFileFolderMenu.class, "/com/github/n_i_e/deepfolderview/icon/go-up.png"));
+		btnUp.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				onUpperFolderSelected(e);
+			}
+		});
+		formToolkit.adapt(btnUp, true, true);
+		
+		txtLocation = new Text(compositeToolBar, SWT.BORDER);
+		txtLocation.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent arg0) {
+				onLocationModified(arg0);
+			}
+		});
+		GridData gd_txtLocation = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		gd_txtLocation.widthHint = 200;
+		txtLocation.setLayoutData(gd_txtLocation);
+		txtLocation.setFont(SWTResourceManager.getFont("Meiryo UI", 11, SWT.NORMAL));
+		formToolkit.adapt(txtLocation, true, true);
+		
+		Button btnRefresh = new Button(compositeToolBar, SWT.NONE);
+		btnRefresh.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				refresh();
+			}
+		});
+		btnRefresh.setImage(SWTResourceManager.getImage(SwtFileFolderMenu.class, "/com/github/n_i_e/deepfolderview/icon/view-refresh.png"));
+		formToolkit.adapt(btnRefresh, true, true);
+		
+		final TableViewer tableViewer = new TableViewer(shell, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL);
+		table = tableViewer.getTable();
+		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		//table = new Table(scrolledComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL);
+		table.setHeaderVisible(true);
+		table.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				onTableSelected(e);
+			}
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				onOpenSelected(e);
+			}
+		});
+		formToolkit.adapt(table);
+		formToolkit.paintBordersFor(table);
+		
+		final TableColumn tblclmnPath = new TableColumn(table, SWT.LEFT);
+		tblclmnPath.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				table.setSortColumn(tblclmnPath);
+				if (table.getSortDirection() == SWT.UP) {
+					table.setSortDirection(SWT.DOWN);
+				} else {
+					table.setSortDirection(SWT.UP);
+				}
+				onTblclmnPathSelected(tblclmnPath, e);
+			}
+		});
+		tblclmnPath.setWidth(230);
+		tblclmnPath.setText(Messages.tblclmnPath_text);
+		setTableSortDirection(tblclmnPath, "path", order);
+		
+		final TableColumn tblclmnDateLastModified = new TableColumn(table, SWT.LEFT);
+		tblclmnDateLastModified.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				table.setSortColumn(tblclmnDateLastModified);
+				if (table.getSortDirection() == SWT.UP) {
+					table.setSortDirection(SWT.DOWN);
+				} else {
+					table.setSortDirection(SWT.UP);
+				}
+				onTblclmnDateLastModifiedSelected(tblclmnDateLastModified, e);
+			}
+		});
+		tblclmnDateLastModified.setWidth(136);
+		tblclmnDateLastModified.setText(Messages.tblclmnDateLastModified_text);
+		setTableSortDirection(tblclmnDateLastModified, "datelastmodified", order);
+		
+		final TableColumn tblclmnSize = new TableColumn(table, SWT.RIGHT);
+		tblclmnSize.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				table.setSortColumn(tblclmnSize);
+				if (table.getSortDirection() == SWT.UP) {
+					table.setSortDirection(SWT.DOWN);
+				} else {
+					table.setSortDirection(SWT.UP);
+				}
+				onTblclmnSizeSelected(tblclmnSize, e);
+			}
+		});
+		tblclmnSize.setWidth(110);
+		tblclmnSize.setText(Messages.tblclmnSize_text);
+		setTableSortDirection(tblclmnSize, "size", order);
+		
+		final TableColumn tblclmnCompressedsize = new TableColumn(table, SWT.RIGHT);
+		tblclmnCompressedsize.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				table.setSortColumn(tblclmnCompressedsize);
+				if (table.getSortDirection() == SWT.UP) {
+					table.setSortDirection(SWT.DOWN);
+				} else {
+					table.setSortDirection(SWT.UP);
+				}
+				onTblclmnCompressedsizeSelected(tblclmnCompressedsize, e);
+			}
+		});
+		tblclmnCompressedsize.setWidth(110);
+		tblclmnCompressedsize.setText(Messages.tblclmnCompressedesize_text);
+		setTableSortDirection(tblclmnCompressedsize, "compressedsize", order);
+		
+		final TableColumn tblclmnDuplicate = new TableColumn(table, SWT.NONE);
+		tblclmnDuplicate.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				table.setSortColumn(tblclmnDuplicate);
+				if (table.getSortDirection() == SWT.UP) {
+					table.setSortDirection(SWT.DOWN);
+				} else {
+					table.setSortDirection(SWT.UP);
+				}
+				onTblclmnDuplicateSelected(tblclmnDuplicate, e);
+			}
+		});
+		tblclmnDuplicate.setWidth(35);
+		tblclmnDuplicate.setText(Messages.tblclmnDuplicate_text);
+		setTableSortDirection(tblclmnDuplicate, "duplicate", order);
+		
+		final TableColumn tblclmnDedupablesize = new TableColumn(table, SWT.RIGHT);
+		tblclmnDedupablesize.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				table.setSortColumn(tblclmnDedupablesize);
+				if (table.getSortDirection() == SWT.UP) {
+					table.setSortDirection(SWT.DOWN);
+				} else {
+					table.setSortDirection(SWT.UP);
+				}
+				onTblclmnDedupablesizeSelected(tblclmnDedupablesize, e);
+			}
+		});
+		tblclmnDedupablesize.setWidth(110);
+		tblclmnDedupablesize.setText(Messages.tblclmnDedupablesize_text);
+		setTableSortDirection(tblclmnDedupablesize, "dedupablesize", order);
+
+		Menu popupMenu = new Menu(table);
+		table.setMenu(popupMenu);
+
+		MenuItem mntmRun = new MenuItem(popupMenu, SWT.NONE);
+		mntmRun.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				onRunSelected();
+			}
+		});
+		mntmRun.setText(Messages.mntmRun_text);
+
+		MenuItem mntmOpen = new MenuItem(popupMenu, SWT.NONE);
+		mntmOpen.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				onOpenSelected(e);
+			}
+		});
+		mntmOpen.setText(Messages.mntmOpen_text);
+
+		MenuItem mntmOpenInNew = new MenuItem(popupMenu, SWT.NONE);
+		mntmOpenInNew.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				onOpenInNewWindowSelected(e);
+			}
+		});
+		mntmOpenInNew.setText(Messages.mntmOpenInNewWindow_text);
+
+		MenuItem mntmOpenDuplicateDetails = new MenuItem(popupMenu, SWT.NONE);
+		mntmOpenDuplicateDetails.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				onOpenDuplicateDetailsSelected(e);
+			}
+		});
+		mntmOpenDuplicateDetails.setText(Messages.mntmOpenDuplicateDetails_text);
+
+		MenuItem mntmCopyAsString = new MenuItem(popupMenu, SWT.NONE);
+		mntmCopyAsString.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				onCopyAsStringSelected();
+			}
+		});
+		mntmCopyAsString.setText(Messages.mntmCopyAsString_text);
+
+		MenuItem mntmCopyTo = new MenuItem(popupMenu, SWT.NONE);
+		mntmCopyTo.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				onCopyToSelected();
+			}
+		});
+		mntmCopyTo.setText(Messages.mntmCopyTo_text);
+
+		MenuItem menuItem = new MenuItem(popupMenu, SWT.SEPARATOR);
+		menuItem.setText("Visibility");
+
+		final MenuItem mntmFoldersVisible_1 = new MenuItem(popupMenu, SWT.CHECK);
+		mntmFoldersVisible_1.setSelection(true);
+		mntmFoldersVisible_1.setText(Messages.mntmFoldersVisible_text);
+		mntmFoldersVisible_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				mntmFoldersVisible.setSelection(mntmFoldersVisible_1.getSelection());
+				onFoldersVisibleChecked(mntmFoldersVisible.getSelection());
+			}
+		});
+
+		final MenuItem mntmFilesVisible_1 = new MenuItem(popupMenu, SWT.CHECK);
+		mntmFilesVisible_1.setSelection(true);
+		mntmFilesVisible_1.setText(Messages.mntmFilesVisible_text);
+		mntmFilesVisible_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				mntmFilesVisible.setSelection(mntmFilesVisible_1.getSelection());
+				onFilesVisibleChecked(mntmFilesVisible.getSelection());
+			}
+		});
+
+		final MenuItem mntmCompressedFoldersVisible_1 = new MenuItem(popupMenu, SWT.CHECK);
+		mntmCompressedFoldersVisible_1.setSelection(true);
+		mntmCompressedFoldersVisible_1.setText(Messages.mntmCompressedFoldersVisible_text);
+		mntmCompressedFoldersVisible_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				mntmCompressedFoldersVisible.setSelection(mntmCompressedFoldersVisible_1.getSelection());
+				onCompressedFoldersVisibleChecked(mntmCompressedFoldersVisible.getSelection());
+			}
+		});
+
+		final MenuItem mntmCompressedFilesVisible_1 = new MenuItem(popupMenu, SWT.CHECK);
+		mntmCompressedFilesVisible_1.setSelection(true);
+		mntmCompressedFilesVisible_1.setText(Messages.mntmCompressedFilesVisible_text);
+		mntmCompressedFilesVisible_1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				mntmCompressedFilesVisible.setSelection(mntmCompressedFilesVisible_1.getSelection());
+				onCompressedFilesVisibleSelected(mntmCompressedFilesVisible.getSelection());
+			}
+		});
+		mntmFoldersVisible.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				mntmFoldersVisible_1.setSelection(mntmFoldersVisible.getSelection());
+				onFoldersVisibleChecked(mntmFoldersVisible.getSelection());
+			}
+		});
+		mntmFilesVisible.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+			    mntmFilesVisible_1.setSelection(mntmFilesVisible.getSelection());
+				onFilesVisibleChecked(mntmFilesVisible.getSelection());
+			}
+		});
+		mntmCompressedFoldersVisible.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+			    mntmCompressedFoldersVisible_1.setSelection(mntmCompressedFoldersVisible.getSelection());
+				onCompressedFoldersVisibleChecked(mntmCompressedFoldersVisible.getSelection());
+			}
+		});
+		mntmCompressedFilesVisible.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+			    mntmCompressedFilesVisible_1.setSelection(mntmCompressedFilesVisible.getSelection());
+				onCompressedFilesVisibleSelected(mntmCompressedFilesVisible.getSelection());
+			}
+		});
+		
+		compositeStatusBar = new Composite(shell, SWT.NONE);
+		compositeStatusBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		compositeStatusBar.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+		GridLayout gl_compositeStatusBar = new GridLayout(2, false);
+		gl_compositeStatusBar.marginWidth = 0;
+		gl_compositeStatusBar.marginHeight = 0;
+		compositeStatusBar.setLayout(gl_compositeStatusBar);
+		formToolkit.adapt(compositeStatusBar);
+		formToolkit.paintBordersFor(compositeStatusBar);
+		
+		lblStatusBar = new Label(compositeStatusBar, SWT.NONE);
+		lblStatusBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		lblStatusBar.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+		formToolkit.adapt(lblStatusBar, true, true);
+		lblStatusBar.setText("");
+		
+		progressBar = new ProgressBar(compositeStatusBar, SWT.NONE);
+		formToolkit.adapt(progressBar, true, true);
+		m_bindingContext = initDataBindings();
+
+	}
+
+	protected void onCopyAsStringSelected() {
+		ArrayList<String> s = new ArrayList<String>();
+		for (PathEntry p: getSelectedPathEntries()) {
+			s.add(p.getPath());
+		}
+		StringSelection ss = new StringSelection(String.join("\n", s));
+		Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+		clip.setContents(ss, ss);
+	}
+
+	protected void onOpenSelected(SelectionEvent e) {
+		try {
+			setLocationAndRefresh(getSelectedPathEntry());
+		} catch (ArrayIndexOutOfBoundsException e1) {}
+	}
+
+	protected void onOpenInNewWindowSelected(SelectionEvent e) {
+		DbPathEntry p = getSelectedPathEntry();
+		if (p == null) {
+			p = location.get().pathEntry;
+		}
+		if (p != null) {
+			new SwtFileFolderMenu().setLocationAndRefresh(p);
+		} else if (location.get().pathString != null) {
+			new SwtFileFolderMenu().setLocationAndRefresh(location.get().pathString);
+		} else if (location.get().searchString != null) {
+			new SwtFileFolderMenu().setLocationAndRefresh(location.get().searchString);
+		} else if (location.get().pathId != 0L) {
+			new SwtFileFolderMenu().setLocationAndRefresh(location.get().pathId);
+		}
+	}
+
+	protected void onOpenDuplicateDetailsSelected(SelectionEvent e) {
+		DbPathEntry p = getSelectedPathEntry();
+		if (p == null) {
+			p = location.get().pathEntry;
+		}
+		if (p != null) {
+			new SwtDuplicateMenu().setLocationAndRefresh(p);
+		} else if (location.get().pathString != null) {
+			new SwtDuplicateMenu().setLocationAndRefresh(location.get().pathString);
+		} else if (location.get().searchString != null) {
+			new SwtDuplicateMenu().setLocationAndRefresh(location.get().searchString);
+		} else if (location.get().pathId != 0L) {
+			new SwtDuplicateMenu().setLocationAndRefresh(location.get().pathId);
+		}
+	}
+
+	protected void onNavigatePreviousSelected(SelectionEvent e) {
+		location.navigatePrevious();
+		setLocationAndRefresh(location.get());
+	}
+
+	protected void onNavigateNextSelected(SelectionEvent e) {
+		location.navigateNext();
+		setLocationAndRefresh(location.get());
+	}
+
+	protected void onUpperFolderSelected(SelectionEvent e) {
+		DbPathEntry p = location.get().pathEntry;
+		if (p != null && p.getParentId() != 0L) {
+			setLocationAndRefresh(p.getParentId());
+		} else {
+			writeStatusBar("Not ready for going up operation; be patient.");
+		}
+	}
+
+	protected void onLocationModified(ModifyEvent arg0) {
+		String newstring = txtLocation.getText();
+		Assertion.assertNullPointerException(newstring != null);
+		writeStatusBar(String.format("New path string is: %s", newstring));
+		shell.setText(newstring);
+		Location oldloc = location.get();
+		if (newstring.equals(oldloc.pathString)) {
+			// noop
+		} else if (newstring.equals(oldloc.searchString)) {
+			oldloc.pathEntry = null;
+			oldloc.pathId = 0L;
+			oldloc.pathString = null;
+		} else {
+			Location newloc = new Location();
+			newloc.pathString = newstring;
+			location.add(newloc);
+		}
+		refresh();
+	}
+
+	public void setLocationAndRefresh(final String text) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				txtLocation.setText(text); // onLocationModified() is automatically called here.
+			}
+		});
+	}
+
+	public void setLocationAndRefresh(final DbPathEntry entry) {
+		Assertion.assertNullPointerException(entry != null);
+		Assertion.assertNullPointerException(location != null);
+		Location oldloc = location.get();
+		if (oldloc.pathEntry != null && oldloc.pathEntry.getPathId() == entry.getPathId()) {
+			// noop
+		} else if (oldloc.pathString != null && oldloc.pathString.equals(entry.getPath())) {
+			oldloc.pathEntry = entry;
+			oldloc.pathId = entry.getPathId();
+		} else {
+			Location newloc = new Location();
+			newloc.pathEntry = entry;
+			newloc.pathId = entry.getPathId();
+			newloc.pathString = entry.getPath();
+			location.add(newloc);
+		}
+		setLocationAndRefresh(entry.getPath());
+	}
+
+	public void setLocationAndRefresh(long id) {
+		writeStatusBar(String.format("Starting query; new ID is: %d", id));
+		Location oldloc = location.get();
+		if (oldloc.pathId == id) {
+			// null
+		} else {
+			Location newloc = new Location();
+			newloc.pathId = id;
+			location.add(newloc);
+		}
+		new LazyAccessorThread(LazyAccessorThreadRunningConfigSingleton.getInstance()) {
+			@Override
+			public void run() throws Exception {
+				writelog("-- SwtFileFolderMenu SetLocationAndRefresh LOCAL PATTERN (id based) --");
+				Location loc = location.get();
+				DbPathEntry p = getDb().getDbPathEntryByPathId(loc.pathId);
+				if (p != null) {
+					loc.pathEntry = p;
+					loc.pathString = p.getPath();
+					loc.searchString = null;
+					setLocationAndRefresh(loc.pathString);
+				}
+			}
+		}.start();
+	}
+
+	public void setLocationAndRefresh(final Location loc) {
+		if (loc.pathString != null) {
+			setLocationAndRefresh(loc.pathString);
+		} else if (loc.pathEntry != null) {
+			setLocationAndRefresh(loc.pathEntry.getPath());
+		} else if (loc.searchString != null) {
+			setLocationAndRefresh(loc.searchString);
+		} else {
+			setLocationAndRefresh("");
+		}
+	}
+
+	protected void onTableSelected(SelectionEvent e) {}
+
+	private String order = PreferenceBox.getSwtFileFolderMenuSortOrder();
+	private boolean folder_is_checked = true;
+	private boolean file_is_checked = true;
+	private boolean compressedfolder_is_checked = true;
+	private boolean compressedfile_is_checked = true;
+
+	protected void onTblclmnPathSelected(TableColumn tblclmnPath, SelectionEvent e) {
+		if (table.getSortDirection() == SWT.UP) {
+			order = "path";
+		} else {
+			order = "path DESC";
+		}
+		PreferenceBox.setSwtFileFolderMenuSortOrder(order);
+		refresh();
+	}
+
+	protected void onTblclmnDateLastModifiedSelected(TableColumn tblclmnDateLastModified, SelectionEvent e) {
+		if (table.getSortDirection() == SWT.UP) {
+			order = "datelastmodified";
+		} else {
+			order = "datelastmodified DESC";
+		}
+		PreferenceBox.setSwtFileFolderMenuSortOrder(order);
+		refresh();
+	}
+
+	protected void onTblclmnSizeSelected(TableColumn tblclmnSize, SelectionEvent e) {
+		if (table.getSortDirection() == SWT.UP) {
+			order = "size";
+		} else {
+			order = "size DESC";
+		}
+		PreferenceBox.setSwtFileFolderMenuSortOrder(order);
+		refresh();
+	}
+
+	protected void onTblclmnCompressedsizeSelected(TableColumn tblclmnCompressedesize, SelectionEvent e) {
+		if (table.getSortDirection() == SWT.UP) {
+			order = "compressedsize";
+		} else {
+			order = "compressedsize DESC";
+		}
+		PreferenceBox.setSwtFileFolderMenuSortOrder(order);
+		refresh();
+	}
+
+	protected void onTblclmnDuplicateSelected(TableColumn tblclmnDuplicate, SelectionEvent e) {
+		if (table.getSortDirection() == SWT.UP) {
+			order = "duplicate";
+		} else {
+			order = "duplicate DESC";
+		}
+		PreferenceBox.setSwtFileFolderMenuSortOrder(order);
+		refresh();
+	}
+
+	protected void onTblclmnDedupablesizeSelected(TableColumn tblclmnDedupablesize, SelectionEvent e) {
+		if (table.getSortDirection() == SWT.UP) {
+			order = "dedupablesize";
+		} else {
+			order = "dedupablesize DESC";
+		}
+		PreferenceBox.setSwtFileFolderMenuSortOrder(order);
+		refresh();
+	}
+
+	protected void onFoldersVisibleChecked(boolean checked) {
+		folder_is_checked = checked;
+		refresh();
+	}
+
+	protected void onFilesVisibleChecked(boolean checked) {
+		file_is_checked = checked;
+		refresh();
+	}
+
+	protected void onCompressedFoldersVisibleChecked(boolean checked) {
+		compressedfolder_is_checked = checked;
+		refresh();
+	}
+
+	protected void onCompressedFilesVisibleSelected(boolean checked) {
+		compressedfile_is_checked = checked;
+		refresh();
+	}
+
+	class Scenario extends SwtCommonFileFolderMenu.Scenario {
+
+		SwtCommonFileFolderRootMenu.Scenario oldScenarioToKill = null;
+
+		Scenario() {
+			super();
+		}
+
+		public Scenario(SwtCommonFileFolderRootMenu.Scenario oldScenarioToKill) {
+			this();
+			this.oldScenarioToKill = oldScenarioToKill;
+		}
+
+		public void run() throws SQLException, InterruptedException, IOException {
+			if (oldScenarioToKill != null) {
+				oldScenarioToKill.setDontResetProgressAtEnding(true);
+				oldScenarioToKill.interrupt();
+			}
+			try {
+				cleanupTable();
+
+				ArrayList<String> typelist = new ArrayList<String> ();
+				if (folder_is_checked) {
+					typelist.add("type=0");
+				}
+				if (file_is_checked) {
+					typelist.add("type=1");
+				}
+				if (compressedfolder_is_checked) {
+					typelist.add("type=2");
+				}
+				if (compressedfile_is_checked) {
+					typelist.add("type=3");
+				}
+				String typeWhere = typelist.size() == 0 ? "" : String.join(" OR ", typelist);
+
+				writeStatusBar("Querying...");
+				writeProgress(70);
+
+				String searchSubSql;
+				ArrayList<String> searchStringElement = new ArrayList<String> ();
+				if (getLocationSearchString() == null || "".equals(getLocationSearchString())) {
+					searchSubSql = "";
+				} else {
+					ArrayList<String> p = new ArrayList<String> ();
+					for (String s: getLocationSearchString().split(" ")) {
+						if (! "".equals(s)) {
+							p.add("path LIKE ?");
+							searchStringElement.add(s);
+						}
+					}
+					searchSubSql = " AND (" + String.join(" OR ", p) + ")";
+				}
+				PreparedStatement ps;
+				if (getLocationPath() == null || "".equals(getLocationPath())) {
+					String sql = "SELECT * FROM directory WHERE (" + typeWhere + ") " + searchSubSql
+							+ " ORDER BY " + order;
+					writelog(sql);
+					ps = getDb().prepareStatement(sql);
+					int c = 1;
+					for (String s: searchStringElement) {
+						ps.setString(c, "%" + s + "%");
+						writelog(c + " %" + s + "%");
+						c++;
+					}
+				} else if (getLocationPathEntry() != null) {
+					String sql = "SELECT * FROM directory WHERE (" + typeWhere + ") " + searchSubSql
+							+ " AND (pathid=? OR EXISTS (SELECT * FROM upperlower WHERE upper=? AND lower=pathid))"
+							+ " ORDER BY " + order;
+					writelog(sql);
+					ps = getDb().prepareStatement(sql);
+					int c = 1;
+					for (String s: searchStringElement) {
+						ps.setString(c, "%" + s + "%");
+						writelog(c + " %" + s + "%");
+						c++;
+					}
+					ps.setLong(c++, getLocationPathEntry().getPathId());
+					ps.setLong(c++, getLocationPathEntry().getPathId());
+					writelog(getLocationPathEntry().getPath());
+				} else {
+					String sql = "SELECT * FROM directory WHERE (" + typeWhere + ") " + searchSubSql
+							+ " AND path LIKE ? ORDER BY " + order;
+					writelog(sql);
+					ps = getDb().prepareStatement(sql);
+					int c = 1;
+					for (String s: searchStringElement) {
+						ps.setString(c, "%" + s + "%");
+						writelog(c + " %" + s + "%");
+						c++;
+					}
+					ps.setString(c++, getLocationPath() + "%");
+					writelog(getLocationPath());
+				}
+
+				try {
+					LazyProxyDirTreeDb.Dispatcher disp = getDb().getDispatcher();
+					disp.setList(Dispatcher.NONE);
+					disp.setCsum(Dispatcher.NONE);
+
+					ResultSet rs = ps.executeQuery();
+					try {
+						writelog("QUERY FINISHED");
+						writeStatusBar("Listing...");
+						writeProgress(90);
+
+						int count = 0;
+						while (rs.next()) {
+							getDb().threadHook();
+							DbPathEntry p1 = getDb().rsToPathEntry(rs);
+							Assertion.assertAssertionError(p1 != null);
+							Assertion.assertAssertionError(p1.getPath() != null);
+							if (getLocationPathEntry() != null) {
+								Assertion.assertAssertionError(getLocationPathEntry().getPath() != null);
+								Assertion.assertAssertionError(p1.getPath().startsWith(getLocationPathEntry().getPath()),
+										p1.getPath() + " does not start with " + getLocationPathEntry().getPath()
+										);
+							}
+							PathEntry p2 = disp.dispatch(p1);
+							if (p2 == null) {
+								addRow(p1, rs.getInt("duplicate"), rs.getLong("dedupablesize"), true);
+							} else {
+								Assertion.assertAssertionError(p1.getPath().equals(p2.getPath()));
+								if (!AbstractDirTreeDb.dscMatch(p1, p2)) {
+									p1.setDateLastModified(p2.getDateLastModified());
+									p1.setSize(p2.getSize());
+									p1.setCompressedSize(p2.getCompressedSize());
+									p1.clearCsum();
+								}
+								addRow(p1, rs.getInt("duplicate"), rs.getLong("dedupablesize"), false);
+							}
+							getDb().consumeSomeUpdateQueueWithTimeLimit(100);
+							count ++;
+						}
+						writeStatusBar(String.format("%d items", count));
+					} finally {
+						rs.close();
+					}
+				} finally {
+					ps.close();
+				}
+			} catch (WindowDisposedException e) {
+			}
+		}
+
+	}
+
+	protected void cleanupTable() throws WindowDisposedException {
+		if (table.isDisposed()) {
+			throw new WindowDisposedException("!! Window disposed at addRow");
+		}
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				pathentrylist.clear();
+				table.removeAll();;
+			}
+		});
+	}
+
+	protected void addRow(final DbPathEntry entry, final int duplicate,
+			final long dedupablesize, final boolean grayout) throws WindowDisposedException {
+		if (table.isDisposed()) {
+			throw new WindowDisposedException("!! Window disposed at addRow");
+		}
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				pathentrylist.add(entry);
+
+				final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				final NumberFormat numf = NumberFormat.getNumberInstance();
+				Date d = new Date(entry.getDateLastModified());
+				String[] row = {
+						entry.getPath(),
+						sdf.format(d),
+						numf.format(entry.getSize()),
+						numf.format(entry.getCompressedSize()),
+						(duplicate > 0 ? numf.format(duplicate) : null),
+						(dedupablesize > 0 ? numf.format(dedupablesize) : null),
+				};
+
+				final Display display = Display.getDefault();
+				final Color blue = new Color(display, 0, 0, 255);
+				final Color red = new Color(display, 255, 0, 0);
+				final Color black = new Color(display, 0, 0, 0);
+				final Color gray = new Color(display, 127, 127, 127);
+
+				try {
+					TableItem tableItem = new TableItem(table, SWT.NONE);
+					tableItem.setText(row);
+					if (grayout) {
+						tableItem.setForeground(gray);
+					} else if (entry.isNoAccess()) {
+						tableItem.setForeground(red);
+					} else if (entry.isFile() && entry.getSize() != entry.getCompressedSize()) {
+						tableItem.setForeground(blue);
+					} else {
+						tableItem.setForeground(black);
+					}
+
+				} catch (Exception e) {
+					if (!table.isDisposed()) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+	}
+
+	private SwtCommonFileFolderRootMenu.Scenario scenario = null;
+
+	protected synchronized void refresh() {
+		final SwtCommonFileFolderRootMenu.Scenario oldScenarioToKill = scenario;
+
+		final Location loc = location.get();
+		if (loc.pathEntry != null || loc.searchString != null ||
+				(loc.pathEntry == null && loc.pathId == 0L && (loc.pathString == null || "".equals(loc.pathString)))) {
+			scenario = new Scenario(oldScenarioToKill);
+		} else {
+			scenario = new SwtCommonFileFolderRootMenu.Scenario() {
+
+				@Override
+				public void run() throws Exception {
+					if (oldScenarioToKill != null) {
+						oldScenarioToKill.interrupt();
+					}
+					writeProgress(50);
+					if (loc.pathString != null) {
+						DbPathEntry p = getDb().getDbPathEntryByPath(loc.pathString);
+						if (p != null) {
+							writelog("-- SwtFileFolderMenu PREPROCESS PATTERN 1 (path based entry detection) --");
+							setLocationAndRefresh(p);
+							return;
+						} else {
+							loc.searchString = loc.pathString;
+							loc.pathString = null;
+							loc.pathId = 0L;
+							loc.pathEntry = null;
+							writelog("-- SwtFileFolderMenu PREPROCESS PATTERN 2 (searchstring=" + loc.searchString + ") --");
+							refresh();
+							return;
+						}
+					} else if (loc.pathId != 0L) {
+						writelog("-- SwtFileFolderMenu PREPROCESS PATTERN 3 (id based) --");
+						DbPathEntry p = getDb().getDbPathEntryByPathId(loc.pathId);
+						assert(p != null);
+						setLocationAndRefresh(p);
+						return;
+					} else {
+						writelog("-- SwtFileFolderMenu PREPROCESS PATTERN 4 (show all paths) --");
+					}
+					scenario = new Scenario();
+					scenario.start();
+				}
+				
+			};
+		}
+		scenario.start();
+	}
+	protected DataBindingContext initDataBindings() {
+		DataBindingContext bindingContext = new DataBindingContext();
+		//
+		IObservableValue observeBackgroundCompositeObserveWidget = WidgetProperties.background().observe(compositeToolBar);
+		IObservableValue backgroundShellObserveValue = PojoProperties.value("background").observe(shell);
+		bindingContext.bindValue(observeBackgroundCompositeObserveWidget, backgroundShellObserveValue, null, null);
+		//
+		IObservableValue observeBackgroundLblStatusBarObserveWidget = WidgetProperties.background().observe(lblStatusBar);
+		bindingContext.bindValue(observeBackgroundLblStatusBarObserveWidget, backgroundShellObserveValue, null, null);
+		//
+		IObservableValue observeBackgroundCompositeStatusBarObserveWidget = WidgetProperties.background().observe(compositeStatusBar);
+		bindingContext.bindValue(observeBackgroundCompositeStatusBarObserveWidget, backgroundShellObserveValue, null, null);
+		//
+		return bindingContext;
+	}
+}
