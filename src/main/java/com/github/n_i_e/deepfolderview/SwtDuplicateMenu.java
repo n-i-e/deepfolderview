@@ -64,7 +64,6 @@ import com.github.n_i_e.dirtreedb.DbPathEntry;
 import com.github.n_i_e.dirtreedb.LazyAccessorThread;
 import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDb;
 import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDb.Dispatcher;
-import com.github.n_i_e.dirtreedb.NavigatableArrayList;
 import com.github.n_i_e.dirtreedb.PathEntry;
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.SimpleDateFormat;
@@ -665,16 +664,16 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 	protected void onOpenInNewWindowSelected(SelectionEvent e) {
 		DbPathEntry p = getSelectedPathEntry();
 		if (p == null) {
-			p = location.get().pathEntry;
+			p = location.get().getPathEntry();
 		}
 		if (p != null) {
 			new SwtDuplicateMenu().setLocationAndRefresh(p);
-		} else if (location.get().pathString != null) {
-			new SwtDuplicateMenu().setLocationAndRefresh(location.get().pathString);
-		} else if (location.get().searchString != null) {
-			new SwtDuplicateMenu().setLocationAndRefresh(location.get().searchString);
-		} else if (location.get().pathId != 0L) {
-			new SwtDuplicateMenu().setLocationAndRefresh(location.get().pathId);
+		} else if (location.get().getPathString() != null) {
+			new SwtDuplicateMenu().setLocationAndRefresh(location.get().getPathString());
+		} else if (location.get().getSearchString() != null) {
+			new SwtDuplicateMenu().setLocationAndRefresh(location.get().getSearchString());
+		} else if (location.get().getPathId() != 0L) {
+			new SwtDuplicateMenu().setLocationAndRefresh(location.get().getPathId());
 		}
 	}
 
@@ -689,7 +688,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 	}
 
 	protected void onUpperFolderSelected(SelectionEvent e) {
-		DbPathEntry p = location.get().pathEntry;
+		DbPathEntry p = location.get().getPathEntry();
 		if (p != null && p.getParentId() != 0L) {
 			setLocationAndRefresh(p.getParentId());
 		} else {
@@ -703,15 +702,15 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		writeStatusBar(String.format("New path string is: %s", newstring));
 		shell.setText(newstring);
 		Location oldloc = location.get();
-		if (newstring.equals(oldloc.pathString)) {
+		if (newstring.equals(oldloc.getPathString())) {
 			// noop
-		} else if (newstring.equals(oldloc.searchString)) {
-			oldloc.pathEntry = null;
-			oldloc.pathId = 0L;
-			oldloc.pathString = null;
+		} else if (newstring.equals(oldloc.getSearchString())) {
+			oldloc.setPathEntry(null);
+			oldloc.setPathId(0L);
+			oldloc.setPathString(null);
 		} else {
 			Location newloc = new Location();
-			newloc.pathString = newstring;
+			newloc.setPathString(newstring);
 			location.add(newloc);
 		}
 		refresh();
@@ -729,16 +728,16 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		assert(entry != null);
 		assert(location != null);
 		Location oldloc = location.get();
-		if (oldloc.pathEntry != null && oldloc.pathEntry.getPathId() == entry.getPathId()) {
+		if (oldloc.getPathEntry() != null && oldloc.getPathEntry().getPathId() == entry.getPathId()) {
 			// noop
-		} else if (oldloc.pathString != null && oldloc.pathString.equals(entry.getPath())) {
-			oldloc.pathEntry = entry;
-			oldloc.pathId = entry.getPathId();
+		} else if (oldloc.getPathString() != null && oldloc.getPathString().equals(entry.getPath())) {
+			oldloc.setPathEntry(entry);
+			oldloc.setPathId(entry.getPathId());
 		} else {
 			Location newloc = new Location();
-			newloc.pathEntry = entry;
-			newloc.pathId = entry.getPathId();
-			newloc.pathString = entry.getPath();
+			newloc.setPathEntry(entry);
+			newloc.setPathId(entry.getPathId());
+			newloc.setPathString(entry.getPath());
 			location.add(newloc);
 		}
 		setLocationAndRefresh(entry.getPath());
@@ -747,11 +746,11 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 	public void setLocationAndRefresh(long id) {
 		writeStatusBar(String.format("Starting query; new ID is: %d", id));
 		Location oldloc = location.get();
-		if (oldloc.pathId == id) {
+		if (oldloc.getPathId() == id) {
 			// null
 		} else {
 			Location newloc = new Location();
-			newloc.pathId = id;
+			newloc.setPathId(id);
 			location.add(newloc);
 		}
 		new LazyAccessorThread(LazyAccessorThreadRunningConfigSingleton.getInstance()) {
@@ -759,24 +758,24 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 			public void run() throws Exception {
 				writelog("-- SwtFileFolderMenu SetLocationAndRefresh LOCAL PATTERN (id based) --");
 				Location loc = location.get();
-				DbPathEntry p = getDb().getDbPathEntryByPathId(loc.pathId);
+				DbPathEntry p = getDb().getDbPathEntryByPathId(loc.getPathId());
 				if (p != null) {
-					loc.pathEntry = p;
-					loc.pathString = p.getPath();
-					loc.searchString = null;
-					setLocationAndRefresh(loc.pathString);
+					loc.setPathEntry(p);
+					loc.setPathString(p.getPath());
+					loc.setSearchString(null);
+					setLocationAndRefresh(loc.getPathString());
 				}
 			}
 		}.start();
 	}
 
 	public void setLocationAndRefresh(final Location loc) {
-		if (loc.pathString != null) {
-			setLocationAndRefresh(loc.pathString);
-		} else if (loc.pathEntry != null) {
-			setLocationAndRefresh(loc.pathEntry.getPath());
-		} else if (loc.searchString != null) {
-			setLocationAndRefresh(loc.searchString);
+		if (loc.getPathString() != null) {
+			setLocationAndRefresh(loc.getPathString());
+		} else if (loc.getPathEntry() != null) {
+			setLocationAndRefresh(loc.getPathEntry().getPath());
+		} else if (loc.getSearchString() != null) {
+			setLocationAndRefresh(loc.getSearchString());
 		} else {
 			setLocationAndRefresh("");
 		}
@@ -1341,8 +1340,9 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		final SwtCommonFileFolderRootMenu.Scenario oldScenarioToKill = scenario;
 
 		final Location loc = location.get();
-		if (loc.pathEntry != null || loc.searchString != null ||
-				(loc.pathEntry == null && loc.pathId == 0L && (loc.pathString == null || "".equals(loc.pathString)))) {
+		if (loc.getPathEntry() != null || loc.getSearchString() != null ||
+				(loc.getPathEntry() == null && loc.getPathId() == 0L
+				&& (loc.getPathString() == null || "".equals(loc.getPathString())))) {
 			scenario = new Scenario(oldScenarioToKill);
 		} else {
 			scenario = new SwtCommonFileFolderRootMenu.Scenario() {
@@ -1353,24 +1353,24 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 						oldScenarioToKill.interrupt();
 					}
 					writeProgress(50);
-					if (loc.pathString != null) {
-						DbPathEntry p = getDb().getDbPathEntryByPath(loc.pathString);
+					if (loc.getPathString() != null) {
+						DbPathEntry p = getDb().getDbPathEntryByPath(loc.getPathString());
 						if (p != null) {
 							writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 1 (path based entry detection) --");
 							setLocationAndRefresh(p);
 							return;
 						} else {
-							loc.searchString = loc.pathString;
-							loc.pathString = null;
-							loc.pathId = 0L;
-							loc.pathEntry = null;
-							writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 2 (searchstring=" + loc.searchString + ") --");
+							loc.setSearchString(loc.getPathString());
+							loc.setPathString(null);
+							loc.setPathId(0L);
+							loc.setPathEntry(null);
+							writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 2 (searchstring=" + loc.getSearchString() + ") --");
 							refresh();
 							return;
 						}
-					} else if (loc.pathId != 0L) {
+					} else if (loc.getPathId() != 0L) {
 						writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 3 (id based) --");
-						DbPathEntry p = getDb().getDbPathEntryByPathId(loc.pathId);
+						DbPathEntry p = getDb().getDbPathEntryByPathId(loc.getPathId());
 						assert(p != null);
 						setLocationAndRefresh(p);
 						return;

@@ -29,17 +29,41 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import com.github.n_i_e.dirtreedb.DbPathEntry;
 import com.github.n_i_e.dirtreedb.LazyAccessorThread;
-import com.github.n_i_e.dirtreedb.NavigatableArrayList;
 import com.github.n_i_e.dirtreedb.PathEntry;
 
 public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMenu {
 	protected List<DbPathEntry> pathentrylist = new ArrayList<DbPathEntry>();
 
 	protected class Location {
-		public String pathString = "";
-		public long pathId = 0L;
-		public DbPathEntry pathEntry = null;
-		public String searchString = null;
+		private String pathString = "";
+		private long pathId = 0L;
+		private DbPathEntry pathEntry = null;
+		private String searchString = null;
+
+		public synchronized String getPathString() {
+			return pathString;
+		}
+		public synchronized void setPathString(String pathString) {
+			this.pathString = pathString;
+		}
+		public synchronized long getPathId() {
+			return pathId;
+		}
+		public synchronized void setPathId(long pathId) {
+			this.pathId = pathId;
+		}
+		public synchronized DbPathEntry getPathEntry() {
+			return pathEntry;
+		}
+		public synchronized void setPathEntry(DbPathEntry pathEntry) {
+			this.pathEntry = pathEntry;
+		}
+		public synchronized String getSearchString() {
+			return searchString;
+		}
+		public synchronized void setSearchString(String searchString) {
+			this.searchString = searchString;
+		}
 	}
 
 	public String getLocationPath() {
