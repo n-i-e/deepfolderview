@@ -21,11 +21,11 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-    	<groupId>localdomain.org.eclipse.ui</groupId>
-    	<artifactId>workbench</artifactId>
-    	<version>3.106.2.v20150204-1030</version>
-    </dependency>
+	<dependency>
+		<groupId>localdomain.org.eclipse.ui</groupId>
+		<artifactId>workbench</artifactId>
+		<version>3.106.2.v20150204-1030</version>
+	</dependency>
 	<dependency>
 		<groupId>localdomain.org.eclipse.ui</groupId>
 		<artifactId>forms</artifactId>
