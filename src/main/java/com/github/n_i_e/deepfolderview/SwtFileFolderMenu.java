@@ -914,6 +914,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 					}
 					searchSubSql = " AND (" + String.join(" OR ", p) + ")";
 				}
+				DbPathEntry locationPathEntry = null;
 				PreparedStatement ps;
 				if (getLocationPath() == null || "".equals(getLocationPath())) {
 					String sql = "SELECT * FROM directory WHERE (" + typeWhere + ") " + searchSubSql
@@ -926,7 +927,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 						writelog(c + " %" + s + "%");
 						c++;
 					}
-				} else if (getLocationPathEntry() != null) {
+				} else if ((locationPathEntry = getLocationPathEntry()) != null) {
 					String sql = "SELECT * FROM directory WHERE (" + typeWhere + ") " + searchSubSql
 							+ " AND (pathid=? OR EXISTS (SELECT * FROM upperlower WHERE upper=? AND lower=pathid))"
 							+ " ORDER BY " + order;
@@ -938,9 +939,9 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 						writelog(c + " %" + s + "%");
 						c++;
 					}
-					ps.setLong(c++, getLocationPathEntry().getPathId());
-					ps.setLong(c++, getLocationPathEntry().getPathId());
-					writelog(getLocationPathEntry().getPath());
+					ps.setLong(c++, locationPathEntry.getPathId());
+					ps.setLong(c++, locationPathEntry.getPathId());
+					writelog(locationPathEntry.getPath());
 				} else {
 					String sql = "SELECT * FROM directory WHERE (" + typeWhere + ") " + searchSubSql
 							+ " AND path LIKE ? ORDER BY " + order;
@@ -973,10 +974,10 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 							DbPathEntry p1 = getDb().rsToPathEntry(rs);
 							Assertion.assertAssertionError(p1 != null);
 							Assertion.assertAssertionError(p1.getPath() != null);
-							if (getLocationPathEntry() != null) {
-								Assertion.assertAssertionError(getLocationPathEntry().getPath() != null);
-								Assertion.assertAssertionError(p1.getPath().startsWith(getLocationPathEntry().getPath()),
-										p1.getPath() + " does not start with " + getLocationPathEntry().getPath()
+							if (locationPathEntry != null) {
+								Assertion.assertAssertionError(locationPathEntry.getPath() != null);
+								Assertion.assertAssertionError(p1.getPath().startsWith(locationPathEntry.getPath()),
+										p1.getPath() + " does not start with " + locationPathEntry.getPath()
 										);
 							}
 							PathEntry p2 = disp.dispatch(p1);

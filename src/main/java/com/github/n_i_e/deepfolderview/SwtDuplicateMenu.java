@@ -972,149 +972,6 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 			this.oldScenarioToKill = oldScenarioToKill;
 		}
 
-		private static final String d1d2SubSql = "d1.pathid AS d1_pathid, d1.parentid AS d1_parentid, "
-				+ "d1.rootid AS d1_rootid, d1.datelastmodified AS d1_datelastmodified, d1.size AS d1_size, "
-				+ "d1.compressedsize AS d1_compressedsize, d1.csum AS d1_csum, d1.path AS d1_path, "
-				+ "d1.type AS d1_type, d1.status AS d1_status, d1.duplicate AS d1_duplicate, "
-				+ "d1.dedupablesize AS d1_dedupablesize, "
-				+ "d2.pathid AS d2_pathid, d2.parentid AS d2_parentid, "
-				+ "d2.rootid AS d2_rootid, d2.datelastmodified AS d2_datelastmodified, d2.size AS d2_size, "
-				+ "d2.compressedsize AS d2_compressedsize, d2.csum AS d2_csum, d2.path AS d2_path, "
-				+ "d2.type AS d2_type, d2.status AS d2_status, d2.duplicate AS d2_duplicate, "
-				+ "d2.dedupablesize AS d2_dedupablesize";
-		private static final String d1nSubSql = "pathid AS d1_pathid, parentid AS d1_parentid, "
-				+ "rootid AS d1_rootid, datelastmodified AS d1_datelastmodified, size AS d1_size, "
-				+ "compressedsize AS d1_compressedsize, csum AS d1_csum, path AS d1_path, type AS d1_type, "
-				+ "status AS d1_status, duplicate AS d1_duplicate, dedupablesize AS d1_dedupablesize, "
-				+ "NULL AS d2_pathid, NULL AS d2_parentid, NULL AS d2_rootid, NULL AS d2_datelastmodified, "
-				+ "NULL AS d2_size, NULL AS d2_compressedsize, NULL AS d2_csum, NULL AS d2_path, "
-				+ "NULL AS d2_type, NULL AS d2_status, NULL AS d2_duplicate, NULL AS d2_dedupablesize";
-
-		@Deprecated
-		public void run_OBSOLETE() throws SQLException, InterruptedException, IOException {
-			if (oldScenarioToKill != null) {
-				oldScenarioToKill.interrupt();
-			}
-			try {
-				cleanupTable();
-
-				ArrayList<String> typelist = new ArrayList<String> ();
-				if (folder_is_checked) {
-					typelist.add("type=0");
-				}
-				if (file_is_checked) {
-					typelist.add("type=1");
-				}
-				if (compressedfolder_is_checked) {
-					typelist.add("type=2");
-				}
-				if (compressedfile_is_checked) {
-					typelist.add("type=3");
-				}
-				String typeWhere = typelist.size() == 0 ? "" : String.join(" OR ", typelist);
-
-				writeStatusBar("Querying...");
-				writeProgress(70);
-
-				String searchSubSql;
-				ArrayList<String> searchStringElement = new ArrayList<String> ();
-				if (getLocationSearchString() == null || "".equals(getLocationSearchString())) {
-					searchSubSql = "";
-				} else {
-					ArrayList<String> p = new ArrayList<String> ();
-					for (String s: getLocationSearchString().split(" ")) {
-						if (! "".equals(s)) {
-							p.add("path LIKE ?");
-							searchStringElement.add(s);
-						}
-					}
-					searchSubSql = " AND (" + String.join(" OR ", p) + ")";
-				}
-				PreparedStatement ps;
-				if (getLocationPath() == null || "".equals(getLocationPath())) {
-					String sql = "SELECT " + d1nSubSql + " FROM directory WHERE (" + typeWhere + ") " + searchSubSql
-							+ " ORDER BY " + orderL;
-					writelog(sql);
-					ps = getDb().prepareStatement(sql);
-					int c = 1;
-					for (String s: searchStringElement) {
-						ps.setString(c, "%" + s + "%");
-						writelog(c + " %" + s + "%");
-						c++;
-					}
-				} else if (getLocationPathEntry() != null) {
-					String sql = "SELECT " + d1nSubSql + " FROM directory WHERE (" + typeWhere + ") " + searchSubSql
-							+ " AND (pathid=? OR EXISTS (SELECT * FROM upperlower WHERE upper=? AND lower=pathid))"
-							+ " ORDER BY " + orderL;
-					writelog(sql);
-					ps = getDb().prepareStatement(sql);
-					int c = 1;
-					for (String s: searchStringElement) {
-						ps.setString(c, "%" + s + "%");
-						writelog(c + " %" + s + "%");
-						c++;
-					}
-					ps.setLong(c++, getLocationPathEntry().getPathId());
-					ps.setLong(c++, getLocationPathEntry().getPathId());
-					writelog(getLocationPathEntry().getPath());
-				} else {
-					String sql = "SELECT " + d1nSubSql + " FROM directory WHERE (" + typeWhere + ") " + searchSubSql
-							+ " AND path LIKE ? ORDER BY " + orderL;
-					writelog(sql);
-					ps = getDb().prepareStatement(sql);
-					int c = 1;
-					for (String s: searchStringElement) {
-						ps.setString(c, "%" + s + "%");
-						writelog(c + " %" + s + "%");
-						c++;
-					}
-					ps.setString(c++, getLocationPath() + "%");
-					writelog(getLocationPath());
-				}
-
-				try {
-					ResultSet rs1 = ps.executeQuery();
-					try {
-						writelog("QUERY FINISHED");
-						writeStatusBar("Listing...");
-						writeProgress(90);
-
-						int count = 0;
-						DbPathEntry oldentryL = null;
-						while (rs1.next()) {
-							if (rs1.getInt("duplicate") > 0) {
-								String sql2 = "SELECT " + d1d2SubSql + " FROM "
-										+ "(SELECT * FROM directory WHERE pathid=?) AS d1 "
-										+ "LEFT JOIN directory AS d2 ON EXISTS (SELECT * FROM equality "
-										+ "WHERE (pathid1=d1.pathid AND pathid2=d2.pathid) "
-										+ "OR (pathid1=d2.pathid AND pathid2=d1.pathid)) "
-										+ "ORDER BY d2." + orderR;
-								PreparedStatement ps2 = getDb().prepareStatement(sql2);
-								try {
-									ps2.setInt(1, rs1.getInt("pathid"));
-									ResultSet rs2 = ps2.executeQuery();
-									while (rs2.next()) {
-										oldentryL = dispatchAndAddRow(rs2, oldentryL);
-									}
-								} finally {
-									ps2.close();
-								}
-							} else {
-								oldentryL = dispatchAndAddRow(rs1, oldentryL);
-								count ++;
-							}
-						}
-						writeStatusBar(String.format("%d items", count));
-					} finally {
-						rs1.close();
-					}
-				} finally {
-					ps.close();
-				}
-			} catch (WindowDisposedException e) {
-			}
-		}
-
 		@Override
 		public void run() throws SQLException, InterruptedException, IOException {
 			if (oldScenarioToKill != null) {
@@ -1155,6 +1012,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 					}
 					searchSubSql = " AND (" + String.join(" OR ", p) + ")";
 				}
+				DbPathEntry locationPathEntry = null;
 				PreparedStatement psL;
 				if (getLocationPath() == null || "".equals(getLocationPath())) {
 					String sqlL = "SELECT * FROM directory WHERE (" + typeWhere + ") " + searchSubSql
@@ -1164,7 +1022,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 					for (String s: searchStringElement) {
 						psL.setString(c++, "%" + s + "%");
 					}
-				} else if (getLocationPathEntry() != null) {
+				} else if ((locationPathEntry = getLocationPathEntry()) != null) {
 					String sqlL = "SELECT * FROM directory WHERE (" + typeWhere + ") " + searchSubSql
 							+ " AND (pathid=? OR EXISTS (SELECT * FROM upperlower WHERE upper=? AND lower=pathid))"
 							+ " ORDER BY " + orderL;
@@ -1173,8 +1031,8 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 					for (String s: searchStringElement) {
 						psL.setString(c++, "%" + s + "%");
 					}
-					psL.setLong(c++, getLocationPathEntry().getPathId());
-					psL.setLong(c++, getLocationPathEntry().getPathId());
+					psL.setLong(c++, locationPathEntry.getPathId());
+					psL.setLong(c++, locationPathEntry.getPathId());
 				} else {
 					String sqlL = "SELECT * FROM directory WHERE (" + typeWhere + ") " + searchSubSql
 							+ " AND path LIKE ? ORDER BY " + orderL;
@@ -1200,6 +1058,14 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 						int countL = 0;
 						while (rsL.next()) {
 							DbPathEntry p1L = getDb().rsToPathEntry(rsL);
+							Assertion.assertAssertionError(p1L != null);
+							Assertion.assertAssertionError(p1L.getPath() != null);
+							if (locationPathEntry != null) {
+								Assertion.assertAssertionError(locationPathEntry.getPath() != null);
+								Assertion.assertAssertionError(p1L.getPath().startsWith(locationPathEntry.getPath()),
+										p1L.getPath() + " does not start with " + locationPathEntry.getPath()
+										);
+							}
 							PathEntry p2L = disp.dispatch(p1L);
 							if (rsL.getInt("duplicate") == 0 || p2L == null || !AbstractDirTreeDb.dscMatch(p1L, p2L)) {
 								// no right side fields, only left
@@ -1298,40 +1164,6 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 			}
 		}
 
-		private DbPathEntry dispatchAndAddRow(ResultSet rs, DbPathEntry oldentryL) throws InterruptedException,
-				SQLException, IOException, WindowDisposedException {
-			getDb().threadHook();
-
-			LazyProxyDirTreeDb.Dispatcher disp = getDb().getDispatcher();
-			disp.setList(Dispatcher.NONE);
-			disp.setCsum(Dispatcher.NONE);
-
-			DbPathEntry p1L = getDb().rsToPathEntry(rs, "d1_");
-			DbPathEntry p1R = getDb().rsToPathEntry(rs, "d2_");
-			if (p1R == null) {
-				// no right side fields, only left
-				addRow(p1L, null, true);
-				oldentryL = p1L;
-			} else {
-				PathEntry p2R = disp.dispatch(p1R);
-				if (!AbstractDirTreeDb.dscMatch(p1R, p2R)) {
-					p1R.setDateLastModified(p2R.getDateLastModified());
-					p1R.setSize(p2R.getSize());
-					p1R.setCompressedSize(p2R.getCompressedSize());
-					p1R.clearCsum();
-				}
-				if (oldentryL != null && oldentryL.getPathId() == p1L.getPathId()) {
-					// left side abbreviated, only right
-					addRow(null, p1R, false);
-				} else {
-					// both left and right
-					addRow(p1L, p1R, false);
-					oldentryL = p1L;
-				}
-			}
-			getDb().consumeSomeUpdateQueueWithTimeLimit(100);
-			return oldentryL;
-		}
 	}
 
 	private SwtCommonFileFolderRootMenu.Scenario scenario = null;
