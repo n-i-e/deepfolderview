@@ -1054,6 +1054,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 						LazyProxyDirTreeDb.Dispatcher disp = getDb().getDispatcher();
 						disp.setList(Dispatcher.NONE);
 						disp.setCsum(Dispatcher.NONE);
+						disp.setNoReturn(false);
 
 						int countL = 0;
 						while (rsL.next()) {
@@ -1072,17 +1073,18 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 								mixOldNewEntriesAndAddRow(p1L, p2L, null, null);
 								countL ++;
 							} else {
-								String sqlR = "SELECT directory.*, pathid1, pathid2 FROM directory LEFT JOIN equality "
+								String sqlR = "SELECT directory.*, datelasttested FROM directory LEFT JOIN equality "
 										+ "ON (pathid1=pathid AND pathid2=?) OR (pathid2=pathid AND pathid1=?) "
-										+ "WHERE pathid<>? AND directory.size=? AND directory.csum=? "
+										+ "WHERE (type=1 OR type=3) "
+										+ "AND pathid<>? AND directory.size=? AND directory.csum=? "
 										+ "ORDER BY " + orderR;
 								PreparedStatement psR = getDb().prepareStatement(sqlR);
 								try {
-									psR.setLong(1, rsL.getLong("pathid"));
-									psR.setLong(2, rsL.getLong("pathid"));
-									psR.setLong(3, rsL.getLong("pathid"));
-									psR.setLong(4, rsL.getLong("size"));
-									psR.setInt(5, rsL.getInt("csum"));
+									psR.setLong(1, p1L.getPathId());
+									psR.setLong(2, p1L.getPathId());
+									psR.setLong(3, p1L.getPathId());
+									psR.setLong(4, p1L.getSize());
+									psR.setInt(5, p1L.getCsum());
 									ResultSet rsR = psR.executeQuery();
 									int countR = 0;
 									while (rsR.next()) {
@@ -1092,7 +1094,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 										if (p2R == null) {
 											// noop
 										} else if (AbstractDirTreeDb.dscMatch(p1R, p2R)) {
-											rsR.getLong("pathid1");
+											rsR.getLong("datelasttested");
 											if (rsR.wasNull()) {
 												addRowFlag = getDb().checkEqualityNoLazy(p1L, p1R, true);
 											}
