@@ -502,7 +502,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 				onRunSelected();
 			}
 		});
-		mntmRun.setText("&Run");
+		mntmRun.setText(Messages.mntmRun_text);
 
 		MenuItem mntmOpen = new MenuItem(popupMenu, SWT.NONE);
 		mntmOpen.addSelectionListener(new SelectionAdapter() {
@@ -511,7 +511,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 				onOpenSelected(e);
 			}
 		});
-		mntmOpen.setText("&Open");
+		mntmOpen.setText(Messages.mntmOpen_text);
 
 		MenuItem mntmOpenInNew = new MenuItem(popupMenu, SWT.NONE);
 		mntmOpenInNew.addSelectionListener(new SelectionAdapter() {
@@ -520,7 +520,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 				onOpenInNewWindowSelected(e);
 			}
 		});
-		mntmOpenInNew.setText("Open in new window");
+		mntmOpenInNew.setText(Messages.mntmOpenInNewWindow_text);
 
 		MenuItem mntmCopyAsString = new MenuItem(popupMenu, SWT.NONE);
 		mntmCopyAsString.addSelectionListener(new SelectionAdapter() {
@@ -529,7 +529,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 				onCopyAsStringSelected();
 			}
 		});
-		mntmCopyAsString.setText("Copy as string");
+		mntmCopyAsString.setText(Messages.mntmCopyAsString_text);
 
 		MenuItem mntmCopyTo = new MenuItem(popupMenu, SWT.NONE);
 		mntmCopyTo.addSelectionListener(new SelectionAdapter() {
@@ -538,14 +538,14 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 				onCopyToSelected();
 			}
 		});
-		mntmCopyTo.setText("Copy to");
+		mntmCopyTo.setText(Messages.mntmCopyTo_text);
 
 		MenuItem menuItem = new MenuItem(popupMenu, SWT.SEPARATOR);
 		menuItem.setText("Visibility");
 
 		final MenuItem mntmFoldersVisible_1 = new MenuItem(popupMenu, SWT.CHECK);
 		mntmFoldersVisible_1.setSelection(folder_is_checked);
-		mntmFoldersVisible_1.setText("Folders");
+		mntmFoldersVisible_1.setText(Messages.mntmFoldersVisible_text);
 		mntmFoldersVisible_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -556,7 +556,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 
 		final MenuItem mntmFilesVisible_1 = new MenuItem(popupMenu, SWT.CHECK);
 		mntmFilesVisible_1.setSelection(file_is_checked);
-		mntmFilesVisible_1.setText("Files");
+		mntmFilesVisible_1.setText(Messages.mntmFilesVisible_text);
 		mntmFilesVisible_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -567,7 +567,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 
 		final MenuItem mntmCompressedFoldersVisible_1 = new MenuItem(popupMenu, SWT.CHECK);
 		mntmCompressedFoldersVisible_1.setSelection(compressedfolder_is_checked);
-		mntmCompressedFoldersVisible_1.setText("Compressed Folders");
+		mntmCompressedFoldersVisible_1.setText(Messages.mntmCompressedFoldersVisible_text);
 		mntmCompressedFoldersVisible_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -578,7 +578,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 
 		final MenuItem mntmCompressedFilesVisible_1 = new MenuItem(popupMenu, SWT.CHECK);
 		mntmCompressedFilesVisible_1.setSelection(compressedfile_is_checked);
-		mntmCompressedFilesVisible_1.setText("Compressed Files");
+		mntmCompressedFilesVisible_1.setText(Messages.mntmCompressedFilesVisible_text);
 		mntmCompressedFilesVisible_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
