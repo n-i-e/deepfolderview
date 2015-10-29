@@ -1096,7 +1096,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 										} else if (AbstractDirTreeDb.dscMatch(p1R, p2R)) {
 											rsR.getLong("datelasttested");
 											if (rsR.wasNull()) {
-												addRowFlag = getDb().checkEqualityNoLazy(p1L, p1R, true);
+												addRowFlag = disp.checkEquality(p1L, p1R, true);
 											}
 										}
 										if (addRowFlag) {
