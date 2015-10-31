@@ -268,7 +268,7 @@ public class SwtConfigure extends Dialog {
 		if (newDatabaseFilePath != null) {
 			PreferenceBox.setDbFilePath(newDatabaseFilePath);
 		}
-		if (newWindowsIdleTime > 0) {
+		if (newWindowsIdleTime >= 0) {
 			PreferenceBox.setWindowsIdleSeconds(newWindowsIdleTime);
 		}
 		if (newArchiveListerExtensionAvailabilityList != null) {
