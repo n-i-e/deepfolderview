@@ -162,7 +162,12 @@ public class SwtConfigure extends Dialog {
 		textWindowsIdleTime = new Text(compositeParameters, SWT.BORDER);
 		textWindowsIdleTime.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
-				Integer t = Integer.parseInt(textWindowsIdleTime.getText());
+				Integer t;
+				try {
+					t = Integer.parseInt(textWindowsIdleTime.getText());
+				} catch (NumberFormatException e) {
+					t = null;
+				}
 				if (t != null) {
 					newWindowsIdleTime = t;
 				}
