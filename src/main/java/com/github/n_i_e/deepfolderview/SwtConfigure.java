@@ -50,7 +50,8 @@ public class SwtConfigure extends Dialog {
 	private Text textWindowsIdleTime;
 
 	private String newDatabaseFilePath = null;
-	private int newWindowsIdleTime = 0;
+	private int newWindowsIdleTime = -1;
+	private int newNumCrawlingThreads = -1;
 	HashMap<String, Boolean> newArchiveListerExtensionAvailabilityList = PreferenceBox.getArchiveListerExtensionAvailabilityList();
 
 	private Text textNumCrawlingThreads;
@@ -187,6 +188,19 @@ public class SwtConfigure extends Dialog {
 		lblNumCrawlingThreads.setText(Messages.SwtConfigure_lblNewLabel_text);
 		
 		textNumCrawlingThreads = new Text(compositeParameters, SWT.BORDER);
+		textNumCrawlingThreads.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent arg0) {
+				Integer t;
+				try {
+					t = Integer.parseInt(textNumCrawlingThreads.getText());
+				} catch (NumberFormatException e) {
+					t = null;
+				}
+				if (t != null) {
+					newNumCrawlingThreads = t;
+				}
+			}
+		});
 		textNumCrawlingThreads.setText(String.valueOf(PreferenceBox.getNumCrawlingThreads()));
 		textNumCrawlingThreads.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
 		formToolkit.adapt(textNumCrawlingThreads, true, true);
@@ -275,6 +289,9 @@ public class SwtConfigure extends Dialog {
 		}
 		if (newWindowsIdleTime >= 0) {
 			PreferenceBox.setWindowsIdleSeconds(newWindowsIdleTime);
+		}
+		if (newNumCrawlingThreads >= 0) {
+			PreferenceBox.setNumCrawlingThreads(newNumCrawlingThreads);
 		}
 		if (newArchiveListerExtensionAvailabilityList != null) {
 			PreferenceBox.setArchiveListerExtensionAvailabilityList(newArchiveListerExtensionAvailabilityList);

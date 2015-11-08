@@ -912,7 +912,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 							searchStringElement.add(s);
 						}
 					}
-					searchSubSql = " AND (" + String.join(" OR ", p) + ")";
+					searchSubSql = " AND (" + String.join(" AND ", p) + ")";
 				}
 				DbPathEntry locationPathEntry = null;
 				PreparedStatement ps;

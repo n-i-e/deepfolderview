@@ -1010,7 +1010,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 							searchStringElement.add(s);
 						}
 					}
-					searchSubSql = " AND (" + String.join(" OR ", p) + ")";
+					searchSubSql = " AND (" + String.join(" AND ", p) + ")";
 				}
 				DbPathEntry locationPathEntry = null;
 				PreparedStatement psL;
@@ -1098,6 +1098,8 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 											if (rsR.wasNull()) {
 												addRowFlag = disp.checkEquality(p1L, p1R, true);
 											}
+										} else {
+											addRowFlag = false; // not dscMatch - modified
 										}
 										if (addRowFlag) {
 											if (countR == 0) {
