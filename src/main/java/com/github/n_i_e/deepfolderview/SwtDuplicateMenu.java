@@ -1056,6 +1056,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 						disp.setCsum(Dispatcher.NONE);
 						disp.setNoReturn(false);
 
+						long timer = new Date().getTime();
 						int countL = 0;
 						while (rsL.next()) {
 							DbPathEntry p1L = getDb().rsToPathEntry(rsL);
@@ -1107,12 +1108,22 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 											} else {
 												mixOldNewEntriesAndAddRow(null, null, p1R, p2R);
 											}
+											timer += 100;
+											long t = timer - new Date().getTime();
+											if (t>0) {
+												getDb().consumeSomeUpdateQueueWithTimeLimit(t);
+											}
 											countL++;
 											countR++;
 										}
 									}
 									if (countR == 0) {
 										mixOldNewEntriesAndAddRow(p1L, p2L, null, null);
+										timer += 100;
+										long t = timer - new Date().getTime();
+										if (t>0) {
+											getDb().consumeSomeUpdateQueueWithTimeLimit(t);
+										}
 										countL++;
 									}
 								} finally {

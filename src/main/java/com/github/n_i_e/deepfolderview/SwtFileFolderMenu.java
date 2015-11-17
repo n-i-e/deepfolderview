@@ -969,6 +969,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 						writeProgress(90);
 
 						int count = 0;
+						long timer = new Date().getTime();
 						while (rs.next()) {
 							getDb().threadHook();
 							DbPathEntry p1 = getDb().rsToPathEntry(rs);
@@ -993,7 +994,11 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 								}
 								addRow(p1, rs.getInt("duplicate"), rs.getLong("dedupablesize"), false);
 							}
-							getDb().consumeSomeUpdateQueueWithTimeLimit(100);
+							timer += 100;
+							long t = timer - new Date().getTime();
+							if (t>0) {
+								getDb().consumeSomeUpdateQueueWithTimeLimit(t);
+							}
 							count ++;
 						}
 						writeStatusBar(String.format("%d items", count));
