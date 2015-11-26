@@ -19,6 +19,7 @@ package com.github.n_i_e.deepfolderview;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -194,7 +195,9 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 						@Override
 						public void run() throws Exception {
 							writeStatusBar(String.format("Start copying from compressed file: %s to %s", entry.getPath(), toPath));
-							Files.copy(getDb().getInputStream(entry) , toFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+							InputStream inf = getDb().getInputStream(entry);
+							Files.copy(inf , toFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+							inf.close();
 							toFile.setLastModified(entry.getDateLastModified());
 							writeStatusBar(String.format("Copying from compressed file finished: %s to %s", entry.getPath(), toPath));
 							desktop.open(new File(toPath));
