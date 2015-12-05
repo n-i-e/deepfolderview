@@ -656,9 +656,10 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 	}
 
 	protected void onOpenSelected(SelectionEvent e) {
-		try {
+		DbPathEntry entry = getSelectedPathEntry();
+		if (entry != null) {
 			setLocationAndRefresh(getSelectedPathEntry());
-		} catch (ArrayIndexOutOfBoundsException e1) {}
+		}
 	}
 
 	protected void onOpenInNewWindowSelected(SelectionEvent e) {

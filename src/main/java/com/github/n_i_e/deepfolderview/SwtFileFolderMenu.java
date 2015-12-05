@@ -632,9 +632,10 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 	}
 
 	protected void onOpenSelected(SelectionEvent e) {
-		try {
-			setLocationAndRefresh(getSelectedPathEntry());
-		} catch (ArrayIndexOutOfBoundsException e1) {}
+		DbPathEntry entry = getSelectedPathEntry();
+		if (entry != null) {
+			setLocationAndRefresh(entry);
+		}
 	}
 
 	protected void onOpenInNewWindowSelected(SelectionEvent e) {

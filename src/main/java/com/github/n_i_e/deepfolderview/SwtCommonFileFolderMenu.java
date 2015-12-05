@@ -214,9 +214,9 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 
 	protected DbPathEntry getSelectedPathEntry() {
 		int row = getTable().getSelectionIndex();
-		if (row >= 0) {
+		try {
 			return pathentrylist.get(row);
-		} else {
+		} catch (IndexOutOfBoundsException e) {
 			return null;
 		}
 	}
