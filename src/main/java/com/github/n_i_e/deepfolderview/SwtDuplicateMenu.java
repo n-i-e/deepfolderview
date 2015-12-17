@@ -1092,13 +1092,15 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 									while (rsR.next()) {
 										DbPathEntry p1R = getDb().rsToPathEntry(rsR);
 										PathEntry p2R = disp.dispatch(p1R);
-										boolean addRowFlag = true;
+										boolean addRowFlag;
 										if (p2R == null) {
-											// noop
+											addRowFlag = false; // p1R does not exist
 										} else if (AbstractDirTreeDb.dscMatch(p1R, p2R)) {
 											rsR.getLong("datelasttested");
 											if (rsR.wasNull()) {
 												addRowFlag = disp.checkEquality(p1L, p1R, true);
+											} else {
+												addRowFlag = true;
 											}
 										} else {
 											addRowFlag = false; // not dscMatch - modified
