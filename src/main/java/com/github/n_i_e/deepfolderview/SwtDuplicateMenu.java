@@ -99,7 +99,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 						public void run() {
 							TableItem tableItem = new TableItem(window.table, SWT.NONE);
 							tableItem.setText(new String[] {"C:\\", "2015-01-01 00:00:00", "1", "2", "3"});
-							
+
 							TableItem tableItem_1 = new TableItem(window.table, SWT.NONE);
 							tableItem_1.setText(new String[] {"D:\\", "2014-01-01 00:00:00", "100", "200", "1"});
 						}
@@ -146,13 +146,13 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		gl_shell.marginHeight = 3;
 		gl_shell.horizontalSpacing = 6;
 		shell.setLayout(gl_shell);
-		
+
 		Menu menu = new Menu(shell, SWT.BAR);
 		shell.setMenuBar(menu);
-		
+
 		MenuItem mntmFile = new MenuItem(menu, SWT.CASCADE);
 		mntmFile.setText(Messages.mntmFile_text);
-		
+
 		Menu menuFile = new Menu(mntmFile);
 		mntmFile.setMenu(menuFile);
 
@@ -164,7 +164,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 			}
 		});
 		mntmOpen_1.setText(Messages.mntmOpen_text);
-		
+
 		MenuItem mntmOpenInNew_1 = new MenuItem(menuFile, SWT.NONE);
 		mntmOpenInNew_1.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -173,7 +173,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 			}
 		});
 		mntmOpenInNew_1.setText(Messages.mntmOpenInNewWindow_text);
-		
+
 		MenuItem mntmCopyTo_2 = new MenuItem(menuFile, SWT.NONE);
 		mntmCopyTo_2.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -182,7 +182,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 			}
 		});
 		mntmCopyTo_2.setText(Messages.mntmCopyTo_text);
-		
+
 		MenuItem mntmClose = new MenuItem(menuFile, SWT.NONE);
 		mntmClose.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -203,10 +203,10 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 
 		MenuItem mntmEdit = new MenuItem(menu, SWT.CASCADE);
 		mntmEdit.setText(Messages.mntmEdit_text);
-		
+
 		Menu menuEdit = new Menu(mntmEdit);
 		mntmEdit.setMenu(menuEdit);
-		
+
 		MenuItem mntmRun_1 = new MenuItem(menuEdit, SWT.NONE);
 		mntmRun_1.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -215,7 +215,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 			}
 		});
 		mntmRun_1.setText(Messages.mntmRun_text);
-		
+
 		MenuItem mntmCopyAsString_1 = new MenuItem(menuEdit, SWT.NONE);
 		mntmCopyAsString_1.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -224,7 +224,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 			}
 		});
 		mntmCopyAsString_1.setText(Messages.mntmCopyAsString_text);
-		
+
 		MenuItem mntmCopyTo_1 = new MenuItem(menuEdit, SWT.NONE);
 		mntmCopyTo_1.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -236,32 +236,32 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 
 		MenuItem mntmVisibility = new MenuItem(menu, SWT.CASCADE);
 		mntmVisibility.setText(Messages.mntmVisibility_text);
-		
+
 		Menu menuVisibility = new Menu(mntmVisibility);
 		mntmVisibility.setMenu(menuVisibility);
-		
+
 		final MenuItem mntmFoldersVisible = new MenuItem(menuVisibility, SWT.CHECK);
 		mntmFoldersVisible.setSelection(folder_is_checked);
 		mntmFoldersVisible.setText(Messages.mntmFoldersVisible_text);
-		
+
 		final MenuItem mntmFilesVisible = new MenuItem(menuVisibility, SWT.CHECK);
 		mntmFilesVisible.setSelection(file_is_checked);
 		mntmFilesVisible.setText(Messages.mntmFilesVisible_text);
-		
+
 		final MenuItem mntmCompressedFoldersVisible = new MenuItem(menuVisibility, SWT.CHECK);
 		mntmCompressedFoldersVisible.setSelection(compressedfolder_is_checked);
 		mntmCompressedFoldersVisible.setText(Messages.mntmCompressedFoldersVisible_text);
-		
+
 		final MenuItem mntmCompressedFilesVisible = new MenuItem(menuVisibility, SWT.CHECK);
 		mntmCompressedFilesVisible.setSelection(compressedfile_is_checked);
 		mntmCompressedFilesVisible.setText(Messages.mntmCompressedFilesVisible_text);
-		
+
 		MenuItem mntmHelp = new MenuItem(menu, SWT.CASCADE);
 		mntmHelp.setText(Messages.mntmHelp_text);
-		
+
 		Menu menuHelp = new Menu(mntmHelp);
 		mntmHelp.setMenu(menuHelp);
-		
+
 		MenuItem mntmOpenSourceLicenses = new MenuItem(menuHelp, SWT.NONE);
 		mntmOpenSourceLicenses.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -283,7 +283,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		compositeToolBar.setLayout(gl_compositeToolBar);
 		formToolkit.adapt(compositeToolBar);
 		formToolkit.paintBordersFor(compositeToolBar);
-		
+
 		Button btnLeft = new Button(compositeToolBar, SWT.NONE);
 		btnLeft.setImage(SWTResourceManager.getImage(SwtDuplicateMenu.class, "/com/github/n_i_e/deepfolderview/icon/go-previous.png"));
 		btnLeft.addSelectionListener(new SelectionAdapter() {
@@ -294,7 +294,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		});
 		btnLeft.setFont(SWTResourceManager.getFont("Meiryo UI", 11, SWT.NORMAL));
 		formToolkit.adapt(btnLeft, true, true);
-		
+
 		Button btnRight = new Button(compositeToolBar, SWT.NONE);
 		btnRight.setImage(SWTResourceManager.getImage(SwtDuplicateMenu.class, "/com/github/n_i_e/deepfolderview/icon/go-next.png"));
 		btnRight.addSelectionListener(new SelectionAdapter() {
@@ -305,7 +305,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		});
 		btnRight.setFont(SWTResourceManager.getFont("Meiryo UI", 11, SWT.NORMAL));
 		formToolkit.adapt(btnRight, true, true);
-		
+
 		Button btnUp = new Button(compositeToolBar, SWT.NONE);
 		btnUp.setImage(SWTResourceManager.getImage(SwtDuplicateMenu.class, "/com/github/n_i_e/deepfolderview/icon/go-up.png"));
 		btnUp.addSelectionListener(new SelectionAdapter() {
@@ -315,7 +315,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 			}
 		});
 		formToolkit.adapt(btnUp, true, true);
-		
+
 		txtLocation = new Text(compositeToolBar, SWT.BORDER);
 		txtLocation.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
@@ -327,7 +327,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		txtLocation.setLayoutData(gd_txtLocation);
 		txtLocation.setFont(SWTResourceManager.getFont("Meiryo UI", 11, SWT.NORMAL));
 		formToolkit.adapt(txtLocation, true, true);
-		
+
 		Button btnRefresh = new Button(compositeToolBar, SWT.NONE);
 		btnRefresh.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -337,7 +337,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		});
 		btnRefresh.setImage(SWTResourceManager.getImage(SwtDuplicateMenu.class, "/com/github/n_i_e/deepfolderview/icon/view-refresh.png"));
 		formToolkit.adapt(btnRefresh, true, true);
-		
+
 		final TableViewer tableViewer = new TableViewer(shell, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL);
 		table = tableViewer.getTable();
 		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -355,7 +355,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		});
 		formToolkit.adapt(table);
 		formToolkit.paintBordersFor(table);
-		
+
 		final TableColumn tblclmnPathL = new TableColumn(table, SWT.NONE);
 		tblclmnPathL.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -372,7 +372,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		tblclmnPathL.setWidth(230);
 		tblclmnPathL.setText(Messages.tblclmnPath_text);
 		setTableSortDirection(tblclmnPathL, "path", orderL);
-		
+
 		final TableColumn tblclmnDateLastModifiedL = new TableColumn(table, SWT.LEFT);
 		tblclmnDateLastModifiedL.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -389,7 +389,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		tblclmnDateLastModifiedL.setWidth(136);
 		tblclmnDateLastModifiedL.setText(Messages.tblclmnDateLastModified_text);
 		setTableSortDirection(tblclmnDateLastModifiedL, "datelastmodified", orderL);
-		
+
 		final TableColumn tblclmnSizeL = new TableColumn(table, SWT.RIGHT);
 		tblclmnSizeL.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -614,7 +614,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 				onCompressedFilesVisibleSelected(mntmCompressedFilesVisible.getSelection());
 			}
 		});
-		
+
 		compositeStatusBar = new Composite(shell, SWT.NONE);
 		compositeStatusBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		compositeStatusBar.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
@@ -624,13 +624,13 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		compositeStatusBar.setLayout(gl_compositeStatusBar);
 		formToolkit.adapt(compositeStatusBar);
 		formToolkit.paintBordersFor(compositeStatusBar);
-		
+
 		lblStatusBar = new Label(compositeStatusBar, SWT.NONE);
 		lblStatusBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		lblStatusBar.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		formToolkit.adapt(lblStatusBar, true, true);
 		lblStatusBar.setText("");
-		
+
 		progressBar = new ProgressBar(compositeStatusBar, SWT.NONE);
 		formToolkit.adapt(progressBar, true, true);
 		m_bindingContext = initDataBindings();
@@ -904,7 +904,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		});
 	}
 
-	protected void addRow(final DbPathEntry entryL, final DbPathEntry entryR, 
+	protected void addRow(final DbPathEntry entryL, final DbPathEntry entryR,
 			final boolean grayoutL, final boolean grayoutR)
 			throws WindowDisposedException {
 		if (table.isDisposed()) {
@@ -986,13 +986,13 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 
 	class Scenario extends SwtCommonFileFolderMenu.Scenario {
 
-		LazyAccessorThread oldScenarioToKill = null;
+		SwtCommonFileFolderRootMenu.Scenario oldScenarioToKill = null;
 
 		Scenario() {
 			super();
 		}
 
-		public Scenario(LazyAccessorThread oldScenarioToKill) {
+		public Scenario(SwtCommonFileFolderRootMenu.Scenario oldScenarioToKill) {
 			this();
 			this.oldScenarioToKill = oldScenarioToKill;
 		}
@@ -1000,8 +1000,40 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		@Override
 		public void run() throws SQLException, InterruptedException, IOException {
 			if (oldScenarioToKill != null) {
+				oldScenarioToKill.setDontResetProgressAtEnding(true);
 				oldScenarioToKill.interrupt();
 			}
+
+			Location loc = location.get();
+			if (loc.getPathEntry() == null && loc.getSearchString() == null &&
+					(loc.getPathEntry() != null || loc.getPathId() != 0L
+					|| (loc.getPathString() != null && "".equals(loc.getPathString())))) {
+
+				writeProgress(50);
+				if (loc.getPathString() != null) {
+					DbPathEntry p = getDb().getDbPathEntryByPath(loc.getPathString());
+					if (p != null) {
+						loc.setPathEntry(p);
+						loc.setPathId(p.getPathId());
+						writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 1 (path based entry detection) --");
+					} else {
+						loc.setSearchString(loc.getPathString());
+						loc.setPathString(null);
+						loc.setPathId(0L);
+						loc.setPathEntry(null);
+						writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 2 (searchstring=" + loc.getSearchString() + ") --");
+					}
+				} else if (loc.getPathId() != 0L) {
+					writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 3 (id based) --");
+					DbPathEntry p = getDb().getDbPathEntryByPathId(loc.getPathId());
+					assert(p != null);
+					setLocationAndRefresh(p);
+					return;
+				} else {
+					writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 4 (show all paths) --");
+				}
+			}
+
 			try {
 				cleanupTable();
 
@@ -1186,7 +1218,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 						entry1L.clearCsum();
 					}
 				}
-			} 
+			}
 
 			if (entry1R != null) {
 				if (entry2R == null) {
@@ -1200,7 +1232,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 						entry1R.clearCsum();
 					}
 				}
-			} 
+			}
 
 			if (entry1L != null || entry1R != null) {
 				addRow(entry1L, entry1R, grayoutL, grayoutR);
@@ -1211,53 +1243,9 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 
 	private SwtCommonFileFolderRootMenu.Scenario scenario = null;
 
-	private void refresh() {
+	private synchronized void refresh() {
 		final SwtCommonFileFolderRootMenu.Scenario oldScenarioToKill = scenario;
-
-		final Location loc = location.get();
-		if (loc.getPathEntry() != null || loc.getSearchString() != null ||
-				(loc.getPathEntry() == null && loc.getPathId() == 0L
-				&& (loc.getPathString() == null || "".equals(loc.getPathString())))) {
-			scenario = new Scenario(oldScenarioToKill);
-		} else {
-			scenario = new SwtCommonFileFolderRootMenu.Scenario() {
-				@Override
-				public void run() throws Exception {
-					if (oldScenarioToKill != null) {
-						oldScenarioToKill.setDontResetProgressAtEnding(true);
-						oldScenarioToKill.interrupt();
-					}
-					writeProgress(50);
-					if (loc.getPathString() != null) {
-						DbPathEntry p = getDb().getDbPathEntryByPath(loc.getPathString());
-						if (p != null) {
-							writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 1 (path based entry detection) --");
-							setLocationAndRefresh(p);
-							return;
-						} else {
-							loc.setSearchString(loc.getPathString());
-							loc.setPathString(null);
-							loc.setPathId(0L);
-							loc.setPathEntry(null);
-							writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 2 (searchstring=" + loc.getSearchString() + ") --");
-							refresh();
-							return;
-						}
-					} else if (loc.getPathId() != 0L) {
-						writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 3 (id based) --");
-						DbPathEntry p = getDb().getDbPathEntryByPathId(loc.getPathId());
-						assert(p != null);
-						setLocationAndRefresh(p);
-						return;
-					} else {
-						writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 4 (show all paths) --");
-					}
-					scenario = new Scenario();
-					scenario.start();
-				}
-				
-			};
-		}
+		scenario = new Scenario(oldScenarioToKill);
 		scenario.start();
 	}
 
