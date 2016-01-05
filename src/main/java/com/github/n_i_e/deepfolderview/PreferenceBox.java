@@ -57,7 +57,7 @@ public class PreferenceBox {
 	private final static String DbFilePath_KEY = "DbFilePath";
 
 	private String getDbFilePathLocally() {
-		String def = System.getProperty("user.home") + "\\.dirtreedb\\dirtreedb.mv.db";
+		String def = System.getProperty("user.home") + "\\.dirtreedb\\dirtreedb.sqlite";
 		String result = prefs.get(DbFilePath_KEY, def);
 		File p = new File(result).getParentFile();
 		p.mkdirs();

@@ -97,25 +97,25 @@ public class SwtConfigure extends Dialog {
 		shlConfiguration.setSize(450, 300);
 		shlConfiguration.setText(Messages.SwtConfigure_shlConfiguration_text);
 		shlConfiguration.setLayout(new GridLayout(1, false));
-		
+
 		Composite composite = new Composite(shlConfiguration, SWT.NONE);
 		composite.setLayout(new FillLayout(SWT.HORIZONTAL));
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		
+
 		TabFolder tabFolder = new TabFolder(composite, SWT.NONE);
-		
+
 		TabItem tbtmFile = new TabItem(tabFolder, SWT.NONE);
 		tbtmFile.setText(Messages.mntmFile_text);
-		
+
 		Composite compositeFile = new Composite(tabFolder, SWT.NONE);
 		tbtmFile.setControl(compositeFile);
 		compositeFile.setLayout(new GridLayout(2, false));
 		new Label(compositeFile, SWT.NONE);
 		new Label(compositeFile, SWT.NONE);
-		
+
 		@SuppressWarnings("unused") Label lblDatabaseFilePath = formToolkit.createLabel(compositeFile, Messages.SwtConfigure_lblDatabaseFilePath_text, SWT.NONE);
 		new Label(compositeFile, SWT.NONE);
-		
+
 		txtDatabaseFilePath = formToolkit.createText(compositeFile, PreferenceBox.getDbFilePath(), SWT.NONE);
 		txtDatabaseFilePath.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
@@ -123,12 +123,12 @@ public class SwtConfigure extends Dialog {
 			}
 		});
 		txtDatabaseFilePath.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		
+
 		Button btnNewButton = new Button(compositeFile, SWT.NONE);
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String[] ext = {"*.mv.db", "*.sqlite", "*.mdb", "*.script", "*.*"};
+				String[] ext = {"*.sqlite", "*.mv.db", "*.mdb", "*.script", "*.*"};
 				String pt = txtDatabaseFilePath.getText();
 				FileDialog d = new FileDialog(shlConfiguration, SWT.SAVE);
 				d.setText("New File Path");
@@ -142,10 +142,10 @@ public class SwtConfigure extends Dialog {
 			}
 		});
 		btnNewButton.setText("Browse");
-		
+
 		TabItem tbtmParameters = new TabItem(tabFolder, SWT.NONE);
 		tbtmParameters.setText(Messages.SwtConfigure_tbtmParameters_text);
-		
+
 		Composite compositeParameters = new Composite(tabFolder, SWT.NONE);
 		tbtmParameters.setControl(compositeParameters);
 		formToolkit.paintBordersFor(compositeParameters);
@@ -153,13 +153,13 @@ public class SwtConfigure extends Dialog {
 		gl_compositeParameters.marginHeight = 20;
 		gl_compositeParameters.verticalSpacing = 20;
 		compositeParameters.setLayout(gl_compositeParameters);
-		
+
 		Label lblWindowsIdleTime = new Label(compositeParameters, SWT.NONE);
 		lblWindowsIdleTime.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblWindowsIdleTime.setSize(116, 15);
 		formToolkit.adapt(lblWindowsIdleTime, true, true);
 		lblWindowsIdleTime.setText(Messages.SwtConfigure_lblWindowsIdleTime_text);
-		
+
 		textWindowsIdleTime = new Text(compositeParameters, SWT.BORDER);
 		textWindowsIdleTime.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
@@ -177,16 +177,16 @@ public class SwtConfigure extends Dialog {
 		textWindowsIdleTime.setText(String.valueOf(PreferenceBox.getWindowsIdleSeconds()));
 		textWindowsIdleTime.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
 		formToolkit.adapt(textWindowsIdleTime, true, true);
-		
+
 		Label lblSeconds = new Label(compositeParameters, SWT.NONE);
 		formToolkit.adapt(lblSeconds, true, true);
 		lblSeconds.setText(Messages.SwtConfigure_lblSeconds_text);
-		
+
 		Label lblNumCrawlingThreads = new Label(compositeParameters, SWT.NONE);
 		lblNumCrawlingThreads.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		formToolkit.adapt(lblNumCrawlingThreads, true, true);
 		lblNumCrawlingThreads.setText(Messages.SwtConfigure_lblNewLabel_text);
-		
+
 		textNumCrawlingThreads = new Text(compositeParameters, SWT.BORDER);
 		textNumCrawlingThreads.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
@@ -205,12 +205,12 @@ public class SwtConfigure extends Dialog {
 		textNumCrawlingThreads.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
 		formToolkit.adapt(textNumCrawlingThreads, true, true);
 		new Label(compositeParameters, SWT.NONE);
-		
+
 		Label lblZipCharset = new Label(compositeParameters, SWT.NONE);
 		lblZipCharset.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		formToolkit.adapt(lblZipCharset, true, true);
 		lblZipCharset.setText(Messages.SwtConfigure_lblZipCharset_text);
-		
+
 		comboZipListerCharset = new Combo(compositeParameters, SWT.NONE);
 		comboZipListerCharset.setItems(comboZipListerCharsetItems);
 		for (int i=0; i<comboZipListerCharsetItems.length; i++) {
@@ -222,10 +222,10 @@ public class SwtConfigure extends Dialog {
 		formToolkit.adapt(comboZipListerCharset);
 		formToolkit.paintBordersFor(comboZipListerCharset);
 		new Label(compositeParameters, SWT.NONE);
-		
+
 		TabItem tabItemExtensions = new TabItem(tabFolder, SWT.NONE);
 		tabItemExtensions.setText(Messages.SwtConfigure_tabItemExtensions_text);
-		
+
 		Composite compositeExtensions = new Composite(tabFolder, SWT.NONE);
 		tabItemExtensions.setControl(compositeExtensions);
 		formToolkit.paintBordersFor(compositeExtensions);
@@ -234,12 +234,12 @@ public class SwtConfigure extends Dialog {
 		fl_compositeExtensions.marginWidth = 5;
 		fl_compositeExtensions.spacing = 20;
 		compositeExtensions.setLayout(fl_compositeExtensions);
-		
+
 		Composite compositeAvailability = new Composite(compositeExtensions, SWT.NONE);
 		formToolkit.adapt(compositeAvailability);
 		formToolkit.paintBordersFor(compositeAvailability);
 		compositeAvailability.setLayout(new GridLayout(6, false));
-		
+
 		ArrayList<String> kl = new ArrayList<String>(newArchiveListerExtensionAvailabilityList.keySet());
 		Collections.sort(kl);
 		for (final String key: kl) {
@@ -257,11 +257,11 @@ public class SwtConfigure extends Dialog {
 			formToolkit.adapt(btnExt, true, true);
 			btnExt.setText(key);
 		}
-		
+
 		Composite compositeOkCancel = new Composite(shlConfiguration, SWT.NONE);
 		compositeOkCancel.setLayout(new FillLayout(SWT.HORIZONTAL));
 		compositeOkCancel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
-		
+
 		Button btnOk = new Button(compositeOkCancel, SWT.NONE);
 		btnOk.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -271,7 +271,7 @@ public class SwtConfigure extends Dialog {
 			}
 		});
 		btnOk.setText("OK");
-		
+
 		Button btnCancel = new Button(compositeOkCancel, SWT.NONE);
 		btnCancel.addSelectionListener(new SelectionAdapter() {
 			@Override
