@@ -1018,7 +1018,8 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 							if (p2 == null) {
 								addRow(p1, rs.getInt("duplicate"), rs.getLong("dedupablesize"), true);
 							} else {
-								Assertion.assertAssertionError(p1.getPath().equals(p2.getPath()));
+								Assertion.assertAssertionError(p1.getPath().equals(p2.getPath()),
+										"!! " + p1.getPath() + " != " + p2.getPath());
 								if (!AbstractDirTreeDb.dscMatch(p1, p2)) {
 									p1.setDateLastModified(p2.getDateLastModified());
 									p1.setSize(p2.getSize());
