@@ -19,17 +19,14 @@ package com.github.n_i_e.deepfolderview;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ProgressBar;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 import com.github.n_i_e.dirtreedb.LazyAccessorThread;
 
-public abstract class SwtCommonFileFolderRootMenu {
+public abstract class SwtCommonFileFolderRootMenu extends SwtCommonFileFolderRootTaskTrayIconMenu {
 
-	protected abstract Shell getShell();
 	protected abstract Table getTable();
 	protected abstract Label getLblStatusBar();
 	protected abstract ProgressBar getProgressBar();
@@ -58,12 +55,6 @@ public abstract class SwtCommonFileFolderRootMenu {
 				getProgressBar().setSelection(percent);
 			}
 		});
-	}
-
-	protected void writeMessageBox(final String text) {
-		MessageBox msgbox = new MessageBox(getShell(), SWT.OK);
-		msgbox.setMessage(text);
-		msgbox.open();
 	}
 
 	public abstract class Scenario extends LazyAccessorThread {

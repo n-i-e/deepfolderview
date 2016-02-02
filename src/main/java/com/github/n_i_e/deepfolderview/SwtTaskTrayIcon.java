@@ -16,6 +16,13 @@
 
 package com.github.n_i_e.deepfolderview;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.dialogs.IInputValidator;
@@ -35,11 +42,15 @@ import org.eclipse.swt.widgets.ToolTip;
 import org.eclipse.swt.widgets.TrayItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import com.github.n_i_e.dirtreedb.DbPathEntry;
+import com.github.n_i_e.dirtreedb.LazyAccessorThread;
 import com.github.n_i_e.dirtreedb.MessageWriter;
 
-public class SwtTaskTrayIcon implements MessageWriter {
+public class SwtTaskTrayIcon extends SwtCommonFileFolderRootTaskTrayIconMenu implements MessageWriter {
 	private final TrayItem icon;
 	private final Shell shell;
+
+	@Override protected Shell getShell() { return shell; }
 
 	public SwtTaskTrayIcon(Display display) {
 		icon = new TrayItem(display.getSystemTray(), SWT.NONE);
@@ -80,6 +91,15 @@ public class SwtTaskTrayIcon implements MessageWriter {
 			}
 		});
 		mntmSearch.setText(Messages.SwtTaskTrayIcon_mntmSearch_text);
+
+		MenuItem mntmRun = new MenuItem(menu, SWT.PUSH);
+		mntmRun.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				onMntmRunSelected(e);
+			}
+		});
+		mntmRun.setText(Messages.SwtTaskTrayIcon_mntmRun_text);
 
 		MenuItem mntmConfigure = new MenuItem(menu, SWT.PUSH);
 		mntmConfigure.addSelectionListener(new SelectionAdapter() {
@@ -133,6 +153,80 @@ public class SwtTaskTrayIcon implements MessageWriter {
 		});
 	}
 
+	protected void onMntmRunSelected(SelectionEvent e) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				InputDialog d = new InputDialog(shell,
+						"Run",
+						"パス名を入力して下さい。",
+						"",
+						new IInputValidator () {
+					public String isValid(String newText) {
+						return null;
+					}
+				});
+				if (d.open() == Window.OK) {
+					final String runString = d.getValue();
+					new LazyAccessorThread(LazyAccessorThreadRunningConfigSingleton.getInstance()) {
+
+						@Override
+						public void run() throws Exception {
+							Desktop desktop = Desktop.getDesktop();
+							DbPathEntry entry = getDb().getDbPathEntryByPath(runString);
+							if (entry == null) {
+								Display.getDefault().asyncExec(new Runnable() {
+									public void run() {
+										writeMessageBox("No such file or directory: " + runString);
+									}
+								});
+								return;
+							}
+							if (entry.isCompressedFolder()) {
+								Display.getDefault().asyncExec(new Runnable() {
+									public void run() {
+										writeMessageBox(entry.getPath() + " is a compressed folder.");
+									}
+								});
+								return;
+							}
+
+							if (entry.isFolder() || entry.isFile()) {
+								try {
+									desktop.open(new File(entry.getPath()));
+								} catch (IOException e1) {}
+							} else if (entry.isCompressedFile()) {
+								String pt = entry.getPath();
+								pt = replaceToWindowsSafeFileName(pt);
+
+								try {
+									final File toFile = File.createTempFile("DTDB", pt);
+
+									if (toFile == null || !toFile.canWrite()) {
+									} else {
+										toFile.deleteOnExit();
+										final String toPath = toFile.getAbsolutePath();
+										InputStream inf = getDb().getInputStream(entry);
+										Files.copy(inf , toFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+										inf.close();
+										toFile.setLastModified(entry.getDateLastModified());
+										desktop.open(new File(toPath));
+									}
+								} catch (IOException e) {
+									Display.getDefault().asyncExec(new Runnable() {
+										public void run() {
+											String msg = "Failed creating temporary file.";
+											writeMessageBox(msg);
+										}
+									});
+								}
+							}
+						}
+					}.start();
+				}
+			}
+		});
+	}
+
 	protected void onMntmConfigureSelected(SelectionEvent e) {
 		new SwtConfigure(shell).open();
 	}
@@ -152,7 +246,7 @@ public class SwtTaskTrayIcon implements MessageWriter {
 				tip.setText(title);
 				tip.setMessage(message);
 				icon.setToolTip(tip);
-				tip.setVisible(true);		
+				tip.setVisible(true);
 			}
 		});
 	}
@@ -190,6 +284,6 @@ public class SwtTaskTrayIcon implements MessageWriter {
 				System.exit(0);
 			}
 		});
-	
+
 	}
 }

@@ -145,39 +145,22 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 		}
 	}
 
-	private String replaceToWindowsSafeFileName(String pt) {
-		int i1 = pt.lastIndexOf("\\")+1;
-		int i2 = pt.lastIndexOf("/")+1;
-		if (i2>i1) {
-			i1 = i2;
-		}
-		pt = pt.substring(i1);
-
-		pt = pt.replace("\\", "");
-		pt = pt.replace("/", "");
-		pt = pt.replace(":", "");
-		pt = pt.replace("*", "");
-		pt = pt.replace("?", "");
-		pt = pt.replace("\"", "");
-		pt = pt.replace("<", "");
-		pt = pt.replace(">", "");
-		pt = pt.replace("|", "");
-		return pt;
-	}
-
 	protected void onRunSelected() {
 		final Desktop desktop = Desktop.getDesktop();
 
 		final DbPathEntry entry = getSelectedPathEntry();
 		if (entry == null) {
 			writeMessageBox("No file selected to run!");
+			return;
+		}
+		if (entry.isCompressedFolder()) {
+			writeMessageBox(entry.getPath() + " is a compressed folder.");
+			return;
 		}
 
-		if (entry.isCompressedFolder()) {
-			writeMessageBox(entry.getPath() + "is a compressed folder.");
-		} else if (entry.isFolder() || entry.isFile()) {
+		if (entry.isFolder() || entry.isFile()) {
 			try {
-				desktop.open(new File(getSelectedPathEntry().getPath()));
+				desktop.open(new File(entry.getPath()));
 			} catch (IOException e1) {}
 		} else if (entry.isCompressedFile()) {
 			String pt = entry.getPath();

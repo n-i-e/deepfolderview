@@ -54,6 +54,7 @@ public class Messages extends NLS {
 	public static String tblclmnPercentusage_text;
 	public static String SwtRootMenu_shlRootFolders_text;
 	public static String SwtTaskTrayIcon_mntmSearch_text;
+	public static String SwtTaskTrayIcon_mntmRun_text;
 	public static String SwtTaskTrayIcon_mntmConfigure_text;
 	public static String SwtRootMenu_mntmDelete_text;
 	public static String btnRefresh_toolTipText;
