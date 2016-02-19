@@ -152,7 +152,7 @@
 	<repositories>
 		<repository>
 			<id>localdomain</id>
-			<url>file:m2repo</url>
+			<url>file:${basedir}/m2repo</url>
 		</repository>
 	</repositories>
 </project>
