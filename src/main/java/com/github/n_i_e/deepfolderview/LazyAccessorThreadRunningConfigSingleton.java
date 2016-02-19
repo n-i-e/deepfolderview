@@ -19,19 +19,14 @@ package com.github.n_i_e.deepfolderview;
 import com.github.n_i_e.dirtreedb.LazyAccessorThreadRunningConfig;
 
 
-public class LazyAccessorThreadRunningConfigSingleton {
+public class LazyAccessorThreadRunningConfigSingleton extends LazyAccessorThreadRunningConfig {
 
 	private static LazyAccessorThreadRunningConfigSingleton instance = null;
-	private LazyAccessorThreadRunningConfig _registry;
-
-	private LazyAccessorThreadRunningConfigSingleton() {
-		_registry = new LazyAccessorThreadRunningConfig();
-	}
 
 	public static synchronized LazyAccessorThreadRunningConfig getInstance() {
 		if (instance == null) {
 			instance = new LazyAccessorThreadRunningConfigSingleton();
 		}
-		return instance._registry;
+		return instance;
 	}
 }
