@@ -45,7 +45,7 @@ public class PreferenceBox {
 		IsWin32Idle.setWindowsIdleSeconds(getWindowsIdleSecondsLocally());
 	}
 
-	public static PreferenceBox getInstance() {
+	public static synchronized PreferenceBox getInstance() {
 		if (instance == null) {
 			instance = new PreferenceBox();
 		}
