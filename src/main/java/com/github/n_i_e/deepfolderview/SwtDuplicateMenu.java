@@ -1072,7 +1072,8 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 				DbPathEntry locationPathEntry = null;
 				PreparedStatement psL;
 				if (getLocationPath() == null || "".equals(getLocationPath())) {
-					String sqlL = "SELECT * FROM directory WHERE (" + typeWhere + ") " + searchSubSql
+					String sqlL = "SELECT * FROM directory AS d1 WHERE (" + typeWhere + ") " + searchSubSql
+							+ " AND EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid)"
 							+ " ORDER BY " + orderL;
 					psL = getDb().prepareStatement(sqlL);
 					int c = 1;
@@ -1080,8 +1081,9 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 						psL.setString(c++, "%" + s + "%");
 					}
 				} else if ((locationPathEntry = getLocationPathEntry()) != null) {
-					String sqlL = "SELECT * FROM directory WHERE (" + typeWhere + ") " + searchSubSql
+					String sqlL = "SELECT * FROM directory AS d1 WHERE (" + typeWhere + ") " + searchSubSql
 							+ " AND (pathid=? OR EXISTS (SELECT * FROM upperlower WHERE upper=? AND lower=pathid))"
+							+ " AND EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid)"
 							+ " ORDER BY " + orderL;
 					psL = getDb().prepareStatement(sqlL);
 					int c = 1;
@@ -1091,8 +1093,10 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 					psL.setLong(c++, locationPathEntry.getPathId());
 					psL.setLong(c++, locationPathEntry.getPathId());
 				} else {
-					String sqlL = "SELECT * FROM directory WHERE (" + typeWhere + ") " + searchSubSql
-							+ " AND path LIKE ? ORDER BY " + orderL;
+					String sqlL = "SELECT * FROM directory AS d1 WHERE (" + typeWhere + ") " + searchSubSql
+							+ " AND path LIKE ?"
+							+ " AND EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid)"
+							+ " ORDER BY " + orderL;
 					psL = getDb().prepareStatement(sqlL);
 					int c = 0;
 					for (String s: searchStringElement) {
@@ -1131,11 +1135,12 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 								mixOldNewEntriesAndAddRow(entry1L, entry2L, null, null);
 								countL ++;
 							} else {
-								String sqlR = "SELECT directory.*, datelasttested FROM directory LEFT JOIN equality "
-										+ "ON (pathid1=pathid AND pathid2=?) OR (pathid2=pathid AND pathid1=?) "
-										+ "WHERE (type=1 OR type=3) "
-										+ "AND pathid<>? AND directory.size=? AND directory.csum=? "
-										+ "ORDER BY " + orderR;
+								String sqlR = "SELECT d1.*, datelasttested FROM directory AS d1 LEFT JOIN equality"
+										+ " ON (pathid1=pathid AND pathid2=?) OR (pathid2=pathid AND pathid1=?)"
+										+ " WHERE (type=1 OR type=3)"
+										+ " AND pathid<>? AND d1.size=? AND d1.csum=?"
+										+ " AND EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid)"
+										+ " ORDER BY " + orderR;
 								PreparedStatement psR = getDb().prepareStatement(sqlR);
 								try {
 									psR.setLong(1, entry1L.getPathId());
