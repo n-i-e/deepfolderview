@@ -1073,7 +1073,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 				PreparedStatement psL;
 				if (getLocationPath() == null || "".equals(getLocationPath())) {
 					String sqlL = "SELECT * FROM directory AS d1 WHERE (" + typeWhere + ") " + searchSubSql
-							+ " AND EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid)"
+							+ " AND (parentid=0 OR EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid))"
 							+ " ORDER BY " + orderL;
 					psL = getDb().prepareStatement(sqlL);
 					int c = 1;
@@ -1083,7 +1083,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 				} else if ((locationPathEntry = getLocationPathEntry()) != null) {
 					String sqlL = "SELECT * FROM directory AS d1 WHERE (" + typeWhere + ") " + searchSubSql
 							+ " AND (pathid=? OR EXISTS (SELECT * FROM upperlower WHERE upper=? AND lower=pathid))"
-							+ " AND EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid)"
+							+ " AND (parentid=0 OR EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid))"
 							+ " ORDER BY " + orderL;
 					psL = getDb().prepareStatement(sqlL);
 					int c = 1;
@@ -1095,7 +1095,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 				} else {
 					String sqlL = "SELECT * FROM directory AS d1 WHERE (" + typeWhere + ") " + searchSubSql
 							+ " AND path LIKE ?"
-							+ " AND EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid)"
+							+ " AND (parentid=0 OR EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid))"
 							+ " ORDER BY " + orderL;
 					psL = getDb().prepareStatement(sqlL);
 					int c = 0;
@@ -1139,7 +1139,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 										+ " ON (pathid1=pathid AND pathid2=?) OR (pathid2=pathid AND pathid1=?)"
 										+ " WHERE (type=1 OR type=3)"
 										+ " AND pathid<>? AND d1.size=? AND d1.csum=?"
-										+ " AND EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid)"
+										+ " AND (parentid=0 OR EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid))"
 										+ " ORDER BY " + orderR;
 								PreparedStatement psR = getDb().prepareStatement(sqlR);
 								try {

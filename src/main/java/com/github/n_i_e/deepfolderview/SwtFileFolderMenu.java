@@ -951,7 +951,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 				PreparedStatement ps;
 				if (loc.getPathString() == null || "".equals(loc.getPathString())) {
 					String sql = "SELECT * FROM directory AS d1 WHERE (" + typeWhere + ") " + searchSubSql
-							+ " AND EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid)"
+							+ " AND (parentid=0 OR EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid))"
 							+ " ORDER BY " + order;
 					writelog(sql);
 					ps = getDb().prepareStatement(sql);
@@ -964,7 +964,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 				} else if ((locationPathEntry = loc.getPathEntry()) != null) {
 					String sql = "SELECT * FROM directory AS d1 WHERE (" + typeWhere + ") " + searchSubSql
 							+ " AND (pathid=? OR EXISTS (SELECT * FROM upperlower WHERE upper=? AND lower=pathid))"
-							+ " AND EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid)"
+							+ " AND (parentid=0 OR EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid))"
 							+ " ORDER BY " + order;
 					writelog(sql);
 					ps = getDb().prepareStatement(sql);
@@ -980,7 +980,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 				} else {
 					String sql = "SELECT * FROM directory AS d1 WHERE (" + typeWhere + ") " + searchSubSql
 							+ " AND path LIKE ?"
-							+ " AND EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid)"
+							+ " AND (parentid=0 OR EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid))"
 							+ " ORDER BY " + order;
 					writelog(sql);
 					ps = getDb().prepareStatement(sql);
