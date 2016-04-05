@@ -91,7 +91,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 					SwtRootMenu window = new SwtRootMenu();
 					window.open();
 					// test demonstration
-					
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -132,16 +132,16 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 		gl_shell.marginHeight = 3;
 		gl_shell.horizontalSpacing = 6;
 		shell.setLayout(gl_shell);
-		
+
 		Menu menu = new Menu(shell, SWT.BAR);
 		shell.setMenuBar(menu);
-		
+
 		MenuItem mntmFile = new MenuItem(menu, SWT.CASCADE);
 		mntmFile.setText(Messages.mntmFile_text);
-		
+
 		Menu menuFile = new Menu(mntmFile);
 		mntmFile.setMenu(menuFile);
-		
+
 		MenuItem mntmOpenInNewWindow_1 = new MenuItem(menuFile, SWT.NONE);
 		mntmOpenInNewWindow_1.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -150,7 +150,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 			}
 		});
 		mntmOpenInNewWindow_1.setText(Messages.mntmOpenInNewWindow_text);
-		
+
 		MenuItem mntmClose = new MenuItem(menuFile, SWT.NONE);
 		mntmClose.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -159,7 +159,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 			}
 		});
 		mntmClose.setText(Messages.mntmClose_text);
-		
+
 		MenuItem mntmNewRoot_1 = new MenuItem(menuFile, SWT.NONE);
 		mntmNewRoot_1.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -168,7 +168,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 			}
 		});
 		mntmNewRoot_1.setText(Messages.SwtRootMenu_mntmNewRoot_text);
-		
+
 		MenuItem mntmQuit = new MenuItem(menuFile, SWT.NONE);
 		mntmQuit.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -177,13 +177,13 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 			}
 		});
 		mntmQuit.setText(Messages.mntmQuit_text);
-		
+
 		MenuItem mntmEdit = new MenuItem(menu, SWT.CASCADE);
 		mntmEdit.setText(Messages.mntmEdit_text);
-		
+
 		Menu menuEdit = new Menu(mntmEdit);
 		mntmEdit.setMenu(menuEdit);
-		
+
 		MenuItem mntmCopyAsString_1 = new MenuItem(menuEdit, SWT.NONE);
 		mntmCopyAsString_1.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -192,13 +192,13 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 			}
 		});
 		mntmCopyAsString_1.setText(Messages.mntmCopyAsString_text);
-		
+
 		MenuItem mntmHelp = new MenuItem(menu, SWT.CASCADE);
 		mntmHelp.setText(Messages.mntmHelp_text);
-		
+
 		Menu menuHelp = new Menu(mntmHelp);
 		mntmHelp.setMenu(menuHelp);
-		
+
 		MenuItem mntmOpenSourceLicenses = new MenuItem(menuHelp, SWT.NONE);
 		mntmOpenSourceLicenses.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -207,7 +207,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 			}
 		});
 		mntmOpenSourceLicenses.setText(Messages.mntmOpenSourceLicenses_text);
-				
+
 		compositeToolBar = new Composite(shell, SWT.NONE);
 		compositeToolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		compositeToolBar.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
@@ -220,7 +220,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 		compositeToolBar.setLayout(gl_compositeToolBar);
 		formToolkit.adapt(compositeToolBar);
 		formToolkit.paintBordersFor(compositeToolBar);
-		
+
 		txtSearch = new Text(compositeToolBar, SWT.BORDER);
 		txtSearch.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
@@ -232,7 +232,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 		txtSearch.setLayoutData(gd_txtSearch);
 		txtSearch.setFont(SWTResourceManager.getFont("Meiryo UI", 11, SWT.NORMAL));
 		formToolkit.adapt(txtSearch, true, true);
-		
+
 		Button btnRefresh = new Button(compositeToolBar, SWT.NONE);
 		btnRefresh.setToolTipText(Messages.btnRefresh_toolTipText);
 		btnRefresh.addSelectionListener(new SelectionAdapter() {
@@ -253,7 +253,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 		});
 		btnAddNewRoot.setImage(SWTResourceManager.getImage(SwtRootMenu.class, "/com/github/n_i_e/deepfolderview/icon/list-add.png"));
 		formToolkit.adapt(btnAddNewRoot, true, true);
-		
+
 		table = new Table(shell, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL);
 		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		table.setHeaderVisible(true);
@@ -269,7 +269,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 		});
 		formToolkit.adapt(table);
 		formToolkit.paintBordersFor(table);
-		
+
 		final TableColumn tblclmnPath = new TableColumn(table, SWT.LEFT);
 		tblclmnPath.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -286,7 +286,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 		tblclmnPath.setWidth(230);
 		tblclmnPath.setText(Messages.tblclmnPath_text);
 		setTableSortDirection(tblclmnPath, "path", order);
-		
+
 		final TableColumn tblclmnSize = new TableColumn(table, SWT.RIGHT);
 		tblclmnSize.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -303,7 +303,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 		tblclmnSize.setWidth(110);
 		tblclmnSize.setText(Messages.tblclmnSize_text);
 		setTableSortDirection(tblclmnSize, "size", order);
-		
+
 		final TableColumn tblclmnCompressedsize = new TableColumn(table, SWT.RIGHT);
 		tblclmnCompressedsize.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -320,15 +320,15 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 		tblclmnCompressedsize.setWidth(110);
 		tblclmnCompressedsize.setText(Messages.tblclmnCompressedesize_text);
 		setTableSortDirection(tblclmnCompressedsize, "compressedsize", order);
-		
+
 		final TableColumn tblclmnMaximumsize = new TableColumn(table, SWT.RIGHT); // you cannot select this column; no listener here
 		tblclmnMaximumsize.setWidth(110);
 		tblclmnMaximumsize.setText(Messages.tblclmnMaximumsize_text);
-		
+
 		TableColumn tblclmnPercentusage = new TableColumn(table, SWT.RIGHT); // you cannot select this column; no listener here
 		tblclmnPercentusage.setWidth(35);
 		tblclmnPercentusage.setText(Messages.tblclmnPercentusage_text);
-		
+
 		Menu menu_1 = new Menu(table);
 		table.setMenu(menu_1);
 
@@ -367,7 +367,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 			}
 		});
 		mntmNewRoot.setText(Messages.SwtRootMenu_mntmNewRoot_text);
-		
+
 		compositeStatusBar = new Composite(shell, SWT.NONE);
 		compositeStatusBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		compositeStatusBar.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
@@ -377,13 +377,13 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 		compositeStatusBar.setLayout(gl_compositeStatusBar);
 		formToolkit.adapt(compositeStatusBar);
 		formToolkit.paintBordersFor(compositeStatusBar);
-		
+
 		lblStatusBar = new Label(compositeStatusBar, SWT.NONE);
 		lblStatusBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		lblStatusBar.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
 		formToolkit.adapt(lblStatusBar, true, true);
 		lblStatusBar.setText("");
-		
+
 		progressBar = new ProgressBar(compositeStatusBar, SWT.NONE);
 		formToolkit.adapt(progressBar, true, true);
 		m_bindingContext = initDataBindings();
@@ -663,7 +663,6 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 							final long maximumsize = new File(p1.getPath()).getTotalSpace();
 							addRow(p1, maximumsize);
 							disp.dispatch(p1);
-							getDb().consumeSomeUpdateQueueWithTimeLimit(100);
 							count ++;
 						}
 						writeStatusBar(String.format("%d root folders", count));

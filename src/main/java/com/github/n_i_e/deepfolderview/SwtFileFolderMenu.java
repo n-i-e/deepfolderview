@@ -1006,7 +1006,6 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 						writeProgress(90);
 
 						int count = 0;
-						long timer = new Date().getTime();
 						while (rs.next()) {
 							getDb().threadHook();
 							DbPathEntry p1 = getDb().rsToPathEntry(rs);
@@ -1031,11 +1030,6 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 									p1.clearCsum();
 								}
 								addRow(p1, rs.getInt("duplicate"), rs.getLong("dedupablesize"), false);
-							}
-							timer += 100;
-							long t = timer - new Date().getTime();
-							if (t>0) {
-								getDb().consumeSomeUpdateQueueWithTimeLimit(t);
 							}
 							count ++;
 						}
