@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.prefs.Preferences;
@@ -234,11 +235,11 @@ public class PreferenceBox {
 		return result;
 	}
 
-	public static HashMap<String, Boolean> getArchiveListerExtensionAvailabilityList() {
+	public static Map<String, Boolean> getArchiveListerExtensionAvailabilityList() {
 		return getInstance().getArchiveListerExtensionAvailabilityListLocally();
 	}
 
-	public static void setArchiveListerExtensionAvailabilityList(HashMap<String, Boolean> newvalue) {
+	public static void setArchiveListerExtensionAvailabilityList(Map<String, Boolean> newvalue) {
 		ArrayList<String> r1 = new ArrayList<String>();
 		for (Entry<String, Boolean> k: newvalue.entrySet()) {
 			if (k.getValue()) {

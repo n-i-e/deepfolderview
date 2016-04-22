@@ -18,7 +18,7 @@ package com.github.n_i_e.deepfolderview;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -52,7 +52,7 @@ public class SwtConfigure extends Dialog {
 	private String newDatabaseFilePath = null;
 	private int newWindowsIdleTime = -1;
 	private int newNumCrawlingThreads = -1;
-	HashMap<String, Boolean> newArchiveListerExtensionAvailabilityList = PreferenceBox.getArchiveListerExtensionAvailabilityList();
+	Map<String, Boolean> newArchiveListerExtensionAvailabilityList = PreferenceBox.getArchiveListerExtensionAvailabilityList();
 
 	private Text textNumCrawlingThreads;
 	private Combo comboZipListerCharset;
