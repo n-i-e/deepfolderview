@@ -41,6 +41,8 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
+import com.github.n_i_e.dirtreedb.PreferenceRW;
+
 public class SwtConfigure extends Dialog {
 
 	protected Object result;
@@ -52,7 +54,7 @@ public class SwtConfigure extends Dialog {
 	private String newDatabaseFilePath = null;
 	private int newWindowsIdleTime = -1;
 	private int newNumCrawlingThreads = -1;
-	Map<String, Boolean> newArchiveListerExtensionAvailabilityList = PreferenceBox.getArchiveListerExtensionAvailabilityList();
+	Map<String, Boolean> newArchiveListerExtensionAvailabilityList = PreferenceRW.getExtensionAvailabilityMap();
 
 	private Text textNumCrawlingThreads;
 	private Combo comboZipListerCharset;
@@ -116,7 +118,7 @@ public class SwtConfigure extends Dialog {
 		@SuppressWarnings("unused") Label lblDatabaseFilePath = formToolkit.createLabel(compositeFile, Messages.SwtConfigure_lblDatabaseFilePath_text, SWT.NONE);
 		new Label(compositeFile, SWT.NONE);
 
-		txtDatabaseFilePath = formToolkit.createText(compositeFile, PreferenceBox.getDbFilePath(), SWT.NONE);
+		txtDatabaseFilePath = formToolkit.createText(compositeFile, PreferenceRW.getDbFilePath(), SWT.NONE);
 		txtDatabaseFilePath.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
 				newDatabaseFilePath = txtDatabaseFilePath.getText();
@@ -174,7 +176,7 @@ public class SwtConfigure extends Dialog {
 				}
 			}
 		});
-		textWindowsIdleTime.setText(String.valueOf(PreferenceBox.getWindowsIdleSeconds()));
+		textWindowsIdleTime.setText(String.valueOf(PreferenceRW.getWindowsIdleSeconds()));
 		textWindowsIdleTime.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
 		formToolkit.adapt(textWindowsIdleTime, true, true);
 
@@ -201,7 +203,7 @@ public class SwtConfigure extends Dialog {
 				}
 			}
 		});
-		textNumCrawlingThreads.setText(String.valueOf(PreferenceBox.getNumCrawlingThreads()));
+		textNumCrawlingThreads.setText(String.valueOf(PreferenceRW.getNumCrawlingThreads()));
 		textNumCrawlingThreads.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
 		formToolkit.adapt(textNumCrawlingThreads, true, true);
 		new Label(compositeParameters, SWT.NONE);
@@ -214,7 +216,7 @@ public class SwtConfigure extends Dialog {
 		comboZipListerCharset = new Combo(compositeParameters, SWT.NONE);
 		comboZipListerCharset.setItems(comboZipListerCharsetItems);
 		for (int i=0; i<comboZipListerCharsetItems.length; i++) {
-			if (comboZipListerCharsetItems[i].equals(PreferenceBox.getZipListerCharset())) {
+			if (comboZipListerCharsetItems[i].equals(PreferenceRW.getZipListerCharset())) {
 				comboZipListerCharset.select(i);
 			}
 		}
@@ -285,19 +287,19 @@ public class SwtConfigure extends Dialog {
 
 	protected void onOkSelected() {
 		if (newDatabaseFilePath != null) {
-			PreferenceBox.setDbFilePath(newDatabaseFilePath);
+			PreferenceRW.setDbFilePath(newDatabaseFilePath);
 		}
 		if (newWindowsIdleTime >= 0) {
-			PreferenceBox.setWindowsIdleSeconds(newWindowsIdleTime);
+			PreferenceRW.setWindowsIdleSeconds(newWindowsIdleTime);
 		}
 		if (newNumCrawlingThreads >= 0) {
-			PreferenceBox.setNumCrawlingThreads(newNumCrawlingThreads);
+			PreferenceRW.setNumCrawlingThreads(newNumCrawlingThreads);
 		}
 		if (newArchiveListerExtensionAvailabilityList != null) {
-			PreferenceBox.setArchiveListerExtensionAvailabilityList(newArchiveListerExtensionAvailabilityList);
+			PreferenceRW.setExtensionAvailabilityMap(newArchiveListerExtensionAvailabilityList);
 		}
 		if (comboZipListerCharsetItems[comboZipListerCharset.getSelectionIndex()] != null) {
-			PreferenceBox.setZipListerCharset(comboZipListerCharsetItems[comboZipListerCharset.getSelectionIndex()]);
+			PreferenceRW.setZipListerCharset(comboZipListerCharsetItems[comboZipListerCharset.getSelectionIndex()]);
 		}
 	}
 }

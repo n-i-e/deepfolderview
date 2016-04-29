@@ -62,6 +62,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import com.github.n_i_e.dirtreedb.Assertion;
 import com.github.n_i_e.dirtreedb.DbPathEntry;
 import com.github.n_i_e.dirtreedb.PathEntry;
+import com.github.n_i_e.dirtreedb.PreferenceRW;
 import com.ibm.icu.text.NumberFormat;
 
 
@@ -502,7 +503,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 		return searchString;
 	}
 
-	private String order = PreferenceBox.getSwtRootMenuSortOrder();
+	private String order = PreferenceRW.getSwtRootMenuSortOrder();
 
 	private void setSortOrderAndRefresh(String neworder) {
 		order = neworder;
@@ -527,7 +528,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 		} else {
 			setSortOrderAndRefresh("path DESC");
 		}
-		PreferenceBox.setSwtRootMenuSortOrder(order);
+		PreferenceRW.setSwtRootMenuSortOrder(order);
 	}
 
 	protected void onTblclmnSizeSelected(TableColumn tblclmnSize, SelectionEvent e) {
@@ -536,7 +537,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 		} else {
 			setSortOrderAndRefresh("size DESC");
 		}
-		PreferenceBox.setSwtRootMenuSortOrder(order);
+		PreferenceRW.setSwtRootMenuSortOrder(order);
 	}
 
 	protected void onTblclmnCompressedsizeSelected(TableColumn tblclmnCompressedSize, SelectionEvent e) {
@@ -545,7 +546,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 		} else {
 			setSortOrderAndRefresh("compressedsize DESC");
 		}
-		PreferenceBox.setSwtRootMenuSortOrder(order);
+		PreferenceRW.setSwtRootMenuSortOrder(order);
 	}
 
 

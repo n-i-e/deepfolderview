@@ -65,6 +65,7 @@ import com.github.n_i_e.dirtreedb.LazyAccessorThread;
 import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDb;
 import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDb.Dispatcher;
 import com.github.n_i_e.dirtreedb.PathEntry;
+import com.github.n_i_e.dirtreedb.PreferenceRW;
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.SimpleDateFormat;
 
@@ -784,8 +785,8 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 
 	protected void onTableSelected(SelectionEvent e) {}
 
-	private String orderL = PreferenceBox.getSwtFileFolderMenuSortOrder();;
-	private String orderR = PreferenceBox.getSwtDuplicateMenuSortOrderR();
+	private String orderL = PreferenceRW.getSwtFileFolderMenuSortOrder();;
+	private String orderR = PreferenceRW.getSwtDuplicateMenuSortOrderR();
 	private boolean folder_is_checked = true;
 	private boolean file_is_checked = true;
 	private boolean compressedfolder_is_checked = true;
@@ -797,7 +798,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		} else {
 			orderL = "path DESC";
 		}
-		PreferenceBox.setSwtFileFolderMenuSortOrder(orderL);
+		PreferenceRW.setSwtFileFolderMenuSortOrder(orderL);
 		refresh();
 	}
 
@@ -807,7 +808,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		} else {
 			orderL = "datelastmodified DESC";
 		}
-		PreferenceBox.setSwtFileFolderMenuSortOrder(orderL);
+		PreferenceRW.setSwtFileFolderMenuSortOrder(orderL);
 		refresh();
 	}
 
@@ -817,7 +818,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		} else {
 			orderL = "size DESC";
 		}
-		PreferenceBox.setSwtFileFolderMenuSortOrder(orderL);
+		PreferenceRW.setSwtFileFolderMenuSortOrder(orderL);
 		refresh();
 	}
 
@@ -827,7 +828,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		} else {
 			orderL = "compressedsize DESC";
 		}
-		PreferenceBox.setSwtFileFolderMenuSortOrder(orderL);
+		PreferenceRW.setSwtFileFolderMenuSortOrder(orderL);
 		refresh();
 	}
 
@@ -837,7 +838,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		} else {
 			orderR = "path DESC";
 		}
-		PreferenceBox.setSwtDuplicateMenuSortOrderR(orderR);
+		PreferenceRW.setSwtDuplicateMenuSortOrderR(orderR);
 		refresh();
 	}
 
@@ -847,7 +848,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		} else {
 			orderR = "datelastmodified DESC";
 		}
-		PreferenceBox.setSwtDuplicateMenuSortOrderR(orderR);
+		PreferenceRW.setSwtDuplicateMenuSortOrderR(orderR);
 		refresh();
 	}
 
@@ -857,7 +858,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		} else {
 			orderR = "size DESC";
 		}
-		PreferenceBox.setSwtDuplicateMenuSortOrderR(orderR);
+		PreferenceRW.setSwtDuplicateMenuSortOrderR(orderR);
 		refresh();
 	}
 
@@ -867,7 +868,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		} else {
 			orderR = "compressedsize DESC";
 		}
-		PreferenceBox.setSwtDuplicateMenuSortOrderR(orderR);
+		PreferenceRW.setSwtDuplicateMenuSortOrderR(orderR);
 		refresh();
 	}
 

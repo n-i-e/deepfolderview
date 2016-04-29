@@ -64,6 +64,7 @@ import com.github.n_i_e.dirtreedb.LazyAccessorThread;
 import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDb;
 import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDb.Dispatcher;
 import com.github.n_i_e.dirtreedb.PathEntry;
+import com.github.n_i_e.dirtreedb.PreferenceRW;
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.SimpleDateFormat;
 
@@ -776,7 +777,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 
 	protected void onTableSelected(SelectionEvent e) {}
 
-	private String order = PreferenceBox.getSwtFileFolderMenuSortOrder();
+	private String order = PreferenceRW.getSwtFileFolderMenuSortOrder();
 	private boolean folder_is_checked = true;
 	private boolean file_is_checked = true;
 	private boolean compressedfolder_is_checked = true;
@@ -788,7 +789,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 		} else {
 			order = "path DESC";
 		}
-		PreferenceBox.setSwtFileFolderMenuSortOrder(order);
+		PreferenceRW.setSwtFileFolderMenuSortOrder(order);
 		refresh();
 	}
 
@@ -798,7 +799,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 		} else {
 			order = "datelastmodified DESC";
 		}
-		PreferenceBox.setSwtFileFolderMenuSortOrder(order);
+		PreferenceRW.setSwtFileFolderMenuSortOrder(order);
 		refresh();
 	}
 
@@ -808,7 +809,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 		} else {
 			order = "size DESC";
 		}
-		PreferenceBox.setSwtFileFolderMenuSortOrder(order);
+		PreferenceRW.setSwtFileFolderMenuSortOrder(order);
 		refresh();
 	}
 
@@ -818,7 +819,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 		} else {
 			order = "compressedsize DESC";
 		}
-		PreferenceBox.setSwtFileFolderMenuSortOrder(order);
+		PreferenceRW.setSwtFileFolderMenuSortOrder(order);
 		refresh();
 	}
 
@@ -828,7 +829,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 		} else {
 			order = "duplicate DESC";
 		}
-		PreferenceBox.setSwtFileFolderMenuSortOrder(order);
+		PreferenceRW.setSwtFileFolderMenuSortOrder(order);
 		refresh();
 	}
 
@@ -838,7 +839,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 		} else {
 			order = "dedupablesize DESC";
 		}
-		PreferenceBox.setSwtFileFolderMenuSortOrder(order);
+		PreferenceRW.setSwtFileFolderMenuSortOrder(order);
 		refresh();
 	}
 

@@ -23,6 +23,10 @@ public class LazyAccessorThreadRunningConfigSingleton extends LazyAccessorThread
 
 	private static LazyAccessorThreadRunningConfigSingleton instance = null;
 
+	private LazyAccessorThreadRunningConfigSingleton() {
+		super();
+	}
+
 	public static synchronized LazyAccessorThreadRunningConfig getInstance() {
 		if (instance == null) {
 			instance = new LazyAccessorThreadRunningConfigSingleton();

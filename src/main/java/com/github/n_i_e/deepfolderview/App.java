@@ -22,10 +22,9 @@ import org.eclipse.swt.widgets.Display;
 
 import com.github.n_i_e.dirtreedb.StandardCrawler;
 
-public class App 
+public class App
 {
 	public static void main(String[] args) {
-		PreferenceBox.getInstance(); // load PreferenceBox module here.
 		// SWT Initialize (TrayIcon)
 		final Display display = Display.getDefault();
 		final SwtTaskTrayIcon swtTrayIcon = new SwtTaskTrayIcon(display);
