@@ -1197,12 +1197,13 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		}
 
 		private void mixOldNewEntriesAndAddRow(DbPathEntry entry1L, PathEntry entry2L,
-				DbPathEntry entry1R, PathEntry entry2R) throws WindowDisposedException {
+				DbPathEntry entry1R, PathEntry entry2R) throws WindowDisposedException, InterruptedException {
 			boolean grayoutL = false;
 			boolean grayoutR = false;
 			if (entry1L != null) {
 				if (entry2L == null) {
 					grayoutL = true;
+					getDb().unsetCleanLater(entry1L.getParentId());
 				} else {
 					Assertion.assertAssertionError(entry1L.getPath().equals(entry2L.getPath()));
 					if (!AbstractDirTreeDb.dscMatch(entry1L, entry2L)) {
@@ -1210,6 +1211,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 						entry1L.setSize(entry2L.getSize());
 						entry1L.setCompressedSize(entry2L.getCompressedSize());
 						entry1L.clearCsum();
+						getDb().unsetCleanLater(entry1L.getParentId());
 					}
 				}
 			}
@@ -1217,6 +1219,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 			if (entry1R != null) {
 				if (entry2R == null) {
 					grayoutR = true;
+					getDb().unsetCleanLater(entry1R.getParentId());
 				} else {
 					Assertion.assertAssertionError(entry1R.getPath().equals(entry2R.getPath()));
 					if (!AbstractDirTreeDb.dscMatch(entry1R, entry2R)) {
@@ -1224,6 +1227,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 						entry1R.setSize(entry2R.getSize());
 						entry1R.setCompressedSize(entry2R.getCompressedSize());
 						entry1R.clearCsum();
+						getDb().unsetCleanLater(entry1R.getParentId());
 					}
 				}
 			}
