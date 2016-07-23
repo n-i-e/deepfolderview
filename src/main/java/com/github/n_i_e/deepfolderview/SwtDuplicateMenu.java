@@ -1005,6 +1005,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 				oldScenarioToKill.interrupt();
 			}
 
+			getDb().threadHook();
 			Location loc = location.get();
 			if (loc.getPathEntry() == null && loc.getSearchString() == null &&
 					(loc.getPathEntry() != null || loc.getPathId() != 0L
@@ -1036,6 +1037,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 			}
 
 			try {
+				getDb().threadHook();
 				cleanupTable();
 
 				ArrayList<String> typelist = new ArrayList<String> ();
@@ -1053,6 +1055,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 				}
 				String typeWhere = typelist.size() == 0 ? "" : String.join(" OR ", typelist);
 
+				getDb().threadHook();
 				writeStatusBar("Querying...");
 				writeProgress(70);
 
@@ -1070,6 +1073,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 					}
 					searchSubSql = " AND (" + String.join(" AND ", p) + ")";
 				}
+				getDb().threadHook();
 				DbPathEntry locationPathEntry = null;
 				PreparedStatement psL;
 				if (getLocationPath() == null || "".equals(getLocationPath())) {
@@ -1099,7 +1103,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 							+ " AND (parentid=0 OR EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid))"
 							+ " ORDER BY " + orderL;
 					psL = getDb().prepareStatement(sqlL);
-					int c = 0;
+					int c = 1;
 					for (String s: searchStringElement) {
 						psL.setString(c++, "%" + s + "%");
 					}
@@ -1109,6 +1113,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 				try {
 					ResultSet rsL = psL.executeQuery();
 					try {
+						getDb().threadHook();
 						writelog("QUERY FINISHED");
 						writeStatusBar("Listing...");
 						writeProgress(90);
@@ -1120,6 +1125,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 
 						int countL = 0;
 						while (rsL.next()) {
+							getDb().threadHook();
 							DbPathEntry entry1L = getDb().rsToPathEntry(rsL);
 							Assertion.assertAssertionError(entry1L != null);
 							Assertion.assertAssertionError(entry1L.getPath() != null);

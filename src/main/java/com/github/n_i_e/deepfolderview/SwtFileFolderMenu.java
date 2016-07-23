@@ -883,6 +883,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 				oldScenarioToKill.interrupt();
 			}
 
+			getDb().threadHook();
 			Location loc = location.get();
 			if (loc.getPathEntry() == null && loc.getSearchString() == null &&
 					(loc.getPathEntry() != null || loc.getPathId() != 0L
@@ -914,6 +915,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 			}
 
 			try {
+				getDb().threadHook();
 				cleanupTable();
 
 				ArrayList<String> typelist = new ArrayList<String> ();
@@ -931,6 +933,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 				}
 				String typeWhere = typelist.size() == 0 ? "" : String.join(" OR ", typelist);
 
+				getDb().threadHook();
 				writeStatusBar("Querying...");
 				writeProgress(70);
 
@@ -948,6 +951,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 					}
 					searchSubSql = " AND (" + String.join(" AND ", p) + ")";
 				}
+				getDb().threadHook();
 				DbPathEntry locationPathEntry = null;
 				PreparedStatement ps;
 				if (loc.getPathString() == null || "".equals(loc.getPathString())) {
@@ -1002,6 +1006,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 
 					ResultSet rs = ps.executeQuery();
 					try {
+						getDb().threadHook();
 						writelog("QUERY FINISHED");
 						writeStatusBar("Listing...");
 						writeProgress(90);
