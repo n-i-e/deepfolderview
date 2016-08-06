@@ -242,19 +242,19 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		mntmVisibility.setMenu(menuVisibility);
 
 		final MenuItem mntmFoldersVisible = new MenuItem(menuVisibility, SWT.CHECK);
-		mntmFoldersVisible.setSelection(folder_is_checked);
+		mntmFoldersVisible.setSelection(isFolderCheckedL);
 		mntmFoldersVisible.setText(Messages.mntmFoldersVisible_text);
 
 		final MenuItem mntmFilesVisible = new MenuItem(menuVisibility, SWT.CHECK);
-		mntmFilesVisible.setSelection(file_is_checked);
+		mntmFilesVisible.setSelection(isFileCheckedL);
 		mntmFilesVisible.setText(Messages.mntmFilesVisible_text);
 
 		final MenuItem mntmCompressedFoldersVisible = new MenuItem(menuVisibility, SWT.CHECK);
-		mntmCompressedFoldersVisible.setSelection(compressedfolder_is_checked);
+		mntmCompressedFoldersVisible.setSelection(isCompressedFolderCheckedL);
 		mntmCompressedFoldersVisible.setText(Messages.mntmCompressedFoldersVisible_text);
 
 		final MenuItem mntmCompressedFilesVisible = new MenuItem(menuVisibility, SWT.CHECK);
-		mntmCompressedFilesVisible.setSelection(compressedfile_is_checked);
+		mntmCompressedFilesVisible.setSelection(isCompressedFileCheckedL);
 		mntmCompressedFilesVisible.setText(Messages.mntmCompressedFilesVisible_text);
 
 		MenuItem mntmHelp = new MenuItem(menu, SWT.CASCADE);
@@ -545,7 +545,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		menuItem.setText("Visibility");
 
 		final MenuItem mntmFoldersVisible_1 = new MenuItem(popupMenu, SWT.CHECK);
-		mntmFoldersVisible_1.setSelection(folder_is_checked);
+		mntmFoldersVisible_1.setSelection(isFolderCheckedL);
 		mntmFoldersVisible_1.setText(Messages.mntmFoldersVisible_text);
 		mntmFoldersVisible_1.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -556,7 +556,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		});
 
 		final MenuItem mntmFilesVisible_1 = new MenuItem(popupMenu, SWT.CHECK);
-		mntmFilesVisible_1.setSelection(file_is_checked);
+		mntmFilesVisible_1.setSelection(isFileCheckedL);
 		mntmFilesVisible_1.setText(Messages.mntmFilesVisible_text);
 		mntmFilesVisible_1.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -567,7 +567,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		});
 
 		final MenuItem mntmCompressedFoldersVisible_1 = new MenuItem(popupMenu, SWT.CHECK);
-		mntmCompressedFoldersVisible_1.setSelection(compressedfolder_is_checked);
+		mntmCompressedFoldersVisible_1.setSelection(isCompressedFolderCheckedL);
 		mntmCompressedFoldersVisible_1.setText(Messages.mntmCompressedFoldersVisible_text);
 		mntmCompressedFoldersVisible_1.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -578,7 +578,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		});
 
 		final MenuItem mntmCompressedFilesVisible_1 = new MenuItem(popupMenu, SWT.CHECK);
-		mntmCompressedFilesVisible_1.setSelection(compressedfile_is_checked);
+		mntmCompressedFilesVisible_1.setSelection(isCompressedFileCheckedL);
 		mntmCompressedFilesVisible_1.setText(Messages.mntmCompressedFilesVisible_text);
 		mntmCompressedFilesVisible_1.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -787,10 +787,10 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 
 	private String orderL = PreferenceRW.getSwtFileFolderMenuSortOrder();;
 	private String orderR = PreferenceRW.getSwtDuplicateMenuSortOrderR();
-	private boolean folder_is_checked = true;
-	private boolean file_is_checked = true;
-	private boolean compressedfolder_is_checked = true;
-	private boolean compressedfile_is_checked = true;
+	private boolean isFolderCheckedL = true;
+	private boolean isFileCheckedL = true;
+	private boolean isCompressedFolderCheckedL = true;
+	private boolean isCompressedFileCheckedL = true;
 
 	protected void onTblclmnPathLSelected(TableColumn tblclmnPathL, SelectionEvent e) {
 		if (table.getSortDirection() == SWT.UP) {
@@ -873,22 +873,22 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 	}
 
 	protected void onFoldersVisibleChecked(boolean checked) {
-		folder_is_checked = checked;
+		isFolderCheckedL = checked;
 		refresh();
 	}
 
 	protected void onFilesVisibleChecked(boolean checked) {
-		file_is_checked = checked;
+		isFileCheckedL = checked;
 		refresh();
 	}
 
 	protected void onCompressedFoldersVisibleChecked(boolean checked) {
-		compressedfolder_is_checked = checked;
+		isCompressedFolderCheckedL = checked;
 		refresh();
 	}
 
 	protected void onCompressedFilesVisibleSelected(boolean checked) {
-		compressedfile_is_checked = checked;
+		isCompressedFileCheckedL = checked;
 		refresh();
 	}
 
@@ -1041,16 +1041,16 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 				cleanupTable();
 
 				ArrayList<String> typelist = new ArrayList<String> ();
-				if (folder_is_checked) {
+				if (isFolderCheckedL) {
 					typelist.add("type=0");
 				}
-				if (file_is_checked) {
+				if (isFileCheckedL) {
 					typelist.add("type=1");
 				}
-				if (compressedfolder_is_checked) {
+				if (isCompressedFolderCheckedL) {
 					typelist.add("type=2");
 				}
-				if (compressedfile_is_checked) {
+				if (isCompressedFileCheckedL) {
 					typelist.add("type=3");
 				}
 				String typeWhere = typelist.size() == 0 ? "" : String.join(" OR ", typelist);

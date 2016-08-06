@@ -778,10 +778,10 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 	protected void onTableSelected(SelectionEvent e) {}
 
 	private String order = PreferenceRW.getSwtFileFolderMenuSortOrder();
-	private boolean folder_is_checked = true;
-	private boolean file_is_checked = true;
-	private boolean compressedfolder_is_checked = true;
-	private boolean compressedfile_is_checked = true;
+	private boolean isFolderChecked = true;
+	private boolean isFileChecked = true;
+	private boolean isCompressedFolderChecked = true;
+	private boolean isCompressedFileChecked = true;
 
 	protected void onTblclmnPathSelected(TableColumn tblclmnPath, SelectionEvent e) {
 		if (table.getSortDirection() == SWT.UP) {
@@ -844,22 +844,22 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 	}
 
 	protected void onFoldersVisibleChecked(boolean checked) {
-		folder_is_checked = checked;
+		isFolderChecked = checked;
 		refresh();
 	}
 
 	protected void onFilesVisibleChecked(boolean checked) {
-		file_is_checked = checked;
+		isFileChecked = checked;
 		refresh();
 	}
 
 	protected void onCompressedFoldersVisibleChecked(boolean checked) {
-		compressedfolder_is_checked = checked;
+		isCompressedFolderChecked = checked;
 		refresh();
 	}
 
 	protected void onCompressedFilesVisibleSelected(boolean checked) {
-		compressedfile_is_checked = checked;
+		isCompressedFileChecked = checked;
 		refresh();
 	}
 
@@ -919,16 +919,16 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 				cleanupTable();
 
 				ArrayList<String> typelist = new ArrayList<String> ();
-				if (folder_is_checked) {
+				if (isFolderChecked) {
 					typelist.add("type=0");
 				}
-				if (file_is_checked) {
+				if (isFileChecked) {
 					typelist.add("type=1");
 				}
-				if (compressedfolder_is_checked) {
+				if (isCompressedFolderChecked) {
 					typelist.add("type=2");
 				}
-				if (compressedfile_is_checked) {
+				if (isCompressedFileChecked) {
 					typelist.add("type=3");
 				}
 				String typeWhere = typelist.size() == 0 ? "" : String.join(" OR ", typelist);

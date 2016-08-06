@@ -67,23 +67,23 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 		}
 	}
 
+	protected NavigatableArrayList<Location> location;
+
 	public String getLocationPath() {
-		return location.get().pathString;
+		return location.get().getPathString();
 	}
 
 	public long getLocationPathId() {
-		return location.get().pathId;
+		return location.get().getPathId();
 	}
 
 	public DbPathEntry getLocationPathEntry() {
-		return location.get().pathEntry;
+		return location.get().getPathEntry();
 	}
 
 	public String getLocationSearchString() {
-		return location.get().searchString;
+		return location.get().getSearchString();
 	}
-
-	protected NavigatableArrayList<Location> location;
 
 	protected void onCloseSelected() {
 		getShell().dispose();
@@ -97,7 +97,7 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 		DbPathEntry p0 = getSelectedPathEntry();
 		final DbPathEntry p;
 		if (p0 == null) {
-			p = location.get().pathEntry;
+			p = getLocationPathEntry();
 		} else {
 			p = p0;
 		}
