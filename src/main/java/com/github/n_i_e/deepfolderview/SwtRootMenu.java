@@ -598,8 +598,8 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 				cleanupTable();
 				if (_newroot != null) {
 					try {
-						// not getDb() because this INSERT must not be lazy.
-						getSingleThreadDB().insert(null, new PathEntry(new File(_newroot)));
+						getDb().insert(null, new PathEntry(new File(_newroot)));
+						getDb().consumeUpdateQueue();
 					} catch (IOException e) {
 						String msg = String.format("Error: insert root failed for IOException: %s", _newroot);
 						writelog(msg);
