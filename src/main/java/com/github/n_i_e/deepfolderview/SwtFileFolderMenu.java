@@ -57,7 +57,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import com.github.n_i_e.dirtreedb.AbstractDirTreeDb;
 import com.github.n_i_e.dirtreedb.Assertion;
 import com.github.n_i_e.dirtreedb.DbPathEntry;
 import com.github.n_i_e.dirtreedb.LazyAccessorThread;
@@ -1030,7 +1029,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 							} else {
 								Assertion.assertAssertionError(p1.getPath().equals(p2.getPath()),
 										"!! " + p1.getPath() + " != " + p2.getPath());
-								if (!AbstractDirTreeDb.dscMatch(p1, p2)) {
+								if (!PathEntry.dscMatch(p1, p2)) {
 									p1.setDateLastModified(p2.getDateLastModified());
 									p1.setSize(p2.getSize());
 									p1.setCompressedSize(p2.getCompressedSize());

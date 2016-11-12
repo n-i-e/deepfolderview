@@ -58,7 +58,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import com.github.n_i_e.dirtreedb.AbstractDirTreeDb;
 import com.github.n_i_e.dirtreedb.Assertion;
 import com.github.n_i_e.dirtreedb.DbPathEntry;
 import com.github.n_i_e.dirtreedb.LazyAccessorThread;
@@ -1136,7 +1135,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 										);
 							}
 							PathEntry entry2L = disp.dispatch(entry1L);
-							if (rsL.getInt("duplicate") == 0 || entry2L == null || !AbstractDirTreeDb.dscMatch(entry1L, entry2L)) {
+							if (rsL.getInt("duplicate") == 0 || entry2L == null || !PathEntry.dscMatch(entry1L, entry2L)) {
 								// no right side fields, only left
 								mixOldNewEntriesAndAddRow(entry1L, entry2L, null, null);
 								countL ++;
@@ -1162,7 +1161,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 										boolean addRowFlag;
 										if (entry2R == null) {
 											addRowFlag = false; // p1R does not exist
-										} else if (AbstractDirTreeDb.dscMatch(entry1R, entry2R)) {
+										} else if (PathEntry.dscMatch(entry1R, entry2R)) {
 											rsR.getLong("datelasttested");
 											if (rsR.wasNull()) {
 												addRowFlag = disp.checkEquality(entry1L, entry1R, disp.CHECKEQUALITY_AUTOSELECT);
@@ -1212,7 +1211,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 					getDb().unsetCleanLater(entry1L.getParentId());
 				} else {
 					Assertion.assertAssertionError(entry1L.getPath().equals(entry2L.getPath()));
-					if (!AbstractDirTreeDb.dscMatch(entry1L, entry2L)) {
+					if (!PathEntry.dscMatch(entry1L, entry2L)) {
 						entry1L.setDateLastModified(entry2L.getDateLastModified());
 						entry1L.setSize(entry2L.getSize());
 						entry1L.setCompressedSize(entry2L.getCompressedSize());
@@ -1228,7 +1227,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 					getDb().unsetCleanLater(entry1R.getParentId());
 				} else {
 					Assertion.assertAssertionError(entry1R.getPath().equals(entry2R.getPath()));
-					if (!AbstractDirTreeDb.dscMatch(entry1R, entry2R)) {
+					if (!PathEntry.dscMatch(entry1R, entry2R)) {
 						entry1R.setDateLastModified(entry2R.getDateLastModified());
 						entry1R.setSize(entry2R.getSize());
 						entry1R.setCompressedSize(entry2R.getCompressedSize());
