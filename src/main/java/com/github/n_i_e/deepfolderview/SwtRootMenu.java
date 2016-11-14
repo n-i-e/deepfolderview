@@ -602,12 +602,12 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 						getDb().consumeUpdateQueue();
 					} catch (IOException e) {
 						String msg = String.format("Error: insert root failed for IOException: %s", _newroot);
-						writelog(msg);
+						Debug.writelog(msg);
 						writeStatusBar(msg);
 						throw e;
 					} catch (SQLException e) {
 						String msg = String.format("Error: insert root failed for SQLException: %s", _newroot);
-						writelog(msg);
+						Debug.writelog(msg);
 						writeStatusBar(msg);
 						throw e;
 					}
@@ -625,7 +625,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 				PreparedStatement ps;
 				if (getSearchString() == null || "".equals(getSearchString())) {
 					String sql = "SELECT * FROM directory WHERE type=0 AND parentid=0 ORDER BY " + order;
-					writelog(sql);
+					Debug.writelog(sql);
 					ps = getDb().prepareStatement(sql);
 				} else {
 					ArrayList<String> p = new ArrayList<String> ();
@@ -635,13 +635,13 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 						}
 					}
 					String sql = "SELECT * FROM directory WHERE type=0 AND parentid=0 AND (" + String.join(" OR ", p) + ") ORDER BY " + order;
-					writelog(sql);
+					Debug.writelog(sql);
 					ps = getDb().prepareStatement(sql);
 					int c = 1;
 					for (String s: getSearchString().split(" ")) {
 						if (! "".equals(s)) {
 							ps.setString(c, "%" + s + "%");
-							writelog(c + " %" + s + "%");
+							Debug.writelog(c + " %" + s + "%");
 							c++;
 						}
 					}

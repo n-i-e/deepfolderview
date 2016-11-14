@@ -757,7 +757,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		new LazyAccessorThread(LazyAccessorThreadRunningConfigSingleton.getInstance()) {
 			@Override
 			public void run() throws Exception {
-				writelog("-- SwtFileFolderMenu SetLocationAndRefresh LOCAL PATTERN (id based) --");
+				Debug.writelog("-- SwtFileFolderMenu SetLocationAndRefresh LOCAL PATTERN (id based) --");
 				Location loc = location.get();
 				DbPathEntry p = getDb().getDbPathEntryByPathId(loc.getPathId());
 				if (p != null) {
@@ -1016,22 +1016,22 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 					if (p != null) {
 						loc.setPathEntry(p);
 						loc.setPathId(p.getPathId());
-						writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 1 (path based entry detection) --");
+						Debug.writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 1 (path based entry detection) --");
 					} else {
 						loc.setSearchString(loc.getPathString());
 						loc.setPathString(null);
 						loc.setPathId(0L);
 						loc.setPathEntry(null);
-						writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 2 (searchstring=" + loc.getSearchString() + ") --");
+						Debug.writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 2 (searchstring=" + loc.getSearchString() + ") --");
 					}
 				} else if (loc.getPathId() != 0L) {
-					writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 3 (id based) --");
+					Debug.writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 3 (id based) --");
 					DbPathEntry p = getDb().getDbPathEntryByPathId(loc.getPathId());
 					assert(p != null);
 					setLocationAndRefresh(p);
 					return;
 				} else {
-					writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 4 (show all paths) --");
+					Debug.writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 4 (show all paths) --");
 				}
 			}
 
@@ -1113,7 +1113,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 					ResultSet rsL = psL.executeQuery();
 					try {
 						getDb().threadHook();
-						writelog("QUERY FINISHED");
+						Debug.writelog("QUERY FINISHED");
 						writeStatusBar("Listing...");
 						writeProgress(90);
 

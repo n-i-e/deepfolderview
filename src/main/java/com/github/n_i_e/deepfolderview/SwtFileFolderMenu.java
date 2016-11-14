@@ -749,7 +749,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 		new LazyAccessorThread(LazyAccessorThreadRunningConfigSingleton.getInstance()) {
 			@Override
 			public void run() throws Exception {
-				writelog("-- SwtFileFolderMenu SetLocationAndRefresh LOCAL PATTERN (id based) --");
+				Debug.writelog("-- SwtFileFolderMenu SetLocationAndRefresh LOCAL PATTERN (id based) --");
 				Location loc = location.get();
 				DbPathEntry p = getDb().getDbPathEntryByPathId(loc.getPathId());
 				if (p != null) {
@@ -894,22 +894,22 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 					if (p != null) {
 						loc.setPathEntry(p);
 						loc.setPathId(p.getPathId());
-						writelog("-- SwtFileFolderMenu PREPROCESS PATTERN 1 (path based entry detection) --");
+						Debug.writelog("-- SwtFileFolderMenu PREPROCESS PATTERN 1 (path based entry detection) --");
 					} else {
 						loc.setSearchString(loc.getPathString());
 						loc.setPathString(null);
 						loc.setPathId(0L);
 						loc.setPathEntry(null);
-						writelog("-- SwtFileFolderMenu PREPROCESS PATTERN 2 (searchstring=" + loc.getSearchString() + ") --");
+						Debug.writelog("-- SwtFileFolderMenu PREPROCESS PATTERN 2 (searchstring=" + loc.getSearchString() + ") --");
 					}
 				} else if (loc.getPathId() != 0L) {
-					writelog("-- SwtFileFolderMenu PREPROCESS PATTERN 3 (id based) --");
+					Debug.writelog("-- SwtFileFolderMenu PREPROCESS PATTERN 3 (id based) --");
 					DbPathEntry p = getDb().getDbPathEntryByPathId(loc.getPathId());
 					assert(p != null);
 					setLocationAndRefresh(p);
 					return;
 				} else {
-					writelog("-- SwtFileFolderMenu PREPROCESS PATTERN 4 (show all paths) --");
+					Debug.writelog("-- SwtFileFolderMenu PREPROCESS PATTERN 4 (show all paths) --");
 				}
 			}
 
@@ -957,12 +957,12 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 					String sql = "SELECT * FROM directory AS d1 WHERE (" + typeWhere + ") " + searchSubSql
 							+ " AND (parentid=0 OR EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid))"
 							+ " ORDER BY " + order;
-					writelog(sql);
+					Debug.writelog(sql);
 					ps = getDb().prepareStatement(sql);
 					int c = 1;
 					for (String s: searchStringElement) {
 						ps.setString(c, "%" + s + "%");
-						writelog(c + " %" + s + "%");
+						Debug.writelog(c + " %" + s + "%");
 						c++;
 					}
 				} else if ((locationPathEntry = loc.getPathEntry()) != null) {
@@ -970,32 +970,32 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 							+ " AND (pathid=? OR EXISTS (SELECT * FROM upperlower WHERE upper=? AND lower=pathid))"
 							+ " AND (parentid=0 OR EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid))"
 							+ " ORDER BY " + order;
-					writelog(sql);
+					Debug.writelog(sql);
 					ps = getDb().prepareStatement(sql);
 					int c = 1;
 					for (String s: searchStringElement) {
 						ps.setString(c, "%" + s + "%");
-						writelog(c + " %" + s + "%");
+						Debug.writelog(c + " %" + s + "%");
 						c++;
 					}
 					ps.setLong(c++, locationPathEntry.getPathId());
 					ps.setLong(c++, locationPathEntry.getPathId());
-					writelog(locationPathEntry.getPath());
+					Debug.writelog(locationPathEntry.getPath());
 				} else {
 					String sql = "SELECT * FROM directory AS d1 WHERE (" + typeWhere + ") " + searchSubSql
 							+ " AND path LIKE ?"
 							+ " AND (parentid=0 OR EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid))"
 							+ " ORDER BY " + order;
-					writelog(sql);
+					Debug.writelog(sql);
 					ps = getDb().prepareStatement(sql);
 					int c = 1;
 					for (String s: searchStringElement) {
 						ps.setString(c, "%" + s + "%");
-						writelog(c + " %" + s + "%");
+						Debug.writelog(c + " %" + s + "%");
 						c++;
 					}
 					ps.setString(c++, loc.getPathString() + "%");
-					writelog(loc.getPathString());
+					Debug.writelog(loc.getPathString());
 				}
 
 				try {
@@ -1006,7 +1006,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 					ResultSet rs = ps.executeQuery();
 					try {
 						getDb().threadHook();
-						writelog("QUERY FINISHED");
+						Debug.writelog("QUERY FINISHED");
 						writeStatusBar("Listing...");
 						writeProgress(90);
 
