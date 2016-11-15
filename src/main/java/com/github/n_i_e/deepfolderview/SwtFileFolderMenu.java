@@ -1025,7 +1025,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 							PathEntry p2 = disp.dispatch(p1);
 							if (p2 == null) {
 								addRow(p1, rs.getInt("duplicate"), rs.getLong("dedupablesize"), true);
-								getDb().unsetCleanLater(p1.getParentId());
+								getDb().unsetClean(p1.getParentId());
 							} else {
 								Assertion.assertAssertionError(p1.getPath().equals(p2.getPath()),
 										"!! " + p1.getPath() + " != " + p2.getPath());
@@ -1034,7 +1034,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 									p1.setSize(p2.getSize());
 									p1.setCompressedSize(p2.getCompressedSize());
 									p1.clearCsum();
-									getDb().unsetCleanLater(p1.getParentId());
+									getDb().unsetClean(p1.getParentId());
 								}
 								addRow(p1, rs.getInt("duplicate"), rs.getLong("dedupablesize"), false);
 							}
