@@ -862,27 +862,17 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 		refresh();
 	}
 
+	private Scenario scenario = new Scenario();
+
+	protected synchronized void refresh() {
+		refresh(scenario);
+	}
+
 	class Scenario extends SwtCommonFileFolderMenu.Scenario {
 
-		SwtCommonFileFolderRootMenu.Scenario oldScenarioToKill = null;
-
-		Scenario() {
-			super();
-		}
-
-		public Scenario(SwtCommonFileFolderRootMenu.Scenario oldScenarioToKill) {
-			this();
-			this.oldScenarioToKill = oldScenarioToKill;
-		}
-
 		@Override
-		public void run() throws SQLException, InterruptedException, IOException {
-			if (oldScenarioToKill != null) {
-				oldScenarioToKill.setDontResetProgressAtEnding(true);
-				oldScenarioToKill.interrupt();
-			}
-
-			getDb().threadHook();
+		public void run() throws SQLException, InterruptedException {
+			openingHook2();
 			Location loc = location.get();
 			if (loc.getPathEntry() == null && loc.getSearchString() == null &&
 					(loc.getPathEntry() != null || loc.getPathId() != 0L
@@ -1022,7 +1012,12 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 										p1.getPath() + " does not start with " + locationPathEntry.getPath()
 										);
 							}
-							PathEntry p2 = disp.dispatch(p1);
+							PathEntry p2;
+							try {
+								p2 = disp.dispatch(p1);
+							} catch (IOException e) {
+								p2 = null;
+							}
 							if (p2 == null) {
 								addRow(p1, rs.getInt("duplicate"), rs.getLong("dedupablesize"), true);
 								getDb().unsetClean(p1.getParentId());
@@ -1047,79 +1042,70 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 				} finally {
 					ps.close();
 				}
-			} catch (WindowDisposedException e) {
+				closingHook2();
+			} catch (WindowDisposedException e) {}
+		}
+
+		protected void cleanupTable() throws WindowDisposedException {
+			if (table.isDisposed()) {
+				throw new WindowDisposedException("!! Window disposed at addRow");
 			}
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					pathentrylist.clear();
+					table.removeAll();;
+				}
+			});
 		}
 
-	}
-
-	protected void cleanupTable() throws WindowDisposedException {
-		if (table.isDisposed()) {
-			throw new WindowDisposedException("!! Window disposed at addRow");
-		}
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				pathentrylist.clear();
-				table.removeAll();;
+		protected void addRow(final DbPathEntry entry, final int duplicate,
+				final long dedupablesize, final boolean grayout) throws WindowDisposedException {
+			if (table.isDisposed()) {
+				throw new WindowDisposedException("!! Window disposed at addRow");
 			}
-		});
-	}
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					pathentrylist.add(entry);
 
-	protected void addRow(final DbPathEntry entry, final int duplicate,
-			final long dedupablesize, final boolean grayout) throws WindowDisposedException {
-		if (table.isDisposed()) {
-			throw new WindowDisposedException("!! Window disposed at addRow");
-		}
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				pathentrylist.add(entry);
+					final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					final NumberFormat numf = NumberFormat.getNumberInstance();
+					Date d = new Date(entry.getDateLastModified());
+					String[] row = {
+							entry.getPath(),
+							sdf.format(d),
+							numf.format(entry.getSize()),
+							numf.format(entry.getCompressedSize()),
+							(duplicate > 0 ? numf.format(duplicate) : null),
+							(dedupablesize > 0 ? numf.format(dedupablesize) : null),
+					};
 
-				final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				final NumberFormat numf = NumberFormat.getNumberInstance();
-				Date d = new Date(entry.getDateLastModified());
-				String[] row = {
-						entry.getPath(),
-						sdf.format(d),
-						numf.format(entry.getSize()),
-						numf.format(entry.getCompressedSize()),
-						(duplicate > 0 ? numf.format(duplicate) : null),
-						(dedupablesize > 0 ? numf.format(dedupablesize) : null),
-				};
+					final Display display = Display.getDefault();
+					final Color blue = new Color(display, 0, 0, 255);
+					final Color red = new Color(display, 255, 0, 0);
+					final Color black = new Color(display, 0, 0, 0);
+					final Color gray = new Color(display, 127, 127, 127);
 
-				final Display display = Display.getDefault();
-				final Color blue = new Color(display, 0, 0, 255);
-				final Color red = new Color(display, 255, 0, 0);
-				final Color black = new Color(display, 0, 0, 0);
-				final Color gray = new Color(display, 127, 127, 127);
+					try {
+						TableItem tableItem = new TableItem(table, SWT.NONE);
+						tableItem.setText(row);
+						if (grayout) {
+							tableItem.setForeground(gray);
+						} else if (entry.isNoAccess()) {
+							tableItem.setForeground(red);
+						} else if (entry.isFile() && entry.getSize() != entry.getCompressedSize()) {
+							tableItem.setForeground(blue);
+						} else {
+							tableItem.setForeground(black);
+						}
 
-				try {
-					TableItem tableItem = new TableItem(table, SWT.NONE);
-					tableItem.setText(row);
-					if (grayout) {
-						tableItem.setForeground(gray);
-					} else if (entry.isNoAccess()) {
-						tableItem.setForeground(red);
-					} else if (entry.isFile() && entry.getSize() != entry.getCompressedSize()) {
-						tableItem.setForeground(blue);
-					} else {
-						tableItem.setForeground(black);
-					}
-
-				} catch (Exception e) {
-					if (!table.isDisposed()) {
-						e.printStackTrace();
+					} catch (Exception e) {
+						if (!table.isDisposed()) {
+							e.printStackTrace();
+						}
 					}
 				}
-			}
-		});
-	}
-
-	private SwtCommonFileFolderRootMenu.Scenario scenario = null;
-
-	protected synchronized void refresh() {
-		final SwtCommonFileFolderRootMenu.Scenario oldScenarioToKill = scenario;
-		scenario = new Scenario(oldScenarioToKill);
-		scenario.start();
+			});
+		}
 	}
 
 	protected DataBindingContext initDataBindings() {

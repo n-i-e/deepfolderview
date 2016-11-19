@@ -18,7 +18,7 @@ package com.github.n_i_e.deepfolderview;
 
 import com.github.n_i_e.dirtreedb.LazyAccessorThreadRunningConfig;
 
-
+@Deprecated
 public class LazyAccessorThreadRunningConfigSingleton extends LazyAccessorThreadRunningConfig {
 
 	private static LazyAccessorThreadRunningConfigSingleton instance = null;

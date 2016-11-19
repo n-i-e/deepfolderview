@@ -23,9 +23,36 @@ import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
-import com.github.n_i_e.dirtreedb.LazyAccessorThread;
+import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDbAccessorThread;
+import com.github.n_i_e.dirtreedb.RunnableWithLazyProxyDirTreeDbProvider;
+import com.github.n_i_e.dirtreedb.RunnableWithLazyProxyDirTreeDbProviderList;
 
 public abstract class SwtCommonFileFolderRootMenu extends SwtCommonFileFolderRootTaskTrayIconMenu {
+
+	private LazyProxyDirTreeDbAccessorThread thread = null;
+	private RunnableWithLazyProxyDirTreeDbProviderList scenariolist = new RunnableWithLazyProxyDirTreeDbProviderList();
+
+	protected void refresh(RunnableWithLazyProxyDirTreeDbProvider scenario) {
+		if (thread == null || !thread.isAlive()) {
+			scenariolist.add(scenario);
+			thread = App.getProv().getThread(scenariolist);
+			thread.start();
+		} else {
+			scenariolist.add(scenario);
+			if (thread.isAlive()) {
+				if (scenariolist.size() > 0) {
+					thread.interrupt();
+					thread.setTopPriority();
+				}
+			} else {
+				if (scenariolist.size() == 0) {
+					scenariolist.add(scenario);
+				}
+				thread = App.getProv().getThread(scenariolist);
+				thread.start();
+			}
+		}
+	}
 
 	protected abstract Table getTable();
 	protected abstract Label getLblStatusBar();
@@ -57,42 +84,25 @@ public abstract class SwtCommonFileFolderRootMenu extends SwtCommonFileFolderRoo
 		});
 	}
 
-	public abstract class Scenario extends LazyAccessorThread {
+	public abstract class Scenario extends RunnableWithLazyProxyDirTreeDbProvider {
 
-		Scenario() {
-			super(LazyAccessorThreadRunningConfigSingleton.getInstance());
-		}
-
-		private boolean dontResetProgressAtEnding = false;
-
-		public synchronized boolean isDontResetProgressAtEnding() {
-			return dontResetProgressAtEnding;
-		}
-
-		public synchronized void setDontResetProgressAtEnding(boolean dontResetProgressAtEnding) {
-			this.dontResetProgressAtEnding = dontResetProgressAtEnding;
-		}
-
-		public void startingHook1() {
+		@Override
+		public void openingHook() {
 			writeProgress(10);
 		}
 
-		public void startingHook2() {
+		@Override
+		public void closingHook() {
+			writeProgress(0);
+		}
+
+		public void openingHook2() {
 			writeProgress(20);
 		}
 
-		public void endingHook1() {
-			if (! dontResetProgressAtEnding) {
-				writeProgress(100);
-			}
+		public void closingHook2() {
+			writeProgress(100);
 		}
-
-		public void endingHook2() {
-			if (! dontResetProgressAtEnding) {
-				writeProgress(0);
-			}
-		}
-
 	}
 
 	public class WindowDisposedException extends Exception {

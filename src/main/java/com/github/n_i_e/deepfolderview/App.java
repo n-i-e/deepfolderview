@@ -16,48 +16,27 @@
 
 package com.github.n_i_e.deepfolderview;
 
-import java.util.Date;
-
 import org.eclipse.swt.widgets.Display;
 
-import com.github.n_i_e.dirtreedb.StandardCrawler;
+import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDbProvider;
 
 public class App
 {
+	private static LazyProxyDirTreeDbProvider prov = new LazyProxyDirTreeDbProvider();
+	public static LazyProxyDirTreeDbProvider getProv() {
+		return prov;
+	}
+
 	public static void main(String[] args) {
 		// SWT Initialize (TrayIcon)
 		final Display display = Display.getDefault();
 		final SwtTaskTrayIcon swtTrayIcon = new SwtTaskTrayIcon(display);
-		LazyAccessorThreadRunningConfigSingleton.getInstance().setMessageWriter(swtTrayIcon);
+		getProv().setMessageWriter(swtTrayIcon);
 
-		writelog("--- start ---");
-		StandardCrawler scenario = new StandardCrawler(LazyAccessorThreadRunningConfigSingleton.getInstance());
-		scenario.start();
+		Debug.writelog("--- start ---");
+		getProv().getMaintainerThread().start();
 
 		// SWT Event Loop (TrayIcon)
 		swtTrayIcon.swtEventLoop(display);
     }
-
-	static void writelog(final String message) {
-		Date now = new Date();
-		System.out.print(now);
-		System.out.print(" ");
-		System.out.println(message);
-	}
-
-	protected static void writeMessage(String title, String message) {
-		LazyAccessorThreadRunningConfigSingleton.getInstance().getMessageWriter().writeMessage(title, message);
-	}
-
-	protected static void writeInformation(String title, String message) {
-		LazyAccessorThreadRunningConfigSingleton.getInstance().getMessageWriter().writeInformation(title, message);
-	}
-
-	protected static void writeWarning(String title, String message) {
-		LazyAccessorThreadRunningConfigSingleton.getInstance().getMessageWriter().writeWarning(title, message);
-	}
-
-	protected static void writeError(String title, String message) {
-		LazyAccessorThreadRunningConfigSingleton.getInstance().getMessageWriter().writeError(title, message);
-	}
 }

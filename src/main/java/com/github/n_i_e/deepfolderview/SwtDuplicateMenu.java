@@ -60,11 +60,11 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.github.n_i_e.dirtreedb.Assertion;
 import com.github.n_i_e.dirtreedb.DbPathEntry;
-import com.github.n_i_e.dirtreedb.LazyAccessorThread;
 import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDb;
 import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDb.Dispatcher;
 import com.github.n_i_e.dirtreedb.PathEntry;
 import com.github.n_i_e.dirtreedb.PreferenceRW;
+import com.github.n_i_e.dirtreedb.RunnableWithLazyProxyDirTreeDbProvider;
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.SimpleDateFormat;
 
@@ -637,6 +637,10 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 
 	}
 
+	/*
+	 * event handlers
+	 */
+
 	protected void onCopyAsStringSelected() {
 		ArrayList<String> s = new ArrayList<String>();
 		int[] rows = getTable().getSelectionIndices();
@@ -715,71 +719,6 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 			location.add(newloc);
 		}
 		refresh();
-	}
-
-	public void setLocationAndRefresh(final String text) {
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				txtLocation.setText(text); // onLocationModified() is automatically called here.
-			}
-		});
-	}
-
-	public void setLocationAndRefresh(final DbPathEntry entry) {
-		assert(entry != null);
-		assert(location != null);
-		Location oldloc = location.get();
-		if (oldloc.getPathEntry() != null && oldloc.getPathEntry().getPathId() == entry.getPathId()) {
-			// noop
-		} else if (oldloc.getPathString() != null && oldloc.getPathString().equals(entry.getPath())) {
-			oldloc.setPathEntry(entry);
-			oldloc.setPathId(entry.getPathId());
-		} else {
-			Location newloc = new Location();
-			newloc.setPathEntry(entry);
-			newloc.setPathId(entry.getPathId());
-			newloc.setPathString(entry.getPath());
-			location.add(newloc);
-		}
-		setLocationAndRefresh(entry.getPath());
-	}
-
-	public void setLocationAndRefresh(long id) {
-		writeStatusBar(String.format("Starting query; new ID is: %d", id));
-		Location oldloc = location.get();
-		if (oldloc.getPathId() == id) {
-			// null
-		} else {
-			Location newloc = new Location();
-			newloc.setPathId(id);
-			location.add(newloc);
-		}
-		new LazyAccessorThread(LazyAccessorThreadRunningConfigSingleton.getInstance()) {
-			@Override
-			public void run() throws Exception {
-				Debug.writelog("-- SwtFileFolderMenu SetLocationAndRefresh LOCAL PATTERN (id based) --");
-				Location loc = location.get();
-				DbPathEntry p = getDb().getDbPathEntryByPathId(loc.getPathId());
-				if (p != null) {
-					loc.setPathEntry(p);
-					loc.setPathString(p.getPath());
-					loc.setSearchString(null);
-					setLocationAndRefresh(loc.getPathString());
-				}
-			}
-		}.start();
-	}
-
-	public void setLocationAndRefresh(final Location loc) {
-		if (loc.getPathString() != null) {
-			setLocationAndRefresh(loc.getPathString());
-		} else if (loc.getPathEntry() != null) {
-			setLocationAndRefresh(loc.getPathEntry().getPath());
-		} else if (loc.getSearchString() != null) {
-			setLocationAndRefresh(loc.getSearchString());
-		} else {
-			setLocationAndRefresh("");
-		}
 	}
 
 	protected void onTableSelected(SelectionEvent e) {}
@@ -891,120 +830,91 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		refresh();
 	}
 
-	protected void cleanupTable() throws WindowDisposedException {
-		if (table.isDisposed()) {
-			throw new WindowDisposedException("!! Window disposed at addRow");
+	/*
+	 * setLocationAndRefresh and related
+	 */
+
+	public void setLocationAndRefresh(final DbPathEntry entry) {
+		assert(entry != null);
+		assert(location != null);
+		Location oldloc = location.get();
+		if (oldloc.getPathEntry() != null && oldloc.getPathEntry().getPathId() == entry.getPathId()) {
+			// noop
+		} else if (oldloc.getPathString() != null && oldloc.getPathString().equals(entry.getPath())) {
+			oldloc.setPathEntry(entry);
+			oldloc.setPathId(entry.getPathId());
+		} else {
+			Location newloc = new Location();
+			newloc.setPathEntry(entry);
+			newloc.setPathId(entry.getPathId());
+			newloc.setPathString(entry.getPath());
+			location.add(newloc);
 		}
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				pathentrylistL.clear();
-				pathentrylist.clear();
-				table.removeAll();;
+		setLocationAndRefresh(entry.getPath());
+	}
+
+	public void setLocationAndRefresh(final Location loc) {
+		if (loc.getPathString() != null) {
+			setLocationAndRefresh(loc.getPathString());
+		} else if (loc.getPathEntry() != null) {
+			setLocationAndRefresh(loc.getPathEntry().getPath());
+		} else if (loc.getSearchString() != null) {
+			setLocationAndRefresh(loc.getSearchString());
+		} else {
+			setLocationAndRefresh("");
+		}
+	}
+
+	public void setLocationAndRefresh(long id) {
+		writeStatusBar(String.format("Starting query; new ID is: %d", id));
+		Location oldloc = location.get();
+		if (oldloc.getPathId() == id) {
+			// null
+		} else {
+			Location newloc = new Location();
+			newloc.setPathId(id);
+			location.add(newloc);
+		}
+		refresh(new RunnableWithLazyProxyDirTreeDbProvider() {
+			@Override
+			public void run() throws SQLException, InterruptedException {
+				Debug.writelog("-- SwtFileFolderMenu SetLocationAndRefresh LOCAL PATTERN (id based) --");
+				Location loc = location.get();
+				DbPathEntry p = getDb().getDbPathEntryByPathId(loc.getPathId());
+				if (p != null) {
+					loc.setPathEntry(p);
+					loc.setPathString(p.getPath());
+					loc.setSearchString(null);
+					setLocationAndRefresh(loc.getPathString());
+				}
 			}
 		});
 	}
 
-	protected void addRow(final DbPathEntry entryL, final DbPathEntry entryR,
-			final boolean grayoutL, final boolean grayoutR)
-			throws WindowDisposedException {
-		if (table.isDisposed()) {
-			throw new WindowDisposedException("!! Window disposed at addRow");
-		}
+	public void setLocationAndRefresh(final String text) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				pathentrylistL.add(entryL);
-				pathentrylist.add(entryR);
-
-				final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				final NumberFormat numf = NumberFormat.getNumberInstance();
-				Date d = (entryL == null ? null : new Date(entryL.getDateLastModified()));
-				Date dR = (entryR == null ? null : new Date(entryR.getDateLastModified()));
-				String[] row = {
-						(entryL == null ? "" : entryL.getPath()),
-						(d == null ? "" : sdf.format(d)),
-						(entryL == null ? "" : numf.format(entryL.getSize())),
-						(entryL == null ? "" : numf.format(entryL.getCompressedSize())),
-						(entryR == null ? "" : entryR.getPath()),
-						(dR == null ? "" : sdf.format(dR)),
-						(entryR == null ? "" : numf.format(entryR.getSize())),
-						(entryR == null ? "" : numf.format(entryR.getCompressedSize())),
-				};
-
-				final Display display = Display.getDefault();
-				final Color blue = new Color(display, 0, 0, 255);
-				final Color red = new Color(display, 255, 0, 0);
-				final Color black = new Color(display, 0, 0, 0);
-				final Color gray = new Color(display, 127, 127, 127);
-
-				try {
-					TableItem tableItem = new TableItem(table, SWT.NONE);
-					tableItem.setText(row);
-					if (entryL != null) {
-						if (grayoutL) {
-							setForegroundL(tableItem, gray);
-						} else if (entryL.isNoAccess()) {
-							setForegroundL(tableItem, red);
-						} else if (entryL.isFile() && entryL.getSize() != entryL.getCompressedSize()) {
-							setForegroundL(tableItem, blue);
-						} else {
-							setForegroundL(tableItem, black);
-						}
-					}
-					if (entryR != null) {
-						if (grayoutR) {
-							setForegroundR(tableItem, gray);
-						} else if (entryR.isNoAccess()) {
-							setForegroundR(tableItem, red);
-						} else if (entryR.isFile() && entryR.getSize() != entryR.getCompressedSize()) {
-							setForegroundR(tableItem, blue);
-						} else {
-							setForegroundR(tableItem, black);
-						}
-					}
-				} catch (Exception e) {
-					if (!table.isDisposed()) {
-						e.printStackTrace();
-					}
-				}
-			}
-
-			private void setForegroundL(TableItem tableItem, Color color) {
-				for (int i=0; i<4; i++) {
-					tableItem.setForeground(i, color);
-				}
-			}
-
-			private void setForegroundR(TableItem tableItem, Color color) {
-				for (int i=4; i<8; i++) {
-					tableItem.setForeground(i, color);
-				}
+				txtLocation.setText(text); // onLocationModified() is automatically called here.
 			}
 		});
 	}
+
+	/*
+	 * normal refresh
+	 */
 
 	private List<DbPathEntry> pathentrylistL = new ArrayList<DbPathEntry>();
 
+	private Scenario scenario = new Scenario();
+	private synchronized void refresh() {
+		refresh(scenario);
+	}
+
 	class Scenario extends SwtCommonFileFolderMenu.Scenario {
 
-		SwtCommonFileFolderRootMenu.Scenario oldScenarioToKill = null;
-
-		Scenario() {
-			super();
-		}
-
-		public Scenario(SwtCommonFileFolderRootMenu.Scenario oldScenarioToKill) {
-			this();
-			this.oldScenarioToKill = oldScenarioToKill;
-		}
-
 		@Override
-		public void run() throws SQLException, InterruptedException, IOException {
-			if (oldScenarioToKill != null) {
-				oldScenarioToKill.setDontResetProgressAtEnding(true);
-				oldScenarioToKill.interrupt();
-			}
-
-			getDb().threadHook();
+		public void run() throws SQLException, InterruptedException {
+			openingHook2();
 			Location loc = location.get();
 			if (loc.getPathEntry() == null && loc.getSearchString() == null &&
 					(loc.getPathEntry() != null || loc.getPathId() != 0L
@@ -1134,7 +1044,12 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 										entry1L.getPath() + " does not start with " + locationPathEntry.getPath()
 										);
 							}
-							PathEntry entry2L = disp.dispatch(entry1L);
+							PathEntry entry2L;
+							try {
+								entry2L = disp.dispatch(entry1L);
+							} catch (IOException e1) {
+								entry2L = null;
+							}
 							if (rsL.getInt("duplicate") == 0 || entry2L == null || !PathEntry.dscMatch(entry1L, entry2L)) {
 								// no right side fields, only left
 								mixOldNewEntriesAndAddRow(entry1L, entry2L, null, null);
@@ -1157,7 +1072,12 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 									int countR = 0;
 									while (rsR.next()) {
 										DbPathEntry entry1R = getDb().rsToPathEntry(rsR);
-										PathEntry entry2R = disp.dispatch(entry1R);
+										PathEntry entry2R;
+										try {
+											entry2R = disp.dispatch(entry1R);
+										} catch (IOException e) {
+											entry2R = null;
+										}
 										boolean addRowFlag;
 										if (entry2R == null) {
 											addRowFlag = false; // p1R does not exist
@@ -1197,6 +1117,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 				} finally {
 					psL.close();
 				}
+				closingHook2();
 			} catch (WindowDisposedException e) {
 			}
 		}
@@ -1242,14 +1163,96 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 			}
 		}
 
-	}
+		protected void cleanupTable() throws WindowDisposedException {
+			if (table.isDisposed()) {
+				throw new WindowDisposedException("!! Window disposed at addRow");
+			}
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					pathentrylistL.clear();
+					pathentrylist.clear();
+					table.removeAll();;
+				}
+			});
+		}
 
-	private SwtCommonFileFolderRootMenu.Scenario scenario = null;
+		protected void addRow(final DbPathEntry entryL, final DbPathEntry entryR,
+				final boolean grayoutL, final boolean grayoutR)
+				throws WindowDisposedException {
+			if (table.isDisposed()) {
+				throw new WindowDisposedException("!! Window disposed at addRow");
+			}
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					pathentrylistL.add(entryL);
+					pathentrylist.add(entryR);
 
-	private synchronized void refresh() {
-		final SwtCommonFileFolderRootMenu.Scenario oldScenarioToKill = scenario;
-		scenario = new Scenario(oldScenarioToKill);
-		scenario.start();
+					final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					final NumberFormat numf = NumberFormat.getNumberInstance();
+					Date d = (entryL == null ? null : new Date(entryL.getDateLastModified()));
+					Date dR = (entryR == null ? null : new Date(entryR.getDateLastModified()));
+					String[] row = {
+							(entryL == null ? "" : entryL.getPath()),
+							(d == null ? "" : sdf.format(d)),
+							(entryL == null ? "" : numf.format(entryL.getSize())),
+							(entryL == null ? "" : numf.format(entryL.getCompressedSize())),
+							(entryR == null ? "" : entryR.getPath()),
+							(dR == null ? "" : sdf.format(dR)),
+							(entryR == null ? "" : numf.format(entryR.getSize())),
+							(entryR == null ? "" : numf.format(entryR.getCompressedSize())),
+					};
+
+					final Display display = Display.getDefault();
+					final Color blue = new Color(display, 0, 0, 255);
+					final Color red = new Color(display, 255, 0, 0);
+					final Color black = new Color(display, 0, 0, 0);
+					final Color gray = new Color(display, 127, 127, 127);
+
+					try {
+						TableItem tableItem = new TableItem(table, SWT.NONE);
+						tableItem.setText(row);
+						if (entryL != null) {
+							if (grayoutL) {
+								setForegroundL(tableItem, gray);
+							} else if (entryL.isNoAccess()) {
+								setForegroundL(tableItem, red);
+							} else if (entryL.isFile() && entryL.getSize() != entryL.getCompressedSize()) {
+								setForegroundL(tableItem, blue);
+							} else {
+								setForegroundL(tableItem, black);
+							}
+						}
+						if (entryR != null) {
+							if (grayoutR) {
+								setForegroundR(tableItem, gray);
+							} else if (entryR.isNoAccess()) {
+								setForegroundR(tableItem, red);
+							} else if (entryR.isFile() && entryR.getSize() != entryR.getCompressedSize()) {
+								setForegroundR(tableItem, blue);
+							} else {
+								setForegroundR(tableItem, black);
+							}
+						}
+					} catch (Exception e) {
+						if (!table.isDisposed()) {
+							e.printStackTrace();
+						}
+					}
+				}
+
+				private void setForegroundL(TableItem tableItem, Color color) {
+					for (int i=0; i<4; i++) {
+						tableItem.setForeground(i, color);
+					}
+				}
+
+				private void setForegroundR(TableItem tableItem, Color color) {
+					for (int i=4; i<8; i++) {
+						tableItem.setForeground(i, color);
+					}
+				}
+			});
+		}
 	}
 
 	protected DataBindingContext initDataBindings() {

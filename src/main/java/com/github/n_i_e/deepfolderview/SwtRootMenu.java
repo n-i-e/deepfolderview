@@ -571,40 +571,45 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 		return result;
 	}
 
+	private void refresh() {
+		refresh(null, null);
+	}
+
+	private void refresh(String newroot, DbPathEntry deleteroot) {
+		refresh(new Scenario(newroot, deleteroot));
+	}
+
+	private void deleteRootFolderAndRefresh(DbPathEntry deleteroot) {
+		refresh(null, deleteroot);
+	}
+
+	private void addRootFolderAndRefresh(String newroot) {
+		refresh(newroot, null);
+	}
+
 	class Scenario extends SwtCommonFileFolderRootMenu.Scenario {
 
-		SwtCommonFileFolderRootMenu.Scenario oldScenarioToKill = null;
 		private String _newroot = null;
 		private DbPathEntry _deleteroot = null;
 
 		Scenario(String newroot, DbPathEntry deleteroot) {
-			super();
 			_newroot = newroot;
 			_deleteroot = deleteroot;
 		}
 
-		public Scenario(String newroot, DbPathEntry deleteroot, SwtCommonFileFolderRootMenu.Scenario oldScenarioToKill) {
-			this(newroot, deleteroot);
-			this.oldScenarioToKill = oldScenarioToKill;
-		}
-
 		@Override
-		public void run() throws InterruptedException, IOException, SQLException {
-			if (oldScenarioToKill != null) {
-				oldScenarioToKill.setDontResetProgressAtEnding(true);
-				oldScenarioToKill.interrupt();
-			}
+		public void run() throws SQLException, InterruptedException {
 			try {
+				openingHook2();
 				cleanupTable();
 				if (_newroot != null) {
 					try {
 						getDb().insert(null, new PathEntry(new File(_newroot)));
-						getDb().consumeUpdateQueue();
+						getDb().consumeUpdateQueue(0);
 					} catch (IOException e) {
 						String msg = String.format("Error: insert root failed for IOException: %s", _newroot);
 						Debug.writelog(msg);
 						writeStatusBar(msg);
-						throw e;
 					} catch (SQLException e) {
 						String msg = String.format("Error: insert root failed for SQLException: %s", _newroot);
 						Debug.writelog(msg);
@@ -617,6 +622,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 					Assertion.assertAssertionError(_deleteroot.getPathId() == _deleteroot.getRootId());
 					Assertion.assertAssertionError(_deleteroot.getParentId() == 0L);
 					getDb().delete(_deleteroot);
+					getDb().consumeUpdateQueue(0);
 				}
 
 				writeStatusBar("Querying...");
@@ -648,7 +654,6 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 				}
 
 				try {
-					//getDB().threadHook();
 					com.github.n_i_e.dirtreedb.LazyProxyDirTreeDb.Dispatcher disp = getDb().getDispatcher();
 					disp.setList(com.github.n_i_e.dirtreedb.LazyProxyDirTreeDb.Dispatcher.NONE);
 					disp.setCsum(com.github.n_i_e.dirtreedb.LazyProxyDirTreeDb.Dispatcher.NONE);
@@ -660,10 +665,11 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 					try {
 						while (rs.next()) {
 							final DbPathEntry p1 = getDb().rsToPathEntry(rs);
-							//final PathEntry p2 = disp.dispatch(p1);
 							final long maximumsize = new File(p1.getPath()).getTotalSpace();
 							addRow(p1, maximumsize);
-							disp.dispatch(p1);
+							try {
+								disp.dispatch(p1);
+							} catch (IOException e) {}
 							count ++;
 						}
 						writeStatusBar(String.format("%d root folders", count));
@@ -673,8 +679,8 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 				} finally {
 					ps.close();
 				}
-			} catch (WindowDisposedException e1) {
-			}
+				closingHook2();
+			} catch (WindowDisposedException e1) {}
 		}
 
 		protected void cleanupTable() throws WindowDisposedException {
@@ -713,28 +719,8 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 				}
 			});
 		}
-	};
-
-	Scenario scenario = null;
-
-	private void refresh(String newroot, DbPathEntry deleteroot) {
-		SwtCommonFileFolderRootMenu.Scenario oldScenarioToKill = scenario;
-
-		scenario = new Scenario(newroot, deleteroot, oldScenarioToKill);
-		scenario.start();
 	}
 
-	private void refresh() {
-		refresh(null, null);
-	}
-
-	private void deleteRootFolderAndRefresh(DbPathEntry deleteroot) {
-		refresh(null, deleteroot);
-	}
-
-	private void addRootFolderAndRefresh(String newroot) {
-		refresh(newroot, null);
-	}
 	protected DataBindingContext initDataBindings() {
 		DataBindingContext bindingContext = new DataBindingContext();
 		//
