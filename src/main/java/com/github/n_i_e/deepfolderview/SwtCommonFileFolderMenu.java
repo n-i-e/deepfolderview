@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +30,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import com.github.n_i_e.dirtreedb.DbPathEntry;
-import com.github.n_i_e.dirtreedb.LazyAccessorThread;
 import com.github.n_i_e.dirtreedb.PathEntry;
+import com.github.n_i_e.dirtreedb.RunnableWithLazyProxyDirTreeDbProvider;
 
 public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMenu {
 	protected List<DbPathEntry> pathentrylist = new ArrayList<DbPathEntry>();
@@ -131,16 +132,38 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 				}
 			} else {
 				assert(p.isCompressedFile());
-				new LazyAccessorThread(LazyAccessorThreadRunningConfigSingleton.getInstance()) {
+				App.getProv().getThread(new RunnableWithLazyProxyDirTreeDbProvider() {
+
+					private boolean isCopySuccessful = false;
 					@Override
-					public void run() throws Exception {
+					public void openingHook() {
 						writeStatusBar("Start copying from compressed file: " + p.getPath() + " to " + toPath);
-						File f = new File(toPath);
-						Files.copy(getDb().getInputStream(p) , f.toPath(), StandardCopyOption.REPLACE_EXISTING);
-						f.setLastModified(p.getDateLastModified());
-						writeStatusBar("Copying from compressed file finished: " + p.getPath() + " to " + toPath);
 					}
-				}.start();
+
+					@Override
+					public void run() throws SQLException, InterruptedException {
+						File f = new File(toPath);
+						try {
+							Files.copy(getDb().getInputStream(p) , f.toPath(), StandardCopyOption.REPLACE_EXISTING);
+						} catch (IOException e) {
+							isCopySuccessful = false;
+						}
+						f.setLastModified(p.getDateLastModified());
+						isCopySuccessful = true;
+					}
+
+					@Override
+					public void closingHook() {
+						if (isCopySuccessful) {
+							writeStatusBar("Copying from compressed file finished: " + p.getPath() + " to " + toPath);
+						} else {
+							String msg = "Copying from compressed file failed: " + p.getPath() + " to " + toPath;
+							getMessageWriter().writeWarning("Copy Failed", msg);
+							writeStatusBar(msg);
+						}
+					}
+
+				}).start();
 			}
 		}
 	}
@@ -174,18 +197,38 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 				} else {
 					toFile.deleteOnExit();
 					final String toPath = toFile.getAbsolutePath();
-					new LazyAccessorThread(LazyAccessorThreadRunningConfigSingleton.getInstance()) {
+					App.getProv().getThread(new RunnableWithLazyProxyDirTreeDbProvider() {
+						private boolean isCopySuccessful = false;
 						@Override
-						public void run() throws Exception {
+						public void openingHook() {
 							writeStatusBar(String.format("Start copying from compressed file: %s to %s", entry.getPath(), toPath));
-							InputStream inf = getDb().getInputStream(entry);
-							Files.copy(inf , toFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-							inf.close();
-							toFile.setLastModified(entry.getDateLastModified());
-							writeStatusBar(String.format("Copying from compressed file finished: %s to %s", entry.getPath(), toPath));
-							desktop.open(new File(toPath));
 						}
-					}.start();
+
+						@Override
+						public void run() throws SQLException, InterruptedException {
+							InputStream inf;
+							try {
+								inf = getDb().getInputStream(entry);
+								Files.copy(inf , toFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+								inf.close();
+								desktop.open(new File(toPath));
+								isCopySuccessful = true;
+							} catch (IOException e) {
+								isCopySuccessful = false;
+							}
+						}
+
+						@Override
+						public void closingHook() {
+							if (isCopySuccessful) {
+								writeStatusBar(String.format("Copying from compressed file finished: %s to %s", entry.getPath(), toPath));
+							} else {
+								String msg = String.format("Copying from compressed file failed: %s to %s", entry.getPath(), toPath);
+								getMessageWriter().writeWarning("Copy Failed", msg);
+								writeStatusBar(msg);
+							}
+						}
+					}).start();
 				}
 			} catch (IOException e) {
 				String msg = "Failed creating temporary file.";

@@ -59,11 +59,11 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.github.n_i_e.dirtreedb.Assertion;
 import com.github.n_i_e.dirtreedb.DbPathEntry;
-import com.github.n_i_e.dirtreedb.LazyAccessorThread;
 import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDb;
 import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDb.Dispatcher;
 import com.github.n_i_e.dirtreedb.PathEntry;
 import com.github.n_i_e.dirtreedb.PreferenceRW;
+import com.github.n_i_e.dirtreedb.RunnableWithLazyProxyDirTreeDbProvider;
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.SimpleDateFormat;
 
@@ -621,6 +621,10 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 
 	}
 
+	/*
+	 * event handlers
+	 */
+
 	protected void onCopyAsStringSelected() {
 		ArrayList<String> s = new ArrayList<String>();
 		for (PathEntry p: getSelectedPathEntries()) {
@@ -707,71 +711,6 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 			location.add(newloc);
 		}
 		refresh();
-	}
-
-	public void setLocationAndRefresh(final String text) {
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				txtLocation.setText(text); // onLocationModified() is automatically called here.
-			}
-		});
-	}
-
-	public void setLocationAndRefresh(final DbPathEntry entry) {
-		Assertion.assertNullPointerException(entry != null);
-		Assertion.assertNullPointerException(location != null);
-		Location oldloc = location.get();
-		if (oldloc.getPathEntry() != null && oldloc.getPathEntry().getPathId() == entry.getPathId()) {
-			// noop
-		} else if (oldloc.getPathString() != null && oldloc.getPathString().equals(entry.getPath())) {
-			oldloc.setPathEntry(entry);
-			oldloc.setPathId(entry.getPathId());
-		} else {
-			Location newloc = new Location();
-			newloc.setPathEntry(entry);
-			newloc.setPathId(entry.getPathId());
-			newloc.setPathString(entry.getPath());
-			location.add(newloc);
-		}
-		setLocationAndRefresh(entry.getPath());
-	}
-
-	public void setLocationAndRefresh(long id) {
-		writeStatusBar(String.format("Starting query; new ID is: %d", id));
-		Location oldloc = location.get();
-		if (oldloc.getPathId() == id) {
-			// null
-		} else {
-			Location newloc = new Location();
-			newloc.setPathId(id);
-			location.add(newloc);
-		}
-		new LazyAccessorThread(LazyAccessorThreadRunningConfigSingleton.getInstance()) {
-			@Override
-			public void run() throws Exception {
-				Debug.writelog("-- SwtFileFolderMenu SetLocationAndRefresh LOCAL PATTERN (id based) --");
-				Location loc = location.get();
-				DbPathEntry p = getDb().getDbPathEntryByPathId(loc.getPathId());
-				if (p != null) {
-					loc.setPathEntry(p);
-					loc.setPathString(p.getPath());
-					loc.setSearchString(null);
-					setLocationAndRefresh(loc.getPathString());
-				}
-			}
-		}.start();
-	}
-
-	public void setLocationAndRefresh(final Location loc) {
-		if (loc.getPathString() != null) {
-			setLocationAndRefresh(loc.getPathString());
-		} else if (loc.getPathEntry() != null) {
-			setLocationAndRefresh(loc.getPathEntry().getPath());
-		} else if (loc.getSearchString() != null) {
-			setLocationAndRefresh(loc.getSearchString());
-		} else {
-			setLocationAndRefresh("");
-		}
 	}
 
 	protected void onTableSelected(SelectionEvent e) {}
@@ -862,8 +801,80 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 		refresh();
 	}
 
-	private Scenario scenario = new Scenario();
+	public void setLocationAndRefresh(final String text) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				txtLocation.setText(text); // onLocationModified() is automatically called here.
+			}
+		});
+	}
 
+	/*
+	 * setLocationAndRefresh and related
+	 */
+
+	public void setLocationAndRefresh(final DbPathEntry entry) {
+		Assertion.assertNullPointerException(entry != null);
+		Assertion.assertNullPointerException(location != null);
+		Location oldloc = location.get();
+		if (oldloc.getPathEntry() != null && oldloc.getPathEntry().getPathId() == entry.getPathId()) {
+			// noop
+		} else if (oldloc.getPathString() != null && oldloc.getPathString().equals(entry.getPath())) {
+			oldloc.setPathEntry(entry);
+			oldloc.setPathId(entry.getPathId());
+		} else {
+			Location newloc = new Location();
+			newloc.setPathEntry(entry);
+			newloc.setPathId(entry.getPathId());
+			newloc.setPathString(entry.getPath());
+			location.add(newloc);
+		}
+		setLocationAndRefresh(entry.getPath());
+	}
+
+	public void setLocationAndRefresh(long id) {
+		writeStatusBar(String.format("Starting query; new ID is: %d", id));
+		Location oldloc = location.get();
+		if (oldloc.getPathId() == id) {
+			// null
+		} else {
+			Location newloc = new Location();
+			newloc.setPathId(id);
+			location.add(newloc);
+		}
+		refresh(new RunnableWithLazyProxyDirTreeDbProvider() {
+			@Override
+			public void run() throws SQLException, InterruptedException {
+				Debug.writelog("-- SwtFileFolderMenu SetLocationAndRefresh LOCAL PATTERN (id based) --");
+				Location loc = location.get();
+				DbPathEntry p = getDb().getDbPathEntryByPathId(loc.getPathId());
+				if (p != null) {
+					loc.setPathEntry(p);
+					loc.setPathString(p.getPath());
+					loc.setSearchString(null);
+					setLocationAndRefresh(loc.getPathString());
+				}
+			}
+		});
+	}
+
+	public void setLocationAndRefresh(final Location loc) {
+		if (loc.getPathString() != null) {
+			setLocationAndRefresh(loc.getPathString());
+		} else if (loc.getPathEntry() != null) {
+			setLocationAndRefresh(loc.getPathEntry().getPath());
+		} else if (loc.getSearchString() != null) {
+			setLocationAndRefresh(loc.getSearchString());
+		} else {
+			setLocationAndRefresh("");
+		}
+	}
+
+	/*
+	 * normal refresh
+	 */
+
+	private Scenario scenario = new Scenario();
 	protected synchronized void refresh() {
 		refresh(scenario);
 	}

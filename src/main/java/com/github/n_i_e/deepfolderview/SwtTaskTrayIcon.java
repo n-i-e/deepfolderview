@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.sql.SQLException;
 
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.jface.databinding.swt.SWTObservables;
@@ -43,8 +44,8 @@ import org.eclipse.swt.widgets.TrayItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.github.n_i_e.dirtreedb.DbPathEntry;
-import com.github.n_i_e.dirtreedb.LazyAccessorThread;
 import com.github.n_i_e.dirtreedb.MessageWriter;
+import com.github.n_i_e.dirtreedb.RunnableWithLazyProxyDirTreeDbProvider;
 
 public class SwtTaskTrayIcon extends SwtCommonFileFolderRootTaskTrayIconMenu implements MessageWriter {
 	private final TrayItem icon;
@@ -167,10 +168,10 @@ public class SwtTaskTrayIcon extends SwtCommonFileFolderRootTaskTrayIconMenu imp
 				});
 				if (d.open() == Window.OK) {
 					final String runString = d.getValue();
-					new LazyAccessorThread(LazyAccessorThreadRunningConfigSingleton.getInstance()) {
+					App.getProv().getThread(new RunnableWithLazyProxyDirTreeDbProvider() {
 
 						@Override
-						public void run() throws Exception {
+						public void run() throws SQLException, InterruptedException {
 							Desktop desktop = Desktop.getDesktop();
 							DbPathEntry entry = getDb().getDbPathEntryByPath(runString);
 							if (entry == null) {
@@ -221,7 +222,7 @@ public class SwtTaskTrayIcon extends SwtCommonFileFolderRootTaskTrayIconMenu imp
 								}
 							}
 						}
-					}.start();
+					}).start();
 				}
 			}
 		});
