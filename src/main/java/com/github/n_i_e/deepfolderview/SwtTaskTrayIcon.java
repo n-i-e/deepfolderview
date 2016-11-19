@@ -56,7 +56,7 @@ public class SwtTaskTrayIcon extends SwtCommonFileFolderRootTaskTrayIconMenu imp
 	public SwtTaskTrayIcon(Display display) {
 		icon = new TrayItem(display.getSystemTray(), SWT.NONE);
 
-		icon.setImage(SWTResourceManager.getImage(App.class, "/com/github/n_i_e/deepfolderview/icon/drive-harddisk.png"));
+		icon.setImage(SWTResourceManager.getImage(DeepFolderView.class, "/com/github/n_i_e/deepfolderview/icon/drive-harddisk.png"));
 		icon.setToolTipText("DirTreeDB for Windows");
 		icon.setText("DirTreeDB");
 
@@ -168,7 +168,7 @@ public class SwtTaskTrayIcon extends SwtCommonFileFolderRootTaskTrayIconMenu imp
 				});
 				if (d.open() == Window.OK) {
 					final String runString = d.getValue();
-					App.getProv().getThread(new RunnableWithLazyProxyDirTreeDbProvider() {
+					DeepFolderView.getProv().getThread(new RunnableWithLazyProxyDirTreeDbProvider() {
 
 						@Override
 						public void run() throws SQLException, InterruptedException {

@@ -116,7 +116,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.github.n_i_e.deepfolderview.App</mainClass>
+							<mainClass>com.github.n_i_e.deepfolderview.DeepFolderView</mainClass>
 							<addClasspath>true</addClasspath>
 							<addExtensions>false</addExtensions>
 							<classpathPrefix></classpathPrefix>
@@ -152,7 +152,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>com.github.n_i_e.deepfolderview.App</mainClass>
+							<mainClass>com.github.n_i_e.deepfolderview.DeepFolderView</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -173,7 +173,7 @@
 				<configuration>
 					<programs>
 						<program>
-							<mainClass>com.github.n_i_e.deepfolderview.App</mainClass>
+							<mainClass>com.github.n_i_e.deepfolderview.DeepFolderView</mainClass>
 						</program>
 					</programs>
 					<repositoryLayout>flat</repositoryLayout>

@@ -35,7 +35,7 @@ public abstract class SwtCommonFileFolderRootMenu extends SwtCommonFileFolderRoo
 	protected void refresh(RunnableWithLazyProxyDirTreeDbProvider scenario) {
 		if (thread == null || !thread.isAlive()) {
 			scenariolist.add(scenario);
-			thread = App.getProv().getThread(scenariolist);
+			thread = DeepFolderView.getProv().getThread(scenariolist);
 			thread.start();
 		} else {
 			scenariolist.add(scenario);
@@ -48,7 +48,7 @@ public abstract class SwtCommonFileFolderRootMenu extends SwtCommonFileFolderRoo
 				if (scenariolist.size() == 0) {
 					scenariolist.add(scenario);
 				}
-				thread = App.getProv().getThread(scenariolist);
+				thread = DeepFolderView.getProv().getThread(scenariolist);
 				thread.start();
 			}
 		}

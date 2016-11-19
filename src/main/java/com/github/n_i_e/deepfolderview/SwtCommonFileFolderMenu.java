@@ -132,7 +132,7 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 				}
 			} else {
 				assert(p.isCompressedFile());
-				App.getProv().getThread(new RunnableWithLazyProxyDirTreeDbProvider() {
+				DeepFolderView.getProv().getThread(new RunnableWithLazyProxyDirTreeDbProvider() {
 
 					private boolean isCopySuccessful = false;
 					@Override
@@ -197,7 +197,7 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 				} else {
 					toFile.deleteOnExit();
 					final String toPath = toFile.getAbsolutePath();
-					App.getProv().getThread(new RunnableWithLazyProxyDirTreeDbProvider() {
+					DeepFolderView.getProv().getThread(new RunnableWithLazyProxyDirTreeDbProvider() {
 						private boolean isCopySuccessful = false;
 						@Override
 						public void openingHook() {

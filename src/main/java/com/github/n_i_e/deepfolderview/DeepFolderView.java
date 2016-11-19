@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Display;
 
 import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDbProvider;
 
-public class App
+public class DeepFolderView
 {
 	private static LazyProxyDirTreeDbProvider prov = new LazyProxyDirTreeDbProvider();
 	public static LazyProxyDirTreeDbProvider getProv() {
