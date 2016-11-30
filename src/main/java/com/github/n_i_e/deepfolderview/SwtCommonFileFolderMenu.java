@@ -68,7 +68,7 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 		}
 	}
 
-	protected NavigatableArrayList<Location> location;
+	protected NavigatableList<Location> location;
 
 	public String getLocationPath() {
 		return location.get().getPathString();

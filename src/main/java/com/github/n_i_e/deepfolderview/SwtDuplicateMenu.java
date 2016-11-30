@@ -128,7 +128,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 		shell.open();
 		shell.layout();
 
-		location = new NavigatableArrayList<Location>();
+		location = new NavigatableList<Location>();
 		location.add(new Location());
 	}
 

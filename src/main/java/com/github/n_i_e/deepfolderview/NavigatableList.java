@@ -16,34 +16,35 @@
 
 package com.github.n_i_e.deepfolderview;
 
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.ArrayList;
+import java.util.List;
 
-public class NavigatableArrayList<T> extends CopyOnWriteArrayList<T> {
+public class NavigatableList<T> {
+	private List<T> list = new ArrayList<T>();
 	int cursor = -1;
 
-	@Override
-	public boolean add(T element) {
-		while (size() > cursor + 1) {
-			remove(cursor+1);
+	public synchronized boolean add(T element) {
+		while (list.size() > cursor + 1) {
+			list.remove(cursor+1);
 		}
-		super.add(element);
+		list.add(element);
 		cursor++;
 		return true;
 	}
 
-	public void navigateNext() {
-		if (size() > cursor+1) {
+	public synchronized void navigateNext() {
+		if (list.size() > cursor+1) {
 			cursor++;
 		}
 	}
 
-	public void navigatePrevious() {
+	public synchronized void navigatePrevious() {
 		if (cursor > 0) {
 			cursor--;
 		}
 	}
 
-	public T get() {
-		return get(cursor);
+	public synchronized T get() {
+		return list.get(cursor);
 	}
 }
