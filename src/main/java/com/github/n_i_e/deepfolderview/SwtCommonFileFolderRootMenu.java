@@ -33,21 +33,17 @@ public abstract class SwtCommonFileFolderRootMenu extends SwtCommonFileFolderRoo
 	private RunnableWithLazyProxyDirTreeDbProviderList scenariolist = new RunnableWithLazyProxyDirTreeDbProviderList();
 
 	protected void refresh(RunnableWithLazyProxyDirTreeDbProvider scenario) {
-		if (thread == null || !thread.isAlive()) {
-			scenariolist.add(scenario);
+		scenariolist.add(scenario);
+		if (scenariolist.size() == 1) {
+			Debug.writelog("refresh mode 1 size=" + scenariolist.size());
 			thread = DeepFolderView.getProv().getThread(scenariolist);
 			thread.start();
 		} else {
-			scenariolist.add(scenario);
-			if (thread.isAlive()) {
-				if (scenariolist.size() > 0) {
-					thread.interrupt();
-					thread.setTopPriority();
-				}
+			if (thread != null && thread.isAlive()) {
+				Debug.writelog("refresh mode 2 size=" + scenariolist.size());
+				thread.interrupt();
 			} else {
-				if (scenariolist.size() == 0) {
-					scenariolist.add(scenario);
-				}
+				Debug.writelog("refresh mode 3 size=" + scenariolist.size());
 				thread = DeepFolderView.getProv().getThread(scenariolist);
 				thread.start();
 			}
