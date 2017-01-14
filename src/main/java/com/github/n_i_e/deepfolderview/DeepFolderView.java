@@ -18,7 +18,7 @@ package com.github.n_i_e.deepfolderview;
 
 import org.eclipse.swt.widgets.Display;
 
-import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDBProvider;
+import com.github.n_i_e.dirtreedb.lazy.LazyProxyDirTreeDBProvider;
 
 public class DeepFolderView
 {

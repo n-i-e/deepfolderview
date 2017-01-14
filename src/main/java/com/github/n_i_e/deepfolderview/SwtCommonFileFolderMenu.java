@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import com.github.n_i_e.dirtreedb.DBPathEntry;
 import com.github.n_i_e.dirtreedb.PathEntry;
-import com.github.n_i_e.dirtreedb.RunnableWithLazyProxyDirTreeDBProvider;
+import com.github.n_i_e.dirtreedb.lazy.RunnableWithLazyProxyDirTreeDBProvider;
 
 public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMenu {
 	protected List<DBPathEntry> pathentrylist = new ArrayList<DBPathEntry>();

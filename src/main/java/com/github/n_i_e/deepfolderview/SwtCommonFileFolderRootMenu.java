@@ -23,9 +23,9 @@ import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
-import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDBAccessorThread;
-import com.github.n_i_e.dirtreedb.RunnableWithLazyProxyDirTreeDBProvider;
-import com.github.n_i_e.dirtreedb.RunnableWithLazyProxyDirTreeDBProviderList;
+import com.github.n_i_e.dirtreedb.lazy.LazyProxyDirTreeDBAccessorThread;
+import com.github.n_i_e.dirtreedb.lazy.RunnableWithLazyProxyDirTreeDBProvider;
+import com.github.n_i_e.dirtreedb.lazy.RunnableWithLazyProxyDirTreeDBProviderList;
 
 public abstract class SwtCommonFileFolderRootMenu extends SwtCommonFileFolderRootTaskTrayIconMenu {
 

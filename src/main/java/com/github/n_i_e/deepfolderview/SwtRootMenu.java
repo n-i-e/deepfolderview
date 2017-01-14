@@ -654,9 +654,9 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 				}
 
 				try {
-					com.github.n_i_e.dirtreedb.LazyProxyDirTreeDB.Dispatcher disp = getDB().getDispatcher();
-					disp.setList(com.github.n_i_e.dirtreedb.LazyProxyDirTreeDB.Dispatcher.NONE);
-					disp.setCsum(com.github.n_i_e.dirtreedb.LazyProxyDirTreeDB.Dispatcher.NONE);
+					com.github.n_i_e.dirtreedb.lazy.LazyProxyDirTreeDB.Dispatcher disp = getDB().getDispatcher();
+					disp.setList(com.github.n_i_e.dirtreedb.lazy.LazyProxyDirTreeDB.Dispatcher.NONE);
+					disp.setCsum(com.github.n_i_e.dirtreedb.lazy.LazyProxyDirTreeDB.Dispatcher.NONE);
 					disp.setNoReturn(true);
 					ResultSet rs = ps.executeQuery();
 					writeStatusBar("Listing...");

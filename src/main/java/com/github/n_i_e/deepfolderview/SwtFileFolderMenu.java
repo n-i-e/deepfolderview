@@ -59,11 +59,11 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.github.n_i_e.dirtreedb.Assertion;
 import com.github.n_i_e.dirtreedb.DBPathEntry;
-import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDB;
-import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDB.Dispatcher;
 import com.github.n_i_e.dirtreedb.PathEntry;
 import com.github.n_i_e.dirtreedb.PreferenceRW;
-import com.github.n_i_e.dirtreedb.RunnableWithLazyProxyDirTreeDBProvider;
+import com.github.n_i_e.dirtreedb.lazy.LazyProxyDirTreeDB;
+import com.github.n_i_e.dirtreedb.lazy.RunnableWithLazyProxyDirTreeDBProvider;
+import com.github.n_i_e.dirtreedb.lazy.LazyProxyDirTreeDB.Dispatcher;
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.SimpleDateFormat;
 

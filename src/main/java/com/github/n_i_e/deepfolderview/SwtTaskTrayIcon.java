@@ -45,7 +45,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.github.n_i_e.dirtreedb.DBPathEntry;
 import com.github.n_i_e.dirtreedb.MessageWriter;
-import com.github.n_i_e.dirtreedb.RunnableWithLazyProxyDirTreeDBProvider;
+import com.github.n_i_e.dirtreedb.lazy.RunnableWithLazyProxyDirTreeDBProvider;
 
 public class SwtTaskTrayIcon extends SwtCommonFileFolderRootTaskTrayIconMenu implements MessageWriter {
 	private final TrayItem icon;
