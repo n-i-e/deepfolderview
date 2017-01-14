@@ -1,40 +1,7 @@
-deepfolderview
+#deepfolderview
 
-#これは何か
+Deepfolderview is an application that searches the file system like UNIX's du and saves it in the database.
+See [Wiki](https://github.com/n-i-e/deepfolderview/wiki) for details.
 
-ファイルシステムのディレクトリ構造を階層的に探索するデスクトップアプリです。
-
-起動するとタスクトレイに常駐し、ファイルシステムを探索してデータを蓄積していきます。この蓄積を利用して、Linuxのduコマンドやfindコマンド、Windowsのtreeコマンドのような階層的なファイル名検索を高速に行うことができます。
-
-探索の対象は、圧縮フォルダ（zip, tar, lzh等）の中にまで及びます。
-
-圧縮フォルダの中のパスは、例えば以下のように「\」と「/」が混在したパスとして表現されます。
-
-C:\Temp\myzipfile.zip/document/README.txt
-
-圧縮フォルダの中にさらに圧縮フォルダがあるような場合にも、その中のファイル名まで階層的に探索します。
-
-#ファイル名検索以外に何ができるのか。
-
-Linuxのduコマンドのように、フォルダの大きさを概算的に知ることができます。
-また、同一内容のファイルが複数個所にある場合、その場所を知ることができます。
-一杯になってしまったストレージを整理する際に、支援ツールとして活用できます。
-
-#共有フォルダの中は探索できるのか。
-
-はい、できます。ドライブレターでもUNCでも指定できます。
-
-#動作は高速か。
-
-残念ながら、それほど高速ではありません。実際のファイル更新にかなり遅れてついてくるイメージになります。
-PCに入力操作を何もせずに放っておくと、その期間に探索と更新が行われまずので、何もしない時間をできるだけ取ることをお勧めします。
-内部で利用するデータベースをSQLite3, Access MDB, HSQLDB, H2 Databaseの4種から指定できます。SQLite3が一番速いようです。
-
-#動作環境
-
-Windows10で動作確認しております。配布版zipファイルには32bit版JREが同梱されています。
-Javaではありますが、MacやLinuxでは動きません。
-
-Q. 64bit版JREでは動くのか。
-A. 今のところ動きません。
+This software is distrbuted under the Apache 2.0 license.
 
