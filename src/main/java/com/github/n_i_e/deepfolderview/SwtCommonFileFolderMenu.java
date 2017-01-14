@@ -29,17 +29,17 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
-import com.github.n_i_e.dirtreedb.DbPathEntry;
+import com.github.n_i_e.dirtreedb.DBPathEntry;
 import com.github.n_i_e.dirtreedb.PathEntry;
-import com.github.n_i_e.dirtreedb.RunnableWithLazyProxyDirTreeDbProvider;
+import com.github.n_i_e.dirtreedb.RunnableWithLazyProxyDirTreeDBProvider;
 
 public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMenu {
-	protected List<DbPathEntry> pathentrylist = new ArrayList<DbPathEntry>();
+	protected List<DBPathEntry> pathentrylist = new ArrayList<DBPathEntry>();
 
 	protected class Location {
 		private String pathString = "";
 		private long pathId = 0L;
-		private DbPathEntry pathEntry = null;
+		private DBPathEntry pathEntry = null;
 		private String searchString = null;
 
 		public synchronized String getPathString() {
@@ -54,10 +54,10 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 		public synchronized void setPathId(long pathId) {
 			this.pathId = pathId;
 		}
-		public synchronized DbPathEntry getPathEntry() {
+		public synchronized DBPathEntry getPathEntry() {
 			return pathEntry;
 		}
-		public synchronized void setPathEntry(DbPathEntry pathEntry) {
+		public synchronized void setPathEntry(DBPathEntry pathEntry) {
 			this.pathEntry = pathEntry;
 		}
 		public synchronized String getSearchString() {
@@ -78,7 +78,7 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 		return location.get().getPathId();
 	}
 
-	public DbPathEntry getLocationPathEntry() {
+	public DBPathEntry getLocationPathEntry() {
 		return location.get().getPathEntry();
 	}
 
@@ -95,8 +95,8 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 	}
 
 	protected void onCopyToSelected() {
-		DbPathEntry p0 = getSelectedPathEntry();
-		final DbPathEntry p;
+		DBPathEntry p0 = getSelectedPathEntry();
+		final DBPathEntry p;
 		if (p0 == null) {
 			p = getLocationPathEntry();
 		} else {
@@ -132,7 +132,7 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 				}
 			} else {
 				assert(p.isCompressedFile());
-				DeepFolderView.getProv().getThread(new RunnableWithLazyProxyDirTreeDbProvider() {
+				DeepFolderView.getProv().getThread(new RunnableWithLazyProxyDirTreeDBProvider() {
 
 					private boolean isCopySuccessful = false;
 					@Override
@@ -144,7 +144,7 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 					public void run() throws SQLException, InterruptedException {
 						File f = new File(toPath);
 						try {
-							Files.copy(getDb().getInputStream(p) , f.toPath(), StandardCopyOption.REPLACE_EXISTING);
+							Files.copy(getDB().getInputStream(p) , f.toPath(), StandardCopyOption.REPLACE_EXISTING);
 						} catch (IOException e) {
 							isCopySuccessful = false;
 						}
@@ -171,7 +171,7 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 	protected void onRunSelected() {
 		final Desktop desktop = Desktop.getDesktop();
 
-		final DbPathEntry entry = getSelectedPathEntry();
+		final DBPathEntry entry = getSelectedPathEntry();
 		if (entry == null) {
 			writeMessageBox("No file selected to run!");
 			return;
@@ -197,7 +197,7 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 				} else {
 					toFile.deleteOnExit();
 					final String toPath = toFile.getAbsolutePath();
-					DeepFolderView.getProv().getThread(new RunnableWithLazyProxyDirTreeDbProvider() {
+					DeepFolderView.getProv().getThread(new RunnableWithLazyProxyDirTreeDBProvider() {
 						private boolean isCopySuccessful = false;
 						@Override
 						public void openingHook() {
@@ -208,7 +208,7 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 						public void run() throws SQLException, InterruptedException {
 							InputStream inf;
 							try {
-								inf = getDb().getInputStream(entry);
+								inf = getDB().getInputStream(entry);
 								Files.copy(inf , toFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 								inf.close();
 								desktop.open(new File(toPath));
@@ -238,7 +238,7 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 		}
 	}
 
-	protected DbPathEntry getSelectedPathEntry() {
+	protected DBPathEntry getSelectedPathEntry() {
 		int row = getTable().getSelectionIndex();
 		try {
 			return pathentrylist.get(row);

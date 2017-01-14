@@ -60,7 +60,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.github.n_i_e.dirtreedb.Assertion;
-import com.github.n_i_e.dirtreedb.DbPathEntry;
+import com.github.n_i_e.dirtreedb.DBPathEntry;
 import com.github.n_i_e.dirtreedb.PathEntry;
 import com.github.n_i_e.dirtreedb.PreferenceRW;
 import com.ibm.icu.text.NumberFormat;
@@ -422,7 +422,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 	}
 
 	protected void onOpenInNewWindowSelected(SelectionEvent e) {
-		DbPathEntry p = getSelectedPathEntry();
+		DBPathEntry p = getSelectedPathEntry();
 		if (p == null) {
 			new SwtRootMenu().setSearchStringAndRefresh("");
 		} else {
@@ -433,7 +433,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 	protected void onDeleteSelected(SelectionEvent e) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				DbPathEntry p = getSelectedPathEntry();
+				DBPathEntry p = getSelectedPathEntry();
 				MessageBox err = new MessageBox(shell,SWT.OK|SWT.CANCEL);
 				err.setMessage("ルートフォルダ " + p.getPath() + " をデータベースから削除します。よろしいですか？");
 				int okCancel = err.open();
@@ -467,7 +467,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 					if (! "\\".equals(newroot.substring(newroot.length()-1))) {
 						newroot += "\\";
 					}
-					for (DbPathEntry p: pathentrylist) {
+					for (DBPathEntry p: pathentrylist) {
 						if (p.getPath().equals(newroot)) {
 							writeMessageBox("フォルダ " + newroot + " は既に存在します。");
 							return;
@@ -550,9 +550,9 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 	}
 
 
-	private List<DbPathEntry> pathentrylist = new ArrayList<DbPathEntry>();
+	private List<DBPathEntry> pathentrylist = new ArrayList<DBPathEntry>();
 
-	private DbPathEntry getSelectedPathEntry() {
+	private DBPathEntry getSelectedPathEntry() {
 		int row = table.getSelectionIndex();
 		if (row >= 0) {
 			return pathentrylist.get(row);
@@ -575,11 +575,11 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 		refresh(null, null);
 	}
 
-	private void refresh(String newroot, DbPathEntry deleteroot) {
+	private void refresh(String newroot, DBPathEntry deleteroot) {
 		refresh(new Scenario(newroot, deleteroot));
 	}
 
-	private void deleteRootFolderAndRefresh(DbPathEntry deleteroot) {
+	private void deleteRootFolderAndRefresh(DBPathEntry deleteroot) {
 		refresh(null, deleteroot);
 	}
 
@@ -590,9 +590,9 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 	class Scenario extends SwtCommonFileFolderRootMenu.Scenario {
 
 		private String _newroot = null;
-		private DbPathEntry _deleteroot = null;
+		private DBPathEntry _deleteroot = null;
 
-		Scenario(String newroot, DbPathEntry deleteroot) {
+		Scenario(String newroot, DBPathEntry deleteroot) {
 			_newroot = newroot;
 			_deleteroot = deleteroot;
 		}
@@ -604,8 +604,8 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 				cleanupTable();
 				if (_newroot != null) {
 					try {
-						getDb().insert(null, new PathEntry(new File(_newroot)));
-						getDb().consumeUpdateQueue(0);
+						getDB().insert(null, new PathEntry(new File(_newroot)));
+						getDB().consumeUpdateQueue(0);
 					} catch (IOException e) {
 						String msg = String.format("Error: insert root failed for IOException: %s", _newroot);
 						Debug.writelog(msg);
@@ -621,8 +621,8 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 				if (_deleteroot != null) {
 					Assertion.assertAssertionError(_deleteroot.getPathId() == _deleteroot.getRootId());
 					Assertion.assertAssertionError(_deleteroot.getParentId() == 0L);
-					getDb().delete(_deleteroot);
-					getDb().consumeUpdateQueue(0);
+					getDB().delete(_deleteroot);
+					getDB().consumeUpdateQueue(0);
 				}
 
 				writeStatusBar("Querying...");
@@ -632,7 +632,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 				if (getSearchString() == null || "".equals(getSearchString())) {
 					String sql = "SELECT * FROM directory WHERE type=0 AND parentid=0 ORDER BY " + order;
 					Debug.writelog(sql);
-					ps = getDb().prepareStatement(sql);
+					ps = getDB().prepareStatement(sql);
 				} else {
 					ArrayList<String> p = new ArrayList<String> ();
 					for (String s: getSearchString().split(" ")) {
@@ -642,7 +642,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 					}
 					String sql = "SELECT * FROM directory WHERE type=0 AND parentid=0 AND (" + String.join(" OR ", p) + ") ORDER BY " + order;
 					Debug.writelog(sql);
-					ps = getDb().prepareStatement(sql);
+					ps = getDB().prepareStatement(sql);
 					int c = 1;
 					for (String s: getSearchString().split(" ")) {
 						if (! "".equals(s)) {
@@ -654,9 +654,9 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 				}
 
 				try {
-					com.github.n_i_e.dirtreedb.LazyProxyDirTreeDb.Dispatcher disp = getDb().getDispatcher();
-					disp.setList(com.github.n_i_e.dirtreedb.LazyProxyDirTreeDb.Dispatcher.NONE);
-					disp.setCsum(com.github.n_i_e.dirtreedb.LazyProxyDirTreeDb.Dispatcher.NONE);
+					com.github.n_i_e.dirtreedb.LazyProxyDirTreeDB.Dispatcher disp = getDB().getDispatcher();
+					disp.setList(com.github.n_i_e.dirtreedb.LazyProxyDirTreeDB.Dispatcher.NONE);
+					disp.setCsum(com.github.n_i_e.dirtreedb.LazyProxyDirTreeDB.Dispatcher.NONE);
 					disp.setNoReturn(true);
 					ResultSet rs = ps.executeQuery();
 					writeStatusBar("Listing...");
@@ -664,7 +664,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 					int count = 0;
 					try {
 						while (rs.next()) {
-							final DbPathEntry p1 = getDb().rsToPathEntry(rs);
+							final DBPathEntry p1 = getDB().rsToPathEntry(rs);
 							final long maximumsize = new File(p1.getPath()).getTotalSpace();
 							addRow(p1, maximumsize);
 							try {
@@ -695,7 +695,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 			});
 		}
 
-		protected void addRow(final DbPathEntry entry, final long maximumsize) throws WindowDisposedException {
+		protected void addRow(final DBPathEntry entry, final long maximumsize) throws WindowDisposedException {
 			if (table.isDisposed()) {
 				throw new WindowDisposedException("!! Window disposed at addRow");
 			}

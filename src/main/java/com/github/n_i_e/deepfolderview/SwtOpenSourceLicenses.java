@@ -79,12 +79,12 @@ public class SwtOpenSourceLicenses extends Dialog {
 		TabFolder tabFolder = new TabFolder(shell, SWT.BOTTOM);
 		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		
-		TabItem tbtmDirTreeDb = new TabItem(tabFolder, SWT.NONE);
-		tbtmDirTreeDb.setText("DirTreeDB (This Program)");
+		TabItem tbtmDirTreeDB = new TabItem(tabFolder, SWT.NONE);
+		tbtmDirTreeDB.setText("DirTreeDB (This Program)");
 		
-		StyledText styledTextDirTreeDb = new StyledText(tabFolder, SWT.BORDER | SWT.WRAP);
-		styledTextDirTreeDb.setText("Copyright 2015 Namihiko Matsumura (https://github.com/n-i-e/)\r\n\r\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at\r\n\r\n    http://www.apache.org/licenses/LICENSE-2.0\r\n\r\nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.");
-		tbtmDirTreeDb.setControl(styledTextDirTreeDb);
+		StyledText styledTextDirTreeDB = new StyledText(tabFolder, SWT.BORDER | SWT.WRAP);
+		styledTextDirTreeDB.setText("Copyright 2015 Namihiko Matsumura (https://github.com/n-i-e/)\r\n\r\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at\r\n\r\n    http://www.apache.org/licenses/LICENSE-2.0\r\n\r\nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.");
+		tbtmDirTreeDB.setControl(styledTextDirTreeDB);
 
 		TabItem tbtmApacheCommons = new TabItem(tabFolder, SWT.NONE);
 		tbtmApacheCommons.setText("Apache Commons (Compress / Lang / Logging)");
@@ -120,12 +120,12 @@ public class SwtOpenSourceLicenses extends Dialog {
 		styledTextJackcess.setText("Copyright 2015  Health Market Science, Inc.\r\n\r\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at\r\n\r\n    http://www.apache.org/licenses/LICENSE-2.0\r\n\r\nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.");
 		tbtmJackcess.setControl(styledTextJackcess);
 
-		TabItem tbtmHSqlDb = new TabItem(tabFolder, SWT.NONE);
-		tbtmHSqlDb.setText("HSQLDB");
+		TabItem tbtmHSQLDB = new TabItem(tabFolder, SWT.NONE);
+		tbtmHSQLDB.setText("HSQLDB");
 		
-		StyledText styledTextHSqlDb = new StyledText(tabFolder, SWT.BORDER | SWT.WRAP);
-		styledTextHSqlDb.setText("Copyright (c) 1995-2000 by the Hypersonic SQL Group.\r\nAll rights reserved. \r\nRedistribution and use in source and binary forms, with or without\r\nmodification, are permitted provided that the following conditions are met:\r\n\r\nRedistributions of source code must retain the above copyright notice, this\r\nlist of conditions and the following disclaimer.\r\n\r\nRedistributions in binary form must reproduce the above copyright notice,\r\nthis list of conditions and the following disclaimer in the documentation\r\nand/or other materials provided with the distribution.\r\n\r\nNeither the name of the Hypersonic SQL Group nor the names of its\r\ncontributors may be used to endorse or promote products derived from this\r\nsoftware without specific prior written permission.\r\n\r\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\"\r\nAND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE\r\nIMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE\r\nARE DISCLAIMED. IN NO EVENT SHALL THE HYPERSONIC SQL GROUP, \r\nOR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, \r\nEXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, \r\nPROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\r\nLOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\r\nON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\r\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\r\nSOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\r\n\r\nThis software consists of voluntary contributions made by many individuals on behalf of the\r\nHypersonic SQL Group.");
-		tbtmHSqlDb.setControl(styledTextHSqlDb);
+		StyledText styledTextHSQLDB = new StyledText(tabFolder, SWT.BORDER | SWT.WRAP);
+		styledTextHSQLDB.setText("Copyright (c) 1995-2000 by the Hypersonic SQL Group.\r\nAll rights reserved. \r\nRedistribution and use in source and binary forms, with or without\r\nmodification, are permitted provided that the following conditions are met:\r\n\r\nRedistributions of source code must retain the above copyright notice, this\r\nlist of conditions and the following disclaimer.\r\n\r\nRedistributions in binary form must reproduce the above copyright notice,\r\nthis list of conditions and the following disclaimer in the documentation\r\nand/or other materials provided with the distribution.\r\n\r\nNeither the name of the Hypersonic SQL Group nor the names of its\r\ncontributors may be used to endorse or promote products derived from this\r\nsoftware without specific prior written permission.\r\n\r\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\"\r\nAND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE\r\nIMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE\r\nARE DISCLAIMED. IN NO EVENT SHALL THE HYPERSONIC SQL GROUP, \r\nOR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, \r\nEXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, \r\nPROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\r\nLOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\r\nON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\r\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\r\nSOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\r\n\r\nThis software consists of voluntary contributions made by many individuals on behalf of the\r\nHypersonic SQL Group.");
+		tbtmHSQLDB.setControl(styledTextHSQLDB);
 		
 		TabItem tbtmLhaLibraryForJava = new TabItem(tabFolder, SWT.NONE);
 		tbtmLhaLibraryForJava.setText("LHA Library for Java");

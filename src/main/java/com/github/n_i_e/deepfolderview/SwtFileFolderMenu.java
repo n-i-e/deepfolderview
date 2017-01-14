@@ -58,12 +58,12 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.github.n_i_e.dirtreedb.Assertion;
-import com.github.n_i_e.dirtreedb.DbPathEntry;
-import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDb;
-import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDb.Dispatcher;
+import com.github.n_i_e.dirtreedb.DBPathEntry;
+import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDB;
+import com.github.n_i_e.dirtreedb.LazyProxyDirTreeDB.Dispatcher;
 import com.github.n_i_e.dirtreedb.PathEntry;
 import com.github.n_i_e.dirtreedb.PreferenceRW;
-import com.github.n_i_e.dirtreedb.RunnableWithLazyProxyDirTreeDbProvider;
+import com.github.n_i_e.dirtreedb.RunnableWithLazyProxyDirTreeDBProvider;
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.SimpleDateFormat;
 
@@ -636,14 +636,14 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 	}
 
 	protected void onOpenSelected(SelectionEvent e) {
-		DbPathEntry entry = getSelectedPathEntry();
+		DBPathEntry entry = getSelectedPathEntry();
 		if (entry != null) {
 			setLocationAndRefresh(entry);
 		}
 	}
 
 	protected void onOpenInNewWindowSelected(SelectionEvent e) {
-		DbPathEntry p = getSelectedPathEntry();
+		DBPathEntry p = getSelectedPathEntry();
 		if (p == null) {
 			p = location.get().getPathEntry();
 		}
@@ -659,7 +659,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 	}
 
 	protected void onOpenDuplicateDetailsSelected(SelectionEvent e) {
-		DbPathEntry p = getSelectedPathEntry();
+		DBPathEntry p = getSelectedPathEntry();
 		if (p == null) {
 			p = location.get().getPathEntry();
 		}
@@ -685,7 +685,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 	}
 
 	protected void onUpperFolderSelected(SelectionEvent e) {
-		DbPathEntry p = location.get().getPathEntry();
+		DBPathEntry p = location.get().getPathEntry();
 		if (p != null && p.getParentId() != 0L) {
 			setLocationAndRefresh(p.getParentId());
 		} else {
@@ -813,7 +813,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 	 * setLocationAndRefresh and related
 	 */
 
-	public void setLocationAndRefresh(final DbPathEntry entry) {
+	public void setLocationAndRefresh(final DBPathEntry entry) {
 		Assertion.assertNullPointerException(entry != null);
 		Assertion.assertNullPointerException(location != null);
 		Location oldloc = location.get();
@@ -842,12 +842,12 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 			newloc.setPathId(id);
 			location.add(newloc);
 		}
-		refresh(new RunnableWithLazyProxyDirTreeDbProvider() {
+		refresh(new RunnableWithLazyProxyDirTreeDBProvider() {
 			@Override
 			public void run() throws SQLException, InterruptedException {
 				Debug.writelog("-- SwtFileFolderMenu SetLocationAndRefresh LOCAL PATTERN (id based) --");
 				Location loc = location.get();
-				DbPathEntry p = getDb().getDbPathEntryByPathId(loc.getPathId());
+				DBPathEntry p = getDB().getDBPathEntryByPathId(loc.getPathId());
 				if (p != null) {
 					loc.setPathEntry(p);
 					loc.setPathString(p.getPath());
@@ -891,7 +891,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 
 				writeProgress(50);
 				if (loc.getPathString() != null) {
-					DbPathEntry p = getDb().getDbPathEntryByPath(loc.getPathString());
+					DBPathEntry p = getDB().getDBPathEntryByPath(loc.getPathString());
 					if (p != null) {
 						loc.setPathEntry(p);
 						loc.setPathId(p.getPathId());
@@ -905,7 +905,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 					}
 				} else if (loc.getPathId() != 0L) {
 					Debug.writelog("-- SwtFileFolderMenu PREPROCESS PATTERN 3 (id based) --");
-					DbPathEntry p = getDb().getDbPathEntryByPathId(loc.getPathId());
+					DBPathEntry p = getDB().getDBPathEntryByPathId(loc.getPathId());
 					assert(p != null);
 					setLocationAndRefresh(p);
 					return;
@@ -915,7 +915,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 			}
 
 			try {
-				getDb().threadHook();
+				getDB().threadHook();
 				cleanupTable();
 
 				ArrayList<String> typelist = new ArrayList<String> ();
@@ -933,14 +933,14 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 				}
 				String typeWhere = typelist.size() == 0 ? "" : String.join(" OR ", typelist);
 
-				getDb().threadHook();
+				getDB().threadHook();
 				writeStatusBar("Querying...");
 				writeProgress(70);
 
-				String searchSubSql;
+				String searchSubSQL;
 				ArrayList<String> searchStringElement = new ArrayList<String> ();
 				if (loc.getSearchString() == null || "".equals(loc.getSearchString())) {
-					searchSubSql = "";
+					searchSubSQL = "";
 				} else {
 					ArrayList<String> p = new ArrayList<String> ();
 					for (String s: loc.getSearchString().split(" ")) {
@@ -949,17 +949,17 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 							searchStringElement.add(s);
 						}
 					}
-					searchSubSql = " AND (" + String.join(" AND ", p) + ")";
+					searchSubSQL = " AND (" + String.join(" AND ", p) + ")";
 				}
-				getDb().threadHook();
-				DbPathEntry locationPathEntry = null;
+				getDB().threadHook();
+				DBPathEntry locationPathEntry = null;
 				PreparedStatement ps;
 				if (loc.getPathString() == null || "".equals(loc.getPathString())) {
-					String sql = "SELECT * FROM directory AS d1 WHERE (" + typeWhere + ") " + searchSubSql
+					String sql = "SELECT * FROM directory AS d1 WHERE (" + typeWhere + ") " + searchSubSQL
 							+ " AND (parentid=0 OR EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid))"
 							+ " ORDER BY " + order;
 					Debug.writelog(sql);
-					ps = getDb().prepareStatement(sql);
+					ps = getDB().prepareStatement(sql);
 					int c = 1;
 					for (String s: searchStringElement) {
 						ps.setString(c, "%" + s + "%");
@@ -967,12 +967,12 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 						c++;
 					}
 				} else if ((locationPathEntry = loc.getPathEntry()) != null) {
-					String sql = "SELECT * FROM directory AS d1 WHERE (" + typeWhere + ") " + searchSubSql
+					String sql = "SELECT * FROM directory AS d1 WHERE (" + typeWhere + ") " + searchSubSQL
 							+ " AND (pathid=? OR EXISTS (SELECT * FROM upperlower WHERE upper=? AND lower=pathid))"
 							+ " AND (parentid=0 OR EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid))"
 							+ " ORDER BY " + order;
 					Debug.writelog(sql);
-					ps = getDb().prepareStatement(sql);
+					ps = getDB().prepareStatement(sql);
 					int c = 1;
 					for (String s: searchStringElement) {
 						ps.setString(c, "%" + s + "%");
@@ -983,12 +983,12 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 					ps.setLong(c++, locationPathEntry.getPathId());
 					Debug.writelog(locationPathEntry.getPath());
 				} else {
-					String sql = "SELECT * FROM directory AS d1 WHERE (" + typeWhere + ") " + searchSubSql
+					String sql = "SELECT * FROM directory AS d1 WHERE (" + typeWhere + ") " + searchSubSQL
 							+ " AND path LIKE ?"
 							+ " AND (parentid=0 OR EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid))"
 							+ " ORDER BY " + order;
 					Debug.writelog(sql);
-					ps = getDb().prepareStatement(sql);
+					ps = getDB().prepareStatement(sql);
 					int c = 1;
 					for (String s: searchStringElement) {
 						ps.setString(c, "%" + s + "%");
@@ -1000,21 +1000,21 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 				}
 
 				try {
-					LazyProxyDirTreeDb.Dispatcher disp = getDb().getDispatcher();
+					LazyProxyDirTreeDB.Dispatcher disp = getDB().getDispatcher();
 					disp.setList(Dispatcher.NONE);
 					disp.setCsum(Dispatcher.NONE);
 
 					ResultSet rs = ps.executeQuery();
 					try {
-						getDb().threadHook();
+						getDB().threadHook();
 						Debug.writelog("QUERY FINISHED");
 						writeStatusBar("Listing...");
 						writeProgress(90);
 
 						int count = 0;
 						while (rs.next()) {
-							getDb().threadHook();
-							DbPathEntry p1 = getDb().rsToPathEntry(rs);
+							getDB().threadHook();
+							DBPathEntry p1 = getDB().rsToPathEntry(rs);
 							Assertion.assertAssertionError(p1 != null);
 							Assertion.assertAssertionError(p1.getPath() != null);
 							if (locationPathEntry != null) {
@@ -1031,7 +1031,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 							}
 							if (p2 == null) {
 								addRow(p1, rs.getInt("duplicate"), rs.getLong("dedupablesize"), true);
-								getDb().unsetClean(p1.getParentId());
+								getDB().unsetClean(p1.getParentId());
 							} else {
 								Assertion.assertAssertionError(p1.getPath().equals(p2.getPath()),
 										"!! " + p1.getPath() + " != " + p2.getPath());
@@ -1040,7 +1040,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 									p1.setSize(p2.getSize());
 									p1.setCompressedSize(p2.getCompressedSize());
 									p1.clearCsum();
-									getDb().unsetClean(p1.getParentId());
+									getDB().unsetClean(p1.getParentId());
 								}
 								addRow(p1, rs.getInt("duplicate"), rs.getLong("dedupablesize"), false);
 							}
@@ -1069,7 +1069,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 			});
 		}
 
-		protected void addRow(final DbPathEntry entry, final int duplicate,
+		protected void addRow(final DBPathEntry entry, final int duplicate,
 				final long dedupablesize, final boolean grayout) throws WindowDisposedException {
 			if (table.isDisposed()) {
 				throw new WindowDisposedException("!! Window disposed at addRow");

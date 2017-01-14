@@ -43,9 +43,9 @@ import org.eclipse.swt.widgets.ToolTip;
 import org.eclipse.swt.widgets.TrayItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import com.github.n_i_e.dirtreedb.DbPathEntry;
+import com.github.n_i_e.dirtreedb.DBPathEntry;
 import com.github.n_i_e.dirtreedb.MessageWriter;
-import com.github.n_i_e.dirtreedb.RunnableWithLazyProxyDirTreeDbProvider;
+import com.github.n_i_e.dirtreedb.RunnableWithLazyProxyDirTreeDBProvider;
 
 public class SwtTaskTrayIcon extends SwtCommonFileFolderRootTaskTrayIconMenu implements MessageWriter {
 	private final TrayItem icon;
@@ -168,12 +168,12 @@ public class SwtTaskTrayIcon extends SwtCommonFileFolderRootTaskTrayIconMenu imp
 				});
 				if (d.open() == Window.OK) {
 					final String runString = d.getValue();
-					DeepFolderView.getProv().getThread(new RunnableWithLazyProxyDirTreeDbProvider() {
+					DeepFolderView.getProv().getThread(new RunnableWithLazyProxyDirTreeDBProvider() {
 
 						@Override
 						public void run() throws SQLException, InterruptedException {
 							Desktop desktop = Desktop.getDesktop();
-							DbPathEntry entry = getDb().getDbPathEntryByPath(runString);
+							DBPathEntry entry = getDB().getDBPathEntryByPath(runString);
 							if (entry == null) {
 								Display.getDefault().asyncExec(new Runnable() {
 									public void run() {
@@ -206,7 +206,7 @@ public class SwtTaskTrayIcon extends SwtCommonFileFolderRootTaskTrayIconMenu imp
 									} else {
 										toFile.deleteOnExit();
 										final String toPath = toFile.getAbsolutePath();
-										InputStream inf = getDb().getInputStream(entry);
+										InputStream inf = getDB().getInputStream(entry);
 										Files.copy(inf , toFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 										inf.close();
 										toFile.setLastModified(entry.getDateLastModified());

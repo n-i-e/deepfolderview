@@ -118,7 +118,7 @@ public class SwtConfigure extends Dialog {
 		@SuppressWarnings("unused") Label lblDatabaseFilePath = formToolkit.createLabel(compositeFile, Messages.SwtConfigure_lblDatabaseFilePath_text, SWT.NONE);
 		new Label(compositeFile, SWT.NONE);
 
-		txtDatabaseFilePath = formToolkit.createText(compositeFile, PreferenceRW.getDbFilePath(), SWT.NONE);
+		txtDatabaseFilePath = formToolkit.createText(compositeFile, PreferenceRW.getDBFilePath(), SWT.NONE);
 		txtDatabaseFilePath.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
 				newDatabaseFilePath = txtDatabaseFilePath.getText();
@@ -287,7 +287,7 @@ public class SwtConfigure extends Dialog {
 
 	protected void onOkSelected() {
 		if (newDatabaseFilePath != null) {
-			PreferenceRW.setDbFilePath(newDatabaseFilePath);
+			PreferenceRW.setDBFilePath(newDatabaseFilePath);
 		}
 		if (newWindowsIdleTime >= 0) {
 			PreferenceRW.setWindowsIdleSeconds(newWindowsIdleTime);
