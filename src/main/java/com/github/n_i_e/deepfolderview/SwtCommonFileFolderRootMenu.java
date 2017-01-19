@@ -25,12 +25,13 @@ import org.eclipse.swt.widgets.TableColumn;
 
 import com.github.n_i_e.dirtreedb.lazy.LazyProxyDirTreeDBAccessorThread;
 import com.github.n_i_e.dirtreedb.lazy.RunnableWithLazyProxyDirTreeDBProvider;
-import com.github.n_i_e.dirtreedb.lazy.RunnableWithLazyProxyDirTreeDBProviderList;
+import com.github.n_i_e.dirtreedb.lazy.RunnableWithLazyProxyDirTreeDBProviderPlusOneAhead;
 
 public abstract class SwtCommonFileFolderRootMenu extends SwtCommonFileFolderRootTaskTrayIconMenu {
 
 	private LazyProxyDirTreeDBAccessorThread thread = null;
-	private RunnableWithLazyProxyDirTreeDBProviderList scenariolist = new RunnableWithLazyProxyDirTreeDBProviderList();
+	private RunnableWithLazyProxyDirTreeDBProviderPlusOneAhead scenariolist =
+			new RunnableWithLazyProxyDirTreeDBProviderPlusOneAhead();
 
 	protected void refresh(RunnableWithLazyProxyDirTreeDBProvider scenario) {
 		scenariolist.add(scenario);
