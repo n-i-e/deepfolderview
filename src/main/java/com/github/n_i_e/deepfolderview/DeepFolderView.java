@@ -18,12 +18,12 @@ package com.github.n_i_e.deepfolderview;
 
 import org.eclipse.swt.widgets.Display;
 
-import com.github.n_i_e.dirtreedb.lazy.LazyProxyDirTreeDBProvider;
+import com.github.n_i_e.dirtreedb.lazy.LazyUpdaterProvider;
 
 public class DeepFolderView
 {
-	private static LazyProxyDirTreeDBProvider prov = new LazyProxyDirTreeDBProvider();
-	public static LazyProxyDirTreeDBProvider getProv() {
+	private static LazyUpdaterProvider prov = new LazyUpdaterProvider();
+	public static LazyUpdaterProvider getProv() {
 		return prov;
 	}
 

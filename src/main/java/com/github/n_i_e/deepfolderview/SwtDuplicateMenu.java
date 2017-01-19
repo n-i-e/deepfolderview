@@ -62,9 +62,9 @@ import com.github.n_i_e.dirtreedb.Assertion;
 import com.github.n_i_e.dirtreedb.DBPathEntry;
 import com.github.n_i_e.dirtreedb.PathEntry;
 import com.github.n_i_e.dirtreedb.PreferenceRW;
-import com.github.n_i_e.dirtreedb.lazy.LazyProxyDirTreeDB;
-import com.github.n_i_e.dirtreedb.lazy.RunnableWithLazyProxyDirTreeDBProvider;
-import com.github.n_i_e.dirtreedb.lazy.LazyProxyDirTreeDB.Dispatcher;
+import com.github.n_i_e.dirtreedb.lazy.LazyUpdater;
+import com.github.n_i_e.dirtreedb.lazy.RunnableWithLazyUpdaterProvider;
+import com.github.n_i_e.dirtreedb.lazy.LazyUpdater.Dispatcher;
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.SimpleDateFormat;
 
@@ -875,7 +875,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 			newloc.setPathId(id);
 			location.add(newloc);
 		}
-		refresh(new RunnableWithLazyProxyDirTreeDBProvider() {
+		refresh(new RunnableWithLazyUpdaterProvider() {
 			@Override
 			public void run() throws SQLException, InterruptedException {
 				Debug.writelog("-- SwtFileFolderMenu SetLocationAndRefresh LOCAL PATTERN (id based) --");
@@ -1027,7 +1027,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 						writeStatusBar("Listing...");
 						writeProgress(90);
 
-						LazyProxyDirTreeDB.Dispatcher disp = getDB().getDispatcher();
+						LazyUpdater.Dispatcher disp = getDB().getDispatcher();
 						disp.setList(Dispatcher.NONE);
 						disp.setCsum(Dispatcher.NONE);
 						disp.setNoReturn(false);

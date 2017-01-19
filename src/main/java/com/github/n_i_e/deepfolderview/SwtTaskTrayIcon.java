@@ -45,7 +45,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.github.n_i_e.dirtreedb.DBPathEntry;
 import com.github.n_i_e.dirtreedb.MessageWriter;
-import com.github.n_i_e.dirtreedb.lazy.RunnableWithLazyProxyDirTreeDBProvider;
+import com.github.n_i_e.dirtreedb.lazy.RunnableWithLazyUpdaterProvider;
 
 public class SwtTaskTrayIcon extends SwtCommonFileFolderRootTaskTrayIconMenu implements MessageWriter {
 	private final TrayItem icon;
@@ -168,7 +168,7 @@ public class SwtTaskTrayIcon extends SwtCommonFileFolderRootTaskTrayIconMenu imp
 				});
 				if (d.open() == Window.OK) {
 					final String runString = d.getValue();
-					DeepFolderView.getProv().getThread(new RunnableWithLazyProxyDirTreeDBProvider() {
+					DeepFolderView.getProv().getThread(new RunnableWithLazyUpdaterProvider() {
 
 						@Override
 						public void run() throws SQLException, InterruptedException {

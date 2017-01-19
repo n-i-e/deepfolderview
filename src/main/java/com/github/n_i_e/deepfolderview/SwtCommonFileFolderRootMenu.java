@@ -23,17 +23,17 @@ import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
-import com.github.n_i_e.dirtreedb.lazy.LazyProxyDirTreeDBAccessorThread;
-import com.github.n_i_e.dirtreedb.lazy.RunnableWithLazyProxyDirTreeDBProvider;
-import com.github.n_i_e.dirtreedb.lazy.RunnableWithLazyProxyDirTreeDBProviderPlusOneAhead;
+import com.github.n_i_e.dirtreedb.lazy.LazyThread;
+import com.github.n_i_e.dirtreedb.lazy.RunnableWithLazyUpdaterProvider;
+import com.github.n_i_e.dirtreedb.lazy.RunnableWithLazyUpdaterProviderPlusOneAhead;
 
 public abstract class SwtCommonFileFolderRootMenu extends SwtCommonFileFolderRootTaskTrayIconMenu {
 
-	private LazyProxyDirTreeDBAccessorThread thread = null;
-	private RunnableWithLazyProxyDirTreeDBProviderPlusOneAhead scenariolist =
-			new RunnableWithLazyProxyDirTreeDBProviderPlusOneAhead();
+	private LazyThread thread = null;
+	private RunnableWithLazyUpdaterProviderPlusOneAhead scenariolist =
+			new RunnableWithLazyUpdaterProviderPlusOneAhead();
 
-	protected void refresh(RunnableWithLazyProxyDirTreeDBProvider scenario) {
+	protected void refresh(RunnableWithLazyUpdaterProvider scenario) {
 		scenariolist.add(scenario);
 		if (scenariolist.size() == 1) {
 			Debug.writelog("refresh mode 1 size=" + scenariolist.size());
@@ -81,7 +81,7 @@ public abstract class SwtCommonFileFolderRootMenu extends SwtCommonFileFolderRoo
 		});
 	}
 
-	public abstract class Scenario extends RunnableWithLazyProxyDirTreeDBProvider {
+	public abstract class Scenario extends RunnableWithLazyUpdaterProvider {
 
 		@Override
 		public void openingHook() {
