@@ -24,16 +24,16 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 import com.github.n_i_e.dirtreedb.lazy.LazyThread;
-import com.github.n_i_e.dirtreedb.lazy.RunnableWithLazyUpdaterProvider;
-import com.github.n_i_e.dirtreedb.lazy.RunnableWithLazyUpdaterProviderPlusOneAhead;
+import com.github.n_i_e.dirtreedb.lazy.LazyRunnable;
+import com.github.n_i_e.dirtreedb.lazy.LazyRunnablePlusOneAhead;
 
 public abstract class SwtCommonFileFolderRootMenu extends SwtCommonFileFolderRootTaskTrayIconMenu {
 
 	private LazyThread thread = null;
-	private RunnableWithLazyUpdaterProviderPlusOneAhead scenariolist =
-			new RunnableWithLazyUpdaterProviderPlusOneAhead();
+	private LazyRunnablePlusOneAhead scenariolist =
+			new LazyRunnablePlusOneAhead();
 
-	protected void refresh(RunnableWithLazyUpdaterProvider scenario) {
+	protected void refresh(LazyRunnable scenario) {
 		scenariolist.add(scenario);
 		if (scenariolist.size() == 1) {
 			Debug.writelog("refresh mode 1 size=" + scenariolist.size());
@@ -81,7 +81,7 @@ public abstract class SwtCommonFileFolderRootMenu extends SwtCommonFileFolderRoo
 		});
 	}
 
-	public abstract class Scenario extends RunnableWithLazyUpdaterProvider {
+	public abstract class Scenario extends LazyRunnable {
 
 		@Override
 		public void openingHook() {

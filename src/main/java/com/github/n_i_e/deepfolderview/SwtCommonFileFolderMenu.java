@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import com.github.n_i_e.dirtreedb.DBPathEntry;
 import com.github.n_i_e.dirtreedb.PathEntry;
-import com.github.n_i_e.dirtreedb.lazy.RunnableWithLazyUpdaterProvider;
+import com.github.n_i_e.dirtreedb.lazy.LazyRunnable;
 
 public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMenu {
 	protected List<DBPathEntry> pathentrylist = new ArrayList<DBPathEntry>();
@@ -132,7 +132,7 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 				}
 			} else {
 				assert(p.isCompressedFile());
-				DeepFolderView.getProv().getThread(new RunnableWithLazyUpdaterProvider() {
+				DeepFolderView.getProv().getThread(new LazyRunnable() {
 
 					private boolean isCopySuccessful = false;
 					@Override
@@ -197,7 +197,7 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 				} else {
 					toFile.deleteOnExit();
 					final String toPath = toFile.getAbsolutePath();
-					DeepFolderView.getProv().getThread(new RunnableWithLazyUpdaterProvider() {
+					DeepFolderView.getProv().getThread(new LazyRunnable() {
 						private boolean isCopySuccessful = false;
 						@Override
 						public void openingHook() {

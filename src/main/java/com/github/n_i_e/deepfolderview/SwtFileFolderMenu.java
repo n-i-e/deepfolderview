@@ -62,7 +62,7 @@ import com.github.n_i_e.dirtreedb.DBPathEntry;
 import com.github.n_i_e.dirtreedb.PathEntry;
 import com.github.n_i_e.dirtreedb.PreferenceRW;
 import com.github.n_i_e.dirtreedb.lazy.LazyUpdater;
-import com.github.n_i_e.dirtreedb.lazy.RunnableWithLazyUpdaterProvider;
+import com.github.n_i_e.dirtreedb.lazy.LazyRunnable;
 import com.github.n_i_e.dirtreedb.lazy.LazyUpdater.Dispatcher;
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.SimpleDateFormat;
@@ -842,7 +842,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 			newloc.setPathId(id);
 			location.add(newloc);
 		}
-		refresh(new RunnableWithLazyUpdaterProvider() {
+		refresh(new LazyRunnable() {
 			@Override
 			public void run() throws SQLException, InterruptedException {
 				Debug.writelog("-- SwtFileFolderMenu SetLocationAndRefresh LOCAL PATTERN (id based) --");
