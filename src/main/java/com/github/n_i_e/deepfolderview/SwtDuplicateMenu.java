@@ -62,8 +62,8 @@ import com.github.n_i_e.dirtreedb.Assertion;
 import com.github.n_i_e.dirtreedb.DBPathEntry;
 import com.github.n_i_e.dirtreedb.PathEntry;
 import com.github.n_i_e.dirtreedb.PreferenceRW;
-import com.github.n_i_e.dirtreedb.lazy.LazyUpdater;
 import com.github.n_i_e.dirtreedb.lazy.LazyRunnable;
+import com.github.n_i_e.dirtreedb.lazy.LazyUpdater;
 import com.github.n_i_e.dirtreedb.lazy.LazyUpdater.Dispatcher;
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.SimpleDateFormat;
@@ -946,7 +946,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 			}
 
 			try {
-				getDB().threadHook();
+				threadHook();
 				cleanupTable();
 
 				ArrayList<String> typelist = new ArrayList<String> ();
@@ -964,7 +964,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 				}
 				String typeWhere = typelist.size() == 0 ? "" : String.join(" OR ", typelist);
 
-				getDB().threadHook();
+				threadHook();
 				writeStatusBar("Querying...");
 				writeProgress(70);
 
@@ -982,7 +982,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 					}
 					searchSubSQL = " AND (" + String.join(" AND ", p) + ")";
 				}
-				getDB().threadHook();
+				threadHook();
 				DBPathEntry locationPathEntry = null;
 				PreparedStatement psL;
 				if (getLocationPath() == null || "".equals(getLocationPath())) {
@@ -1022,7 +1022,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 				try {
 					ResultSet rsL = psL.executeQuery();
 					try {
-						getDB().threadHook();
+						threadHook();
 						Debug.writelog("QUERY FINISHED");
 						writeStatusBar("Listing...");
 						writeProgress(90);
@@ -1034,7 +1034,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 
 						int countL = 0;
 						while (rsL.next()) {
-							getDB().threadHook();
+							threadHook();
 							DBPathEntry entry1L = getDB().rsToPathEntry(rsL);
 							Assertion.assertAssertionError(entry1L != null);
 							Assertion.assertAssertionError(entry1L.getPath() != null);

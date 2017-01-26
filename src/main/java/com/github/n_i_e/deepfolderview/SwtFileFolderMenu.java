@@ -61,8 +61,8 @@ import com.github.n_i_e.dirtreedb.Assertion;
 import com.github.n_i_e.dirtreedb.DBPathEntry;
 import com.github.n_i_e.dirtreedb.PathEntry;
 import com.github.n_i_e.dirtreedb.PreferenceRW;
-import com.github.n_i_e.dirtreedb.lazy.LazyUpdater;
 import com.github.n_i_e.dirtreedb.lazy.LazyRunnable;
+import com.github.n_i_e.dirtreedb.lazy.LazyUpdater;
 import com.github.n_i_e.dirtreedb.lazy.LazyUpdater.Dispatcher;
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.SimpleDateFormat;
@@ -915,7 +915,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 			}
 
 			try {
-				getDB().threadHook();
+				threadHook();
 				cleanupTable();
 
 				ArrayList<String> typelist = new ArrayList<String> ();
@@ -933,7 +933,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 				}
 				String typeWhere = typelist.size() == 0 ? "" : String.join(" OR ", typelist);
 
-				getDB().threadHook();
+				threadHook();
 				writeStatusBar("Querying...");
 				writeProgress(70);
 
@@ -951,7 +951,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 					}
 					searchSubSQL = " AND (" + String.join(" AND ", p) + ")";
 				}
-				getDB().threadHook();
+				threadHook();
 				DBPathEntry locationPathEntry = null;
 				PreparedStatement ps;
 				if (loc.getPathString() == null || "".equals(loc.getPathString())) {
@@ -1006,14 +1006,14 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 
 					ResultSet rs = ps.executeQuery();
 					try {
-						getDB().threadHook();
+						threadHook();
 						Debug.writelog("QUERY FINISHED");
 						writeStatusBar("Listing...");
 						writeProgress(90);
 
 						int count = 0;
 						while (rs.next()) {
-							getDB().threadHook();
+							threadHook();
 							DBPathEntry p1 = getDB().rsToPathEntry(rs);
 							Assertion.assertAssertionError(p1 != null);
 							Assertion.assertAssertionError(p1.getPath() != null);

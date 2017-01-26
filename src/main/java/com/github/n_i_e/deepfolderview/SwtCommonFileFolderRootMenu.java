@@ -23,9 +23,9 @@ import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
-import com.github.n_i_e.dirtreedb.lazy.LazyThread;
 import com.github.n_i_e.dirtreedb.lazy.LazyRunnable;
 import com.github.n_i_e.dirtreedb.lazy.LazyRunnablePlusOneAhead;
+import com.github.n_i_e.dirtreedb.lazy.LazyThread;
 
 public abstract class SwtCommonFileFolderRootMenu extends SwtCommonFileFolderRootTaskTrayIconMenu {
 
@@ -42,6 +42,7 @@ public abstract class SwtCommonFileFolderRootMenu extends SwtCommonFileFolderRoo
 		} else {
 			if (thread != null && thread.isAlive()) {
 				Debug.writelog("refresh mode 2 size=" + scenariolist.size());
+				thread.setTopPriority();
 				thread.interrupt();
 			} else {
 				Debug.writelog("refresh mode 3 size=" + scenariolist.size());
