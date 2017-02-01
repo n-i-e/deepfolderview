@@ -1050,7 +1050,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 							} catch (IOException e1) {
 								entry2L = null;
 							}
-							if (rsL.getInt("duplicate") == 0 || entry2L == null || !PathEntry.dscMatch(entry1L, entry2L)) {
+							if (entry2L == null || entry1L.isFolder() || entry1L.isCompressedFolder()) {
 								// no right side fields, only left
 								mixOldNewEntriesAndAddRow(entry1L, entry2L, null, null);
 								countL ++;
@@ -1058,19 +1058,22 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 								String sqlR = "SELECT d1.*, datelasttested FROM directory AS d1 LEFT JOIN equality"
 										+ " ON (pathid1=pathid AND pathid2=?) OR (pathid2=pathid AND pathid1=?)"
 										+ " WHERE (type=1 OR type=3)"
-										+ " AND pathid<>? AND d1.size=? AND d1.csum=?"
+										+ " AND pathid<>? AND d1.size=? "
+										+ (entry1L.isCsumNull() ? "" : "AND (d1.csum=? OR d1.csum IS NULL)")
 										+ " AND (parentid=0 OR EXISTS (SELECT * FROM directory AS d2 WHERE d1.parentid=d2.pathid))"
 										+ " ORDER BY " + orderR;
 								PreparedStatement psR = getDB().prepareStatement(sqlR);
+								psR.setLong(1, entry1L.getPathId());
+								psR.setLong(2, entry1L.getPathId());
+								psR.setLong(3, entry1L.getPathId());
+								psR.setLong(4, entry1L.getSize());
+								if (! entry1L.isCsumNull()) { psR.setInt(5, entry1L.getCsum()); }
 								try {
-									psR.setLong(1, entry1L.getPathId());
-									psR.setLong(2, entry1L.getPathId());
-									psR.setLong(3, entry1L.getPathId());
-									psR.setLong(4, entry1L.getSize());
-									psR.setInt(5, entry1L.getCsum());
+									threadHook();
 									ResultSet rsR = psR.executeQuery();
 									int countR = 0;
 									while (rsR.next()) {
+										threadHook();
 										DBPathEntry entry1R = getDB().rsToPathEntry(rsR);
 										PathEntry entry2R;
 										try {
