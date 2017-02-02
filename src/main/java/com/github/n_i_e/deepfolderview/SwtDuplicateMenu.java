@@ -1075,6 +1075,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 									while (rsR.next()) {
 										threadHook();
 										DBPathEntry entry1R = getDB().rsToPathEntry(rsR);
+										Assertion.assertAssertionError(entry1L.getSize() == entry1R.getSize());
 										PathEntry entry2R;
 										try {
 											entry2R = disp.dispatch(entry1R);
