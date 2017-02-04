@@ -685,7 +685,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 
 		protected void cleanupTable() throws WindowDisposedException {
 			if (table.isDisposed()) {
-				throw new WindowDisposedException("!! Window disposed at addRow");
+				throw new WindowDisposedException("!! Window disposed at cleanupTable");
 			}
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
