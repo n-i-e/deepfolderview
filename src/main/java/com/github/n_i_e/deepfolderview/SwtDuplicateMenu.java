@@ -946,7 +946,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 			}
 
 			try {
-				threadHook();
+				threadWait();
 				cleanupTable();
 
 				ArrayList<String> typelist = new ArrayList<String> ();
@@ -964,7 +964,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 				}
 				String typeWhere = typelist.size() == 0 ? "" : String.join(" OR ", typelist);
 
-				threadHook();
+				threadWait();
 				writeStatusBar("Querying...");
 				writeProgress(70);
 
@@ -982,7 +982,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 					}
 					searchSubSQL = " AND (" + String.join(" AND ", p) + ")";
 				}
-				threadHook();
+				threadWait();
 				DBPathEntry locationPathEntry = null;
 				PreparedStatement psL;
 				if (getLocationPath() == null || "".equals(getLocationPath())) {
@@ -1022,7 +1022,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 				try {
 					ResultSet rsL = psL.executeQuery();
 					try {
-						threadHook();
+						threadWait();
 						Debug.writelog("QUERY FINISHED");
 						writeStatusBar("Listing...");
 						writeProgress(90);
@@ -1034,7 +1034,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 
 						int countL = 0;
 						while (rsL.next()) {
-							threadHook();
+							threadWait();
 							DBPathEntry entry1L = getDB().rsToPathEntry(rsL);
 							Assertion.assertAssertionError(entry1L != null);
 							Assertion.assertAssertionError(entry1L.getPath() != null);
@@ -1069,11 +1069,11 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 								psR.setLong(4, entry1L.getSize());
 								if (! entry1L.isCsumNull()) { psR.setInt(5, entry1L.getCsum()); }
 								try {
-									threadHook();
+									threadWait();
 									ResultSet rsR = psR.executeQuery();
 									int countR = 0;
 									while (rsR.next()) {
-										threadHook();
+										threadWait();
 										DBPathEntry entry1R = getDB().rsToPathEntry(rsR);
 										Assertion.assertAssertionError(entry1L.getSize() == entry1R.getSize());
 										PathEntry entry2R;
@@ -1085,15 +1085,17 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 										boolean addRowFlag;
 										if (entry2R == null) {
 											addRowFlag = false; // p1R does not exist
-										} else if (PathEntry.dscMatch(entry1R, entry2R)) {
-											rsR.getLong("datelasttested");
-											if (rsR.wasNull()) {
+										} else if (entry2R.getSize() != entry2L.getSize()) {
+											addRowFlag = false; // p1R size is modified
+										} else if (! PathEntry.dscMatch(entry1R, entry2R)) { // p1R is modified, size is kept
+											addRowFlag = disp.checkEquality(entry1L, entry1R, disp.CHECKEQUALITY_AUTOSELECT);
+										} else { // p1R is not modified
+											rsR.getLong("datelasttested"); // equailty entry exists?
+											if (rsR.wasNull()) { // no, equality entry does not exist
 												addRowFlag = disp.checkEquality(entry1L, entry1R, disp.CHECKEQUALITY_AUTOSELECT);
-											} else {
-												addRowFlag = true;
+											} else { // yes, equality entry does exist;
+												addRowFlag = true; // equality cache is valid in this case
 											}
-										} else {
-											addRowFlag = false; // not dscMatch - modified
 										}
 										if (addRowFlag) {
 											if (countR == 0) {
@@ -1103,6 +1105,10 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 											}
 											countL++;
 											countR++;
+										} else {
+											if (table.isDisposed()) {
+												throw new WindowDisposedException("!! Window disposed at run");
+											}
 										}
 									}
 									if (countR == 0) {
@@ -1169,7 +1175,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 
 		protected void cleanupTable() throws WindowDisposedException {
 			if (table.isDisposed()) {
-				throw new WindowDisposedException("!! Window disposed at addRow");
+				throw new WindowDisposedException("!! Window disposed at cleanupTable");
 			}
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {

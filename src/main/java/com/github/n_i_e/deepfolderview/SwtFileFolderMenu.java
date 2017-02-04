@@ -915,7 +915,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 			}
 
 			try {
-				threadHook();
+				threadWait();
 				cleanupTable();
 
 				ArrayList<String> typelist = new ArrayList<String> ();
@@ -933,7 +933,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 				}
 				String typeWhere = typelist.size() == 0 ? "" : String.join(" OR ", typelist);
 
-				threadHook();
+				threadWait();
 				writeStatusBar("Querying...");
 				writeProgress(70);
 
@@ -951,7 +951,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 					}
 					searchSubSQL = " AND (" + String.join(" AND ", p) + ")";
 				}
-				threadHook();
+				threadWait();
 				DBPathEntry locationPathEntry = null;
 				PreparedStatement ps;
 				if (loc.getPathString() == null || "".equals(loc.getPathString())) {
@@ -1006,14 +1006,14 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 
 					ResultSet rs = ps.executeQuery();
 					try {
-						threadHook();
+						threadWait();
 						Debug.writelog("QUERY FINISHED");
 						writeStatusBar("Listing...");
 						writeProgress(90);
 
 						int count = 0;
 						while (rs.next()) {
-							threadHook();
+							threadWait();
 							DBPathEntry p1 = getDB().rsToPathEntry(rs);
 							Assertion.assertAssertionError(p1 != null);
 							Assertion.assertAssertionError(p1.getPath() != null);
@@ -1059,7 +1059,7 @@ public class SwtFileFolderMenu extends SwtCommonFileFolderMenu {
 
 		protected void cleanupTable() throws WindowDisposedException {
 			if (table.isDisposed()) {
-				throw new WindowDisposedException("!! Window disposed at addRow");
+				throw new WindowDisposedException("!! Window disposed at cleanupTable");
 			}
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
