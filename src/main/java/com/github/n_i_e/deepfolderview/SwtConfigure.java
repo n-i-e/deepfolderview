@@ -41,8 +41,6 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
-import com.github.n_i_e.dirtreedb.PreferenceRW;
-
 public class SwtConfigure extends Dialog {
 
 	protected Object result;

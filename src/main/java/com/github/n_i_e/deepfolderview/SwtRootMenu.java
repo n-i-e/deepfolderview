@@ -36,6 +36,8 @@ import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -62,7 +64,6 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import com.github.n_i_e.dirtreedb.Assertion;
 import com.github.n_i_e.dirtreedb.DBPathEntry;
 import com.github.n_i_e.dirtreedb.PathEntry;
-import com.github.n_i_e.dirtreedb.PreferenceRW;
 import com.ibm.icu.text.NumberFormat;
 
 
@@ -123,9 +124,16 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 	 */
 	private void createContents() {
 		shell = new Shell();
+		shell.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent arg0) {
+				Point p = shell.getSize();
+				PreferenceRW.setSwtRootMenuWindowWidth(p.x);
+				PreferenceRW.setSwtRootMenuWindowHeight(p.y);
+			}
+		});
 		shell.setImage(SWTResourceManager.getImage(SwtRootMenu.class, "/com/github/n_i_e/deepfolderview/icon/drive-harddisk.png"));
 		shell.setMinimumSize(new Point(300, 200));
-		shell.setSize(640, 480);
+		shell.setSize(PreferenceRW.getSwtRootMenuWindowWidth(),PreferenceRW.getSwtDuplicateMenuWindowHeight());
 		shell.setText(Messages.SwtRootMenu_shlRootFolders_text);
 		GridLayout gl_shell = new GridLayout(1, false);
 		gl_shell.verticalSpacing = 6;
