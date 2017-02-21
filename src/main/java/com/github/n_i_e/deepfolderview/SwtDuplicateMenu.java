@@ -930,7 +930,9 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 
 				writeProgress(50);
 				if (loc.getPathString() != null) {
+					threadWait();
 					DBPathEntry p = getDB().getDBPathEntryByPath(loc.getPathString());
+					threadWait();
 					if (p != null) {
 						loc.setPathEntry(p);
 						loc.setPathId(p.getPathId());
@@ -944,7 +946,9 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 					}
 				} else if (loc.getPathId() != 0L) {
 					Debug.writelog("-- SwtDuplicateMenu PREPROCESS PATTERN 3 (id based) --");
+					threadWait();
 					DBPathEntry p = getDB().getDBPathEntryByPathId(loc.getPathId());
+					threadWait();
 					assert(p != null);
 					setLocationAndRefresh(p);
 					return;
