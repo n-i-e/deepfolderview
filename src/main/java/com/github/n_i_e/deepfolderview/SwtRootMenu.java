@@ -129,6 +129,10 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 				Point p = shell.getSize();
 				PreferenceRW.setSwtRootMenuWindowWidth(p.x);
 				PreferenceRW.setSwtRootMenuWindowHeight(p.y);
+				PreferenceRW.setSwtRootMenuSizeColumnWidth(tblclmnSize.getWidth());
+				PreferenceRW.setSwtRootMenuCompressedsizeColumnWidth(tblclmnCompressedsize.getWidth());
+				PreferenceRW.setSwtRootMenuMaximumsizeColumnWidth(tblclmnMaximumsize.getWidth());
+				PreferenceRW.setSwtRootMenuPercentusageColumnWidth(tblclmnPercentusage.getWidth());
 			}
 		});
 		shell.setImage(SWTResourceManager.getImage(SwtRootMenu.class, "/com/github/n_i_e/deepfolderview/icon/drive-harddisk.png"));
@@ -279,10 +283,11 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 		formToolkit.adapt(table);
 		formToolkit.paintBordersFor(table);
 
-		final TableColumn tblclmnPath = new TableColumn(table, SWT.LEFT);
+		tblclmnPath = new TableColumn(table, SWT.LEFT);
 		tblclmnPath.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				PreferenceRW.setSwtRootMenuPathColumnWidth(tblclmnPath.getWidth());
 				table.setSortColumn(tblclmnPath);
 				if (table.getSortDirection() == SWT.UP) {
 					table.setSortDirection(SWT.DOWN);
@@ -293,10 +298,11 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 			}
 		});
 		tblclmnPath.setWidth(230);
+		tblclmnPath.setWidth(PreferenceRW.getSwtRootMenuPathColumnWidth());
 		tblclmnPath.setText(Messages.tblclmnPath_text);
 		setTableSortDirection(tblclmnPath, "path", order);
 
-		final TableColumn tblclmnSize = new TableColumn(table, SWT.RIGHT);
+		tblclmnSize = new TableColumn(table, SWT.RIGHT);
 		tblclmnSize.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -310,10 +316,11 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 			}
 		});
 		tblclmnSize.setWidth(110);
+		tblclmnSize.setWidth(PreferenceRW.getSwtRootMenuSizeColumnWidth());
 		tblclmnSize.setText(Messages.tblclmnSize_text);
 		setTableSortDirection(tblclmnSize, "size", order);
 
-		final TableColumn tblclmnCompressedsize = new TableColumn(table, SWT.RIGHT);
+		tblclmnCompressedsize = new TableColumn(table, SWT.RIGHT);
 		tblclmnCompressedsize.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -327,15 +334,18 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 			}
 		});
 		tblclmnCompressedsize.setWidth(110);
+		tblclmnCompressedsize.setWidth(PreferenceRW.getSwtRootMenuCompressedsizeColumnWidth());
 		tblclmnCompressedsize.setText(Messages.tblclmnCompressedesize_text);
 		setTableSortDirection(tblclmnCompressedsize, "compressedsize", order);
 
-		final TableColumn tblclmnMaximumsize = new TableColumn(table, SWT.RIGHT); // you cannot select this column; no listener here
+		tblclmnMaximumsize = new TableColumn(table, SWT.RIGHT);
 		tblclmnMaximumsize.setWidth(110);
+		tblclmnMaximumsize.setWidth(PreferenceRW.getSwtRootMenuMaximumsizeColumnWidth());
 		tblclmnMaximumsize.setText(Messages.tblclmnMaximumsize_text);
 
-		TableColumn tblclmnPercentusage = new TableColumn(table, SWT.RIGHT); // you cannot select this column; no listener here
+		tblclmnPercentusage = new TableColumn(table, SWT.RIGHT);
 		tblclmnPercentusage.setWidth(35);
+		tblclmnPercentusage.setWidth(PreferenceRW.getSwtRootMenuPercentusageColumnWidth());
 		tblclmnPercentusage.setText(Messages.tblclmnPercentusage_text);
 
 		Menu menu_1 = new Menu(table);
@@ -559,6 +569,16 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 
 
 	private List<DBPathEntry> pathentrylist = new ArrayList<DBPathEntry>();
+
+	private TableColumn tblclmnPath;
+
+	private TableColumn tblclmnSize;
+
+	private TableColumn tblclmnCompressedsize;
+
+	private TableColumn tblclmnMaximumsize;
+
+	private TableColumn tblclmnPercentusage;
 
 	private DBPathEntry getSelectedPathEntry() {
 		int row = table.getSelectionIndex();
