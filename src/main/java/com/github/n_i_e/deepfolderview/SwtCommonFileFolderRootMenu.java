@@ -30,25 +30,21 @@ import com.github.n_i_e.dirtreedb.lazy.LazyThread;
 public abstract class SwtCommonFileFolderRootMenu extends SwtCommonFileFolderRootTaskTrayIconMenu {
 
 	private LazyThread thread = null;
-	private LazyRunnablePlusOneAhead scenariolist =
-			new LazyRunnablePlusOneAhead();
+	private LazyRunnablePlusOneAhead scenariolist = new LazyRunnablePlusOneAhead();
 
 	protected void refresh(LazyRunnable scenario) {
+		if (thread != null && !thread.isAlive()) {
+			thread = null;
+		}
 		scenariolist.add(scenario);
-		if (scenariolist.size() == 1) {
+		if (thread == null) {
 			Debug.writelog("refresh mode 1 size=" + scenariolist.size());
 			thread = DeepFolderView.getProv().getThread(scenariolist);
 			thread.start();
 		} else {
-			if (thread != null && thread.isAlive()) {
-				Debug.writelog("refresh mode 2 size=" + scenariolist.size());
-				thread.setTopPriority();
-				thread.interrupt();
-			} else {
-				Debug.writelog("refresh mode 3 size=" + scenariolist.size());
-				thread = DeepFolderView.getProv().getThread(scenariolist);
-				thread.start();
-			}
+			Debug.writelog("refresh mode 2 size=" + scenariolist.size());
+			thread.setTopPriority();
+			thread.interrupt();
 		}
 	}
 
