@@ -922,7 +922,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 
 		@Override
 		public void run() throws SQLException, InterruptedException {
-			openingHook2();
+			writeProgress(10);
 			Location loc = location.get();
 			if (loc.getPathEntry() == null && loc.getSearchString() == null &&
 					(loc.getPathEntry() != null || loc.getPathId() != 0L
@@ -1139,7 +1139,7 @@ public class SwtDuplicateMenu extends SwtCommonFileFolderMenu {
 				} finally {
 					psL.close();
 				}
-				closingHook2();
+				writeProgress(0);
 			} catch (WindowDisposedException e) {
 			}
 		}

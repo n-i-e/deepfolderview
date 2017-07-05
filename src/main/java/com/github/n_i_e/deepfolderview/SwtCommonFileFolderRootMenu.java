@@ -24,28 +24,21 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 import com.github.n_i_e.dirtreedb.lazy.LazyRunnable;
-import com.github.n_i_e.dirtreedb.lazy.LazyRunnablePlusOneAhead;
 import com.github.n_i_e.dirtreedb.lazy.LazyThread;
 
 public abstract class SwtCommonFileFolderRootMenu extends SwtCommonFileFolderRootTaskTrayIconMenu {
 
 	private LazyThread thread = null;
-	private LazyRunnablePlusOneAhead scenariolist = new LazyRunnablePlusOneAhead();
 
 	protected void refresh(LazyRunnable scenario) {
-		if (thread != null && !thread.isAlive()) {
-			thread = null;
-		}
-		scenariolist.add(scenario);
-		if (thread == null) {
-			Debug.writelog("refresh mode 1 size=" + scenariolist.size());
-			thread = DeepFolderView.getProv().getThread(scenariolist);
-			thread.start();
-		} else {
-			Debug.writelog("refresh mode 2 size=" + scenariolist.size());
-			thread.setTopPriority();
+		if (thread != null && thread.isAlive()) {
 			thread.interrupt();
+			try {
+				thread.join();
+			} catch (InterruptedException e) {}
 		}
+		thread = DeepFolderView.getProv().getThread(scenario);
+		thread.start();
 	}
 
 	protected abstract Table getTable();
@@ -79,24 +72,6 @@ public abstract class SwtCommonFileFolderRootMenu extends SwtCommonFileFolderRoo
 	}
 
 	public abstract class Scenario extends LazyRunnable {
-
-		@Override
-		public void openingHook() {
-			writeProgress(10);
-		}
-
-		@Override
-		public void closingHook() {
-			writeProgress(0);
-		}
-
-		public void openingHook2() {
-			writeProgress(20);
-		}
-
-		public void closingHook2() {
-			writeProgress(100);
-		}
 	}
 
 	public class WindowDisposedException extends Exception {

@@ -134,14 +134,11 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 				assert(p.isCompressedFile());
 				DeepFolderView.getProv().getThread(new LazyRunnable() {
 
-					private boolean isCopySuccessful = false;
-					@Override
-					public void openingHook() {
-						writeStatusBar("Start copying from compressed file: " + p.getPath() + " to " + toPath);
-					}
-
 					@Override
 					public void run() throws SQLException, InterruptedException {
+						boolean isCopySuccessful = false;
+
+						writeStatusBar("Start copying from compressed file: " + p.getPath() + " to " + toPath);
 						File f = new File(toPath);
 						try {
 							Files.copy(getDB().getInputStream(p) , f.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -150,10 +147,7 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 						}
 						f.setLastModified(p.getDateLastModified());
 						isCopySuccessful = true;
-					}
 
-					@Override
-					public void closingHook() {
 						if (isCopySuccessful) {
 							writeStatusBar("Copying from compressed file finished: " + p.getPath() + " to " + toPath);
 						} else {
@@ -198,14 +192,11 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 					toFile.deleteOnExit();
 					final String toPath = toFile.getAbsolutePath();
 					DeepFolderView.getProv().getThread(new LazyRunnable() {
-						private boolean isCopySuccessful = false;
-						@Override
-						public void openingHook() {
-							writeStatusBar(String.format("Start copying from compressed file: %s to %s", entry.getPath(), toPath));
-						}
 
 						@Override
 						public void run() throws SQLException, InterruptedException {
+							boolean isCopySuccessful = false;
+							writeStatusBar(String.format("Start copying from compressed file: %s to %s", entry.getPath(), toPath));
 							InputStream inf;
 							try {
 								inf = getDB().getInputStream(entry);
@@ -216,10 +207,7 @@ public abstract class SwtCommonFileFolderMenu extends SwtCommonFileFolderRootMen
 							} catch (IOException e) {
 								isCopySuccessful = false;
 							}
-						}
 
-						@Override
-						public void closingHook() {
 							if (isCopySuccessful) {
 								writeStatusBar(String.format("Copying from compressed file finished: %s to %s", entry.getPath(), toPath));
 							} else {

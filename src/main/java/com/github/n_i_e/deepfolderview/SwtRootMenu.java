@@ -628,7 +628,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 		@Override
 		public void run() throws SQLException, InterruptedException {
 			try {
-				openingHook2();
+				writeProgress(10);
 				cleanupTable();
 				if (_newroot != null) {
 					try {
@@ -707,7 +707,7 @@ public class SwtRootMenu extends SwtCommonFileFolderRootMenu {
 				} finally {
 					ps.close();
 				}
-				closingHook2();
+				writeProgress(0);
 			} catch (WindowDisposedException e1) {}
 		}
 
